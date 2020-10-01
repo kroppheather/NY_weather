@@ -47,7 +47,6 @@ filesTmax <- filesLatLon[filesLatLon$tmaxL == TRUE,]
 
 filesTmin <- filesLatLon[filesLatLon$tminL == TRUE,]
 
-filesTavg <- filesLatLon[filesLatLon$tmavgL == TRUE,]
 
 filesPrcp <- filesLatLon[filesLatLon$prL == TRUE,]
 
