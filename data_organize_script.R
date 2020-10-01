@@ -58,7 +58,9 @@ filesTmax <- filesLatLon[filesLatLon$tmaxL == TRUE,]
 
 filesTmin <- filesLatLon[filesLatLon$tminL == TRUE,]
 
-
 filesPrcp <- filesLatLon[filesLatLon$prL == TRUE,]
+
+#start to read in csv files
+
 
 
