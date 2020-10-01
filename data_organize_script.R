@@ -1,4 +1,4 @@
-
+#define usr
 #station directory ID
 #1 = Heather
 #2 = Rachel & Abby
@@ -58,9 +58,20 @@ filesTmax <- filesLatLon[filesLatLon$tmaxL == TRUE,]
 
 filesTmin <- filesLatLon[filesLatLon$tminL == TRUE,]
 
-filesPrcp <- filesLatLon[filesLatLon$prL == TRUE,]
+filesPrcp <- na.omit(filesLatLon[filesLatLon$prL == TRUE,])
 
 #start to read in csv files
 
 
 
+PrcpData <- read.csv(paste0(stationDir[usr],"/",filesPrcp$filename[1]))
+
+#read in precip
+for(i in 2:nrow(filesPrcp)){
+  PrcpData <- rbind(PrcpData, read.csv(paste0(stationDir[usr],"/",filesPrcp$filename[i])))
+  
+}
+
+#tminData <- read.csv(paste0(stationDir[usr],"/",filesPrcp$filename[1]))
+
+rm(list=setdiff(ls(), c("PrcpData", "filesInfo")))
