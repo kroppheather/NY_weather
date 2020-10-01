@@ -8,7 +8,7 @@ stationDir <- c("/Users/hkropp/Google Drive/GIS/NYweather/stations",
               "/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/stations")
 infoDir <- c("/Users/hkropp/Google Drive/GIS/NYweather/",
              "/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/")
-
+outDir <- "/Users/hkropp/Google Drive/research/students/NYweather/data"
 files <- list.files(stationDir[usr])
 filesInfo <- read.csv(paste0(infoDir[usr],"station_info.csv"))
 
@@ -54,9 +54,9 @@ filesAll <- full_join(filesDF, filesInfo, by= "station_id")
 filesLatLon <- filesAll[filesAll$lat >= 42.5 & filesAll$long >=-76.5,]
 
 # For each type of data make a new data frame with only files that include that type
-filesTmax <- filesLatLon[filesLatLon$tmaxL == TRUE,]
+filesTmax <- na.omit(filesLatLon[filesLatLon$tmaxL == TRUE,])
 
-filesTmin <- filesLatLon[filesLatLon$tminL == TRUE,]
+filesTmin <- na.omit(filesLatLon[filesLatLon$tminL == TRUE,])
 
 filesPrcp <- na.omit(filesLatLon[filesLatLon$prL == TRUE,])
 
@@ -71,7 +71,26 @@ for(i in 2:nrow(filesPrcp)){
   PrcpData <- rbind(PrcpData, read.csv(paste0(stationDir[usr],"/",filesPrcp$filename[i])))
   
 }
+write.table(PrcpData, paste0(outDir,"/prcp_all.csv"), row.names=FALSE,sep=",")
 
-#tminData <- read.csv(paste0(stationDir[usr],"/",filesPrcp$filename[1]))
+#tmax
+maxData <- read.csv(paste0(stationDir[usr],"/",filesTmax$filename[1]))
 
-rm(list=setdiff(ls(), c("PrcpData", "filesInfo")))
+#read in precip
+for(i in 2:nrow(filesTmax)){
+  maxData <- rbind(maxData, read.csv(paste0(stationDir[usr],"/",filesTmax$filename[i])))
+  
+}
+write.table(maxData, paste0(outDir,"/Tmax_all.csv"), row.names=FALSE,sep=",")
+
+
+#tmin
+minData <- read.csv(paste0(stationDir[usr],"/",filesTmin$filename[1]))
+
+#read in precip
+for(i in 2:nrow(filesTmin)){
+  minData <- rbind(minData, read.csv(paste0(stationDir[usr],"/",filesTmin$filename[i])))
+  
+}
+write.table(minData, paste0(outDir,"/Tmin_all.csv"), row.names=FALSE,sep=",")
+
