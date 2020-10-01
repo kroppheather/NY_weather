@@ -1,5 +1,16 @@
-files <- list.files("/Users/hkropp/Google Drive/GIS/NYweather/stations")
-filesInfo <- read.csv("/Users/hkropp/Google Drive/GIS/NYweather/station_info.csv")
+
+#station directory ID
+#1 = Heather
+#2 = Rachel & Abby
+usr <- 1
+#station directory
+stationDir <- c("/Users/hkropp/Google Drive/GIS/NYweather/stations",
+              "/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/stations")
+infoDir <- c("/Users/hkropp/Google Drive/GIS/NYweather/",
+             "/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/")
+
+files <- list.files(stationDir[usr])
+filesInfo <- read.csv(paste0(infoDir[usr],"station_info.csv"))
 
 # Organizing the file data
 #install.packages("dplyr")
