@@ -1,12 +1,13 @@
 # Rachel Started 10/6
 
-# Installing this library to make it easy to omit na
-#install.packages("tidyr")
+# NEXT STEPS (10/8): remove stations with less than half a year of data
+#                    remove stations with quality flags
+#                    figure out min/max year to see how many years each station has
+#                    remove stations with less than 50 years of data (for visualization)
+#                    remove stations with less than 75% of those 50 years (continuous)
 
 library(tidyr)
 library(lubridate)
-
-# source("/Users/hkropp/Documents/GitHub/NY_weather/data_organize_script.r")
 
 # Reading in prcp data from google drive
 PrcpData <- read.csv("/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/data/prcp_all.csv")
@@ -16,6 +17,8 @@ TmaxData <- read.csv("/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4
 
 # Reading in tmin data from google drive
 TminData <- read.csv("/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/data/Tmin_all.csv")
+
+# COME BACK HERE to remove any stations/years with a quality flag
 
 # Omitting na values from the data sets
 PrcpData <- PrcpData %>% drop_na(prcp)
@@ -67,10 +70,10 @@ PrcpDataYear$ncount <- aggregate(PrcpData$prcp, by=list(PrcpData$id,PrcpData$yea
 
 # Counting number of years per station for tmax- mean year doesn't mean anything to us
   # it just helps us count
-TmaxStn <- aggregate(TmaxDataYear$year, by=list(TmaxDataYear$station), FUN="mean")
+TmaxStn <- aggregate(TmaxDataYear$year, by=list(TmaxDataYear$station), FUN="min")
 
 # Renaming columns
-colnames(TmaxStn) <- c("station", "myear")
+colnames(TmaxStn) <- c("station", "MinYear")
 
 # Adding a count of the years
 TmaxStn$YearCount <- aggregate(TmaxDataYear$year, by=list(TmaxDataYear$station), FUN="length")$x
@@ -78,22 +81,22 @@ TmaxStn$YearCount <- aggregate(TmaxDataYear$year, by=list(TmaxDataYear$station),
 
 # Counting number of years per station for tmin - mean year doesn't mean anything to us
 # it just helps us count
-TminStn <- aggregate(TminDataYear$year, by=list(TminDataYear$station), FUN="mean")
+TminStn <- aggregate(TminDataYear$year, by=list(TminDataYear$station), FUN="min")
 
 # Renaming columns
-colnames(TminStn) <- c("station", "myear")
+colnames(TminStn) <- c("station", "MinYear")
 
 # Adding a count of the years
 TminStn$YearCount <- aggregate(TminDataYear$year, by=list(TminDataYear$station), FUN="length")$x
 
 
-# Counting number of years per station for prcp - mean year doesn't mean anything to us
-# it just helps us count
-PrcpStn <- aggregate(PrcpDataYear$year, by=list(PrcpDataYear$station), FUN="mean")
+# Counting number of years per station for prcp by first getting min year
+PrcpStn <- aggregate(PrcpDataYear$year, by=list(PrcpDataYear$station), FUN="min")
 
 # Renaming columns
-colnames(PrcpStn) <- c("station", "myear")
+colnames(PrcpStn) <- c("station", "MinYear")
 
 # Adding a count of the years
 PrcpStn$YearCount <- aggregate(PrcpDataYear$year, by=list(PrcpDataYear$station), FUN="length")$x
 
+# We can add max year to understand better how many years are actually in data
