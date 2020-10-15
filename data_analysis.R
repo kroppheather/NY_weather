@@ -51,6 +51,7 @@ TMINyear <-aggregate(TMIN$tmin, by=list(TMIN$id,TMIN$year), FUN="mean")
 colnames(TMINyear) <- c("STATION","year","meanTMIN")
 TMINyear$ncount <-aggregate(TMIN$tmin, by=list(TMIN$id,TMIN$year), FUN="length")$x
 
+
 ## reorganize to get number of years per station
 TMAXstn <-aggregate(TMAXyear$year, by=list(TMAXyear$STATION), FUN="mean")
 colnames(TMAXstn) <-c("STATION", "mean")
