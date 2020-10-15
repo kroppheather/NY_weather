@@ -1,29 +1,26 @@
 # Rachel Started 10/6
 
-# NEXT STEPS (10/8): remove stations with less than half a year of data
-#                    remove stations with quality flags
-#                    figure out min/max year to see how many years each station has
-#                    remove stations with less than 50 years of data (for visualization)
-#                    remove stations with less than 75% of those 50 years (continuous)
-
 library(tidyr)
 library(lubridate)
 
 # Reading in prcp data from google drive
-PrcpData <- read.csv("/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/data/prcp_all.csv")
+PrcpData <- read.csv("/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/data/prcp_all.csv", na.strings=c(""," ","NA"))
 
 # Reading in tmax data from google drive
-TmaxData <- read.csv("/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/data/Tmax_all.csv")
+TmaxData <- read.csv("/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/data/Tmax_all.csv", na.strings=c(""," ","NA"))
 
 # Reading in tmin data from google drive
-TminData <- read.csv("/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/data/Tmin_all.csv")
-
-# COME BACK HERE to remove any stations/years with a quality flag
+TminData <- read.csv("/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/data/Tmin_all.csv", na.strings=c(""," ","NA"))
 
 # Omitting na values from the data sets
 PrcpData <- PrcpData %>% drop_na(prcp)
 TmaxData <- TmaxData %>% drop_na(tmax)
 TminData <- TminData %>% drop_na(tmin)
+
+# Keeping only rows without a quality flag
+PrcpData <- subset(PrcpData, is.na(PrcpData$qflag))
+TmaxData <- subset(TmaxData, is.na(TmaxData$qflag))
+TminData <- subset(TminData, is.na(TminData$qflag))
 
 # Formatting date columns as dates
 PrcpData$date <- as.Date(PrcpData$date, "%Y-%m-%d")
@@ -35,68 +32,115 @@ PrcpData$year <- year(PrcpData$date)
 TmaxData$year <- year(TmaxData$date)
 TminData$year <- year(TminData$date)
 
+# Making a day of year column
+PrcpData$DOY <- yday(PrcpData$date)
+TmaxData$DOY <- yday(TmaxData$date)
+TminData$DOY <- yday(TminData$date)
+
+# Subsetting data to only include first half of the year
+PrcpData <- subset(PrcpData, PrcpData$DOY < 182)
+TmaxData <- subset(TmaxData, TmaxData$DOY < 182)
+TminData <- subset(TminData, TminData$DOY < 182)
+
 # Counting observations per year for the tmax data
 # Make new data frame with just the id, tmax value, and year
-TmaxDataYear <- aggregate(TmaxData$tmax, by=list(TmaxData$id,TmaxData$year), FUN="mean")
+TmaxDataYear <- aggregate(TmaxData$tmax, by=list(TmaxData$id,TmaxData$year), FUN="length")
 
 # Changing column names
-colnames(TmaxDataYear) <- c("station", "year", "mtmax")
+colnames(TmaxDataYear) <- c("station", "year", "ncount")
 
-# Add an ncount column to see the total observations per year
-TmaxDataYear$ncount <- aggregate(TmaxData$tmax, by=list(TmaxData$id,TmaxData$year), FUN="length")$x
-
+# Getting rid of rows with less than 180 observations
+TmaxDataYear <- subset(TmaxDataYear, TmaxDataYear$ncount >= 180)
 
 # Counting observations per year for the tmin data
 # Make new data frame with just the id, tmin value, and year
-TminDataYear <- aggregate(TminData$tmin, by=list(TminData$id,TminData$year), FUN="mean")
+TminDataYear <- aggregate(TminData$tmin, by=list(TminData$id,TminData$year), FUN="length")
 
 # Changing column names
-colnames(TminDataYear) <- c("station", "year", "mtmin")
+colnames(TminDataYear) <- c("station", "year", "ncount")
 
-# Add an ncount column to see the total observations per year
-TminDataYear$ncount <- aggregate(TminData$tmin, by=list(TminData$id,TminData$year), FUN="length")$x
-
+# Getting rid of rows with less than 180 observations
+TminDataYear <- subset(TminDataYear, TminDataYear$ncount >= 180)
 
 # Counting observations per year for the prcp data
 # Make new data frame with just the id, prcp value, and year
-PrcpDataYear <- aggregate(PrcpData$prcp, by=list(PrcpData$id,PrcpData$year), FUN="sum")
+PrcpDataYear <- aggregate(PrcpData$prcp, by=list(PrcpData$id,PrcpData$year), FUN="length")
 
 # Changing column names
-colnames(PrcpDataYear) <- c("station", "year", "tprcp")
+colnames(PrcpDataYear) <- c("station", "year", "ncount")
 
-# Add an ncount column to see the total observations per year
-PrcpDataYear$ncount <- aggregate(PrcpData$prcp, by=list(PrcpData$id,PrcpData$year), FUN="length")$x
+PrcpDataYear <- subset(PrcpDataYear, PrcpDataYear$ncount >= 180)
 
-
-# Counting number of years per station for tmax- mean year doesn't mean anything to us
-  # it just helps us count
-TmaxStn <- aggregate(TmaxDataYear$year, by=list(TmaxDataYear$station), FUN="min")
+# Counting number of years per station for tmax
+TmaxStn <- aggregate(TmaxDataYear$year, by=list(TmaxDataYear$station), FUN="length")
 
 # Renaming columns
-colnames(TmaxStn) <- c("station", "MinYear")
+colnames(TmaxStn) <- c("station", "ycount")
 
-# Adding a count of the years
-TmaxStn$YearCount <- aggregate(TmaxDataYear$year, by=list(TmaxDataYear$station), FUN="length")$x
+# Adding a min year column
+TmaxStn$min <- aggregate(TmaxDataYear$year, by=list(TmaxDataYear$station), FUN="min")$x
+
+# Adding a max year column
+TmaxStn$max <- aggregate(TmaxDataYear$year, by=list(TmaxDataYear$station), FUN="max")$x
+
+# Adding a column for the range of years covered by the station
+TmaxStn$range <- (TmaxStn$max + 1) - TmaxStn$min
+
+# Getting rid of rows with less than 50 years
+TmaxStn <- subset(TmaxStn, TmaxStn$ycount >= 50)
+
+# Adding a column for percent of years in range (measure of continuity)
+TmaxStn$pctcont <- TmaxStn$ycount/TmaxStn$range
+
+# Getting rid of rows with less than 75% of years in their range
+TmaxStn <- subset(TmaxStn, TmaxStn$pctcont >= .75)
 
 
-# Counting number of years per station for tmin - mean year doesn't mean anything to us
-# it just helps us count
-TminStn <- aggregate(TminDataYear$year, by=list(TminDataYear$station), FUN="min")
+# Counting number of years per station for tmin
+TminStn <- aggregate(TminDataYear$year, by=list(TminDataYear$station), FUN="length")
 
 # Renaming columns
-colnames(TminStn) <- c("station", "MinYear")
+colnames(TminStn) <- c("station", "ycount")
 
-# Adding a count of the years
-TminStn$YearCount <- aggregate(TminDataYear$year, by=list(TminDataYear$station), FUN="length")$x
+# Adding a min year column
+TminStn$min <- aggregate(TminDataYear$year, by=list(TminDataYear$station), FUN="min")$x
+
+# Adding a max year column
+TminStn$max <- aggregate(TminDataYear$year, by=list(TminDataYear$station), FUN="max")$x
+
+# Adding a column for the range of years covered by the station
+TminStn$range <- (TminStn$max + 1) - TminStn$min
+
+# Getting rid of rows with less than 50 years
+TminStn <- subset(TminStn, TminStn$ycount >= 50)
+
+# Adding a column for percent of years in range (measure of continuity)
+TminStn$pctcont <- TminStn$ycount/TminStn$range
+
+# Getting rid of rows with less than 75% of years in their range
+TminStn <- subset(TminStn, TminStn$pctcont >= .75)
 
 
-# Counting number of years per station for prcp by first getting min year
-PrcpStn <- aggregate(PrcpDataYear$year, by=list(PrcpDataYear$station), FUN="min")
+# Counting number of years per station for prcp
+PrcpStn <- aggregate(PrcpDataYear$year, by=list(PrcpDataYear$station), FUN="length")
 
 # Renaming columns
-colnames(PrcpStn) <- c("station", "MinYear")
+colnames(PrcpStn) <- c("station", "ycount")
 
-# Adding a count of the years
-PrcpStn$YearCount <- aggregate(PrcpDataYear$year, by=list(PrcpDataYear$station), FUN="length")$x
+# Adding a min year column
+PrcpStn$min <- aggregate(PrcpDataYear$year, by=list(PrcpDataYear$station), FUN="min")$x
 
-# We can add max year to understand better how many years are actually in data
+# Adding a max year column
+PrcpStn$max <- aggregate(PrcpDataYear$year, by=list(PrcpDataYear$station), FUN="max")$x
+
+# Adding a column for the range of years covered by the station
+PrcpStn$range <- (PrcpStn$max + 1) - PrcpStn$min
+
+# Getting rid of rows with less than 50 years
+PrcpStn <- subset(PrcpStn, PrcpStn$ycount >= 50)
+
+# Adding a column for percent of years in range (measure of continuity)
+PrcpStn$pctcont <- PrcpStn$ycount/PrcpStn$range
+
+# Getting rid of rows with less than 75% of years in their range
+PrcpStn <- subset(PrcpStn, PrcpStn$pctcont >= .75)
