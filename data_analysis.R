@@ -1,16 +1,40 @@
 # Rachel Started 10/6
 
+# NEXT STEPS (10/15):
+# Relax threshold for missing days (10 missing days ok)
+# Join station info to get geographic information about the stations
+# Plot stations on shapefile of new york state
+# Add threshold for max year (2019)
+# Get general trends and variability for the stations that do meet our requirements
+
+
 library(tidyr)
 library(lubridate)
 
+# Creating user numbers for each person
+Users = c(1, # Abby
+          2, # Professor Kropp
+          3) # Rachel
+
+# Creating a directory with all of our file paths 
+diru = c("/Users/abby/Documents/NYweather/data",
+         "/Users/hkropp/Google Drive/research/students/NYweather/data",
+         "/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/data")
+
+# Choosing the user number - CHANGE THIS VALUE 
+usernumber = 3
+
 # Reading in prcp data from google drive
-PrcpData <- read.csv("/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/data/prcp_all.csv", na.strings=c(""," ","NA"))
+PrcpData <- read.csv(paste0(diru[usernumber], "/prcp_all.csv"), na.strings=c(""," ","NA"))
 
 # Reading in tmax data from google drive
-TmaxData <- read.csv("/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/data/Tmax_all.csv", na.strings=c(""," ","NA"))
+TmaxData <- read.csv(paste0(diru[usernumber], "/Tmax_all.csv"), na.strings=c(""," ","NA"))
 
 # Reading in tmin data from google drive
-TminData <- read.csv("/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/data/Tmin_all.csv", na.strings=c(""," ","NA"))
+TminData <- read.csv(paste0(diru[usernumber],"/Tmin_all.csv"), na.strings=c(""," ","NA"))
+
+# Read in station info data
+StationInfo <- read.csv(paste0(diru[usernumber],"/station_info.csv"), na.strings=c(""," ","NA"))
 
 # Omitting na values from the data sets
 PrcpData <- PrcpData %>% drop_na(prcp)
