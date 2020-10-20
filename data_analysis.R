@@ -184,7 +184,7 @@ PrcpStn$pctcont <- PrcpStn$ycount/PrcpStn$range
 PrcpStn <- subset(PrcpStn, PrcpStn$pctcont >= .75)
 
 
-### Map sites ----he
+### Map sites ----
 #start by mapping all sites
 #assume coordinates are in WGS 84
 #epsg 4326
@@ -209,3 +209,11 @@ ez@data <- left_join(ez@data,MajorZones, by="MAJOR")
 plot(ez, col=ez@data$col, border=NA)
 legend("topleft", paste(MajorZones$MAJOR),fill=MajorZones$col, bty="n", cex=0.35)
 plot(siteP, add=TRUE, pch=19, col=rgb(0.5,0.5,0.5,0.45), cex=0.5)
+#look at Tmax
+TmaxStn$station_id <- TmaxStn$station
+sitesMax <- left_join(TmaxStn,StationInfo, by ="station_id")
+maxPoints <- SpatialPoints(matrix(c(sitesMax $long,sitesMax $lat), ncol=2,byrow=FALSE),
+              CRS( "+init=epsg:4326") )
+#reproject points into the ez coordinate system (utm)
+maxP <- spTransform(maxPoints ,ez@proj4string)
+plot(maxP, col="grey25",pch=19, add=TRUE)
