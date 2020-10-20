@@ -7,9 +7,17 @@
 # Add threshold for max year (2019)
 # Get general trends and variability for the stations that do meet our requirements
 
-
+library(dplyr)
 library(tidyr)
 library(lubridate)
+library(rgdal)
+library(sp)
+library(ggplot2)
+
+
+### Set up directories   -----
+
+
 
 # Creating user numbers for each person
 Users = c(1, # Abby
@@ -22,8 +30,10 @@ diru = c("/Users/abby/Documents/NYweather/data",
          "/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/data")
 
 # Choosing the user number - CHANGE THIS VALUE 
-usernumber = 3
+usernumber = 2
 
+### Read in data   -----
+#csv with weather data
 # Reading in prcp data from google drive
 PrcpData <- read.csv(paste0(diru[usernumber], "/prcp_all.csv"), na.strings=c(""," ","NA"))
 
@@ -36,6 +46,10 @@ TminData <- read.csv(paste0(diru[usernumber],"/Tmin_all.csv"), na.strings=c("","
 # Read in station info data
 StationInfo <- read.csv(paste0(diru[usernumber],"/station_info.csv"), na.strings=c(""," ","NA"))
 
+#NY spatial data
+ez <- readOGR(paste0(diru[usernumber],"/ecozone/dfw_ecozone.shp"))
+
+### Organize weather data  -----
 # Omitting na values from the data sets
 PrcpData <- PrcpData %>% drop_na(prcp)
 TmaxData <- TmaxData %>% drop_na(tmax)
@@ -168,3 +182,30 @@ PrcpStn$pctcont <- PrcpStn$ycount/PrcpStn$range
 
 # Getting rid of rows with less than 75% of years in their range
 PrcpStn <- subset(PrcpStn, PrcpStn$pctcont >= .75)
+
+
+### Map sites ----he
+#start by mapping all sites
+#assume coordinates are in WGS 84
+#epsg 4326
+#turn stations into spatial points
+siteLL <- SpatialPoints(matrix(c(StationInfo$long,StationInfo$lat), ncol=2,byrow=FALSE),
+                      CRS( "+init=epsg:4326") )
+#reproject points into the ez coordinate system (utm)
+siteP <- spTransform(siteLL,ez@proj4string)
+ez@data$MINOR_DESC <- as.factor(ez@data$MINOR_DESC )
+ez@data$MAJOR<- as.factor(ez@data$MAJOR )
+#look at weather stations
+plot(siteP, pch=19)
+#set up colors based on major zone
+MajorZones <- data.frame(MAJOR = unique(ez@data$MAJOR))
+#colors
+MajorZones$col <- c("#e28946",	"#ebb355","#db5236","#36638f","#74a1c3",
+                    "#df9880",	"#8687c1","#4069bf","#0d4247",	"#ff5b3e",
+                   "#576356","#31474f" )
+#add colors to plot back in
+ez@data <- left_join(ez@data,MajorZones, by="MAJOR")
+#make a map of all weather sites
+plot(ez, col=ez@data$col, border=NA)
+legend("topleft", paste(MajorZones$MAJOR),fill=MajorZones$col, bty="n", cex=0.35)
+plot(siteP, add=TRUE, pch=19, col=rgb(0.5,0.5,0.5,0.45), cex=0.5)
