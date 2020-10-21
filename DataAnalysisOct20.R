@@ -315,8 +315,259 @@ ggplot(data = BoonvilleYear, aes(x=year, y=tminAVG))+
   geom_line()+
   theme_classic()+
   labs(title="Average Annual Minimum Temperature for Boonville, NY",
-       x= "year",
-       y= "average minimum temperature (C)")
+       x= "Year",
+       y= "Average Minimum Temperature (C)")
+
+# Cooperstown
+TminCoop <- subset(TminData, TminData$id == "USC00301752")
+CoopYear <- aggregate(TminCoop$tmin, by=list(TminCoop$year), FUN="mean")
+colnames(CoopYear) <- c("year", "tminAVG")
+ggplot(data = CoopYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Cooperstown, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+# Indian Lake
+TminIL <- subset(TminData, TminData$id == "USC00304102")
+ILYear <- aggregate(TminIL$tmin, by=list(TminIL$year), FUN="mean")
+colnames(ILYear) <- c("year", "tminAVG")
+ggplot(data = ILYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Indian Lake, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+# Lowville
+TminLowville <- subset(TminData, TminData$id == "USC00304912")
+LowvilleYear <- aggregate(TminLowville$tmin, by=list(TminLowville$year), FUN="mean")
+colnames(LowvilleYear) <- c("year", "tminAVG")
+ggplot(data = LowvilleYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Lowville, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+# Norwich
+TminNorwich <- subset(TminData, TminData$id == "USC00306085")
+NorwichYear <- aggregate(TminNorwich$tmin, by=list(TminNorwich$year), FUN="mean")
+colnames(NorwichYear) <- c("year", "tminAVG")
+ggplot(data = NorwichYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Norwich, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+# Oswego
+TminOswego <- subset(TminData, TminData$id == "USC00306314")
+OswegoYear <- aggregate(TminOswego$tmin, by=list(TminOswego$year), FUN="mean")
+colnames(OswegoYear) <- c("year", "tminAVG")
+ggplot(data = OswegoYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Oswego, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+# Watertown
+TminWater <- subset(TminData, TminData$id == "USC00309000")
+WaterYear <- aggregate(TminWater$tmin, by=list(TminWater$year), FUN="mean")
+colnames(WaterYear) <- c("year", "tminAVG")
+ggplot(data = WaterYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Watertown, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+# Albany
+TminAlb <- subset(TminData, TminData$id == "USW00014735")
+AlbYear <- aggregate(TminAlb$tmin, by=list(TminAlb$year), FUN="mean")
+colnames(AlbYear) <- c("year", "tminAVG")
+ggplot(data = AlbYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Albany, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+# Glens Falls
+TminGF <- subset(TminData, TminData$id == "USW00014750")
+GFYear <- aggregate(TminGF$tmin, by=list(TminGF$year), FUN="mean")
+colnames(GFYear) <- c("year", "tminAVG")
+ggplot(data = GFYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Glens Falls, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+# Syracuse
+TminSyr <- subset(TminData, TminData$id == "USW00014771")
+SyrYear <- aggregate(TminSyr$tmin, by=list(TminSyr$year), FUN="mean")
+colnames(SyrYear) <- c("year", "tminAVG")
+ggplot(data = SyrYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Syracuse, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+# Massena
+TminMass <- subset(TminData, TminData$id == "USW00094725")
+MassYear <- aggregate(TminMass$tmin, by=list(TminMass$year), FUN="mean")
+colnames(MassYear) <- c("year", "tminAVG")
+ggplot(data = MassYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Massena, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+# Watertown Airport
+TminWaterAP <- subset(TminData, TminData$id == "USW00094790")
+WaterAPYear <- aggregate(TminWaterAP$tmin, by=list(TminWaterAP$year), FUN="mean")
+colnames(WaterAPYear) <- c("year", "tminAVG")
+ggplot(data = WaterAPYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Watertown Airport, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+### trends for precip data ---
+# Boonville
+PrcpBoonville <- subset(PrcpData, PrcpData$id == "USC00300785")
+BoonvilleYearPr <- aggregate(PrcpBoonville$prcp, by=list(PrcpBoonville$year), FUN="sum")
+colnames(BoonvilleYearPr) <-c("year","totalPRCP")
+ggplot(data = BoonvilleYearPr, aes(x=year, y=totalPRCP))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Total Precipitation (January-June) for Boonville, NY",
+       x= "Year",
+       y= "Total Precipitation (mm)")
+# Cooperstown
+PrcpCoop <- subset(PrcpData, PrcpData$id == "USC00301752")
+CoopYearPr <- aggregate(PrcpCoop$prcp, by=list(PrcpCoop$year), FUN="sum")
+colnames(CoopYearPr) <- c("year", "totalPRCP")
+ggplot(data = CoopYearPr, aes(x=year, y=totalPRCP))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Total Precipitation (January-June) for Cooperstown, NY",
+       x= "Year",
+       y= "Total Precipitation (mm)")
+
+# Indian Lake
+PrcpIL <- subset(PrcpData, PrcpData$id == "USC00304102")
+ILYearPr <- aggregate(PrcpIL$prcp, by=list(PrcpIL$year), FUN="sum")
+colnames(ILYearPr) <- c("year", "totalPRCP")
+ggplot(data = ILYearPr, aes(x=year, y=totalPRCP))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Total Precipitation (January-June) for Indian Lake, NY",
+       x= "Year",
+       y= "Total Precipitation (mm)")
+
+# Lowville
+PrcpLowville <- subset(PrcpData, PrcpData$id == "USC00304912")
+LowvilleYearPr <- aggregate(PrcpLowville$prcp, by=list(PrcpLowville$year), FUN="sum")
+colnames(LowvilleYearPr) <- c("year", "totalPRCP")
+ggplot(data = LowvilleYearPr, aes(x=year, y=totalPRCP))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Total Precipitation (January-June) for Lowville, NY",
+       x= "Year",
+       y= "Total Precipitation (mm)")
+
+# Norwich
+PrcpNorwich <- subset(PrcpData, PrcpData$id == "USC00306085")
+NorwichYearPr <- aggregate(PrcpNorwich$prcp, by=list(PrcpNorwich$year), FUN="sum")
+colnames(NorwichYearPr) <- c("year", "totalPRCP")
+ggplot(data = NorwichYearPr, aes(x=year, y=totalPRCP))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Total Precipitation (January-June) for Norwich, NY",
+       x= "Year",
+       y= "Total Precipitation (mm)")
+
+# Oswego
+PrcpOswego <- subset(PrcpData, PrcpData$id == "USC00306314")
+OswegoYearPr <- aggregate(PrcpOswego$prcp, by=list(PrcpOswego$year), FUN="sum")
+colnames(OswegoYearPr) <-c("year", "totalPRCP")
+ggplot(data = OswegoYearPr, aes(x=year, y=totalPRCP))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Total Precipitation (January-June) for Oswego, NY",
+       x= "Year",
+       y= "Total Precipitation (mm)")
+
+# Watertown
+PrcpWater <- subset(PrcpData, PrcpData$id =="USC00309000")
+WaterYearPr <- aggregate(PrcpWater$prcp, by=list(PrcpWater$year), FUN="sum")
+colnames(WaterYearPr) <-c("year", "totalPRCP")
+ggplot(data = WaterYearPr, aes(x=year, y=totalPRCP))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Total Precipitation (January-June) for Watertown, NY",
+       x= "Year",
+       y= "Total Precipitation (mm)")
+
+# Albany
+PrcpAlb <-subset(PrcpData, PrcpData$id == "USW00014735")
+AlbYearPr <- aggregate(PrcpAlb$prcp, by=list(PrcpAlb$year), FUN="sum")
+colnames(AlbYearPr) <-c("year", "totalPRCP")
+ggplot(data = AlbYearPr, aes(x=year, y=totalPRCP))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Total Precipitation (January-June) for Albany, NY",
+       x= "Year",
+       y= "Total Precipitation (mm)")
+
+# Glens Falls
+PrcpGF <- subset(PrcpData, PrcpData$id == "USW00014750")
+GFYearPr <- aggregate(PrcpGF$prcp, by=list(PrcpGF$year), FUN="sum")
+colnames(GFYearPr) <-c("year", "totalPRCP")
+ggplot(data = GFYearPr, aes(x=year, y=totalPRCP))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Total Precipitation (January-June) for Glens Falls, NY",
+       x= "Year",
+       y= "Total Precipitation (mm)")
+
+# Syracuse
+PrcpSyr <- subset(PrcpData, PrcpData$id == "USW00014771")
+SyrYearPr <- aggregate(PrcpSyr$prcp, by=list(PrcpSyr$year), FUN="sum")
+colnames(SyrYearPr) <-c("year", "totalPRCP")
+ggplot(data = SyrYearPr, aes(x=year, y=totalPRCP))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Total Precipitation (January-June) for Syracuse, NY",
+       x= "Year",
+       y= "Total Precipitation (mm)")
 
 
+# Massena
+PrcpMass <-subset(PrcpData, PrcpData$id == "USW00094725")
+MassYearPr <- aggregate(PrcpMass$prcp, by=list(PrcpMass$year), FUN="sum")
+colnames(MassYearPr) <-c("year", "totalPRCP")
+ggplot(data = MassYearPr, aes(x=year, y=totalPRCP))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Total Precipitation (January-June) for Massena, NY",
+       x= "Year",
+       y= "Total Precipitation (mm)")
 
+# Watertown Airport
+PrcpWaterAP <- subset(PrcpData, PrcpData$id == "USW00094790")
+WaterAPYearPr <- aggregate(PrcpWaterAP$prcp, by=list(PrcpWaterAP$year), FUN="sum")
+colnames(WaterAPYearPr) <-c("year", "totalPRCP")
+ggplot(data = WaterAPYearPr, aes(x=year, y=totalPRCP))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Total Precipitation (January-June) for Watertown Airport, NY",
+       x= "Year",
+       y= "Total Precipitation (mm)")
