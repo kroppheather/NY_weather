@@ -1,6 +1,10 @@
 # Rachel Started 10/6
 
 # NEXT STEPS (10/15):
+# Relax threshold for missing days (10 missing days ok)
+# Join station info to get geographic information about the stations
+# Plot stations on shapefile of new york state
+# Add threshold for max year (2019)
 # Get general trends and variability for the stations that do meet our requirements
 
 library(dplyr)
@@ -21,7 +25,7 @@ Users = c(1, # Abby
           3) # Rachel
 
 # Creating a directory with all of our file paths 
-diru = c("/Users/abby/Documents/NYweather/data",
+diru = c("/Users/abby/Documents/NYweather",
          "/Users/hkropp/Google Drive/research/students/NYweather/data",
          "/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/data")
 
@@ -83,7 +87,7 @@ TmaxDataYear <- aggregate(TmaxData$tmax, by=list(TmaxData$id,TmaxData$year), FUN
 # Changing column names
 colnames(TmaxDataYear) <- c("station", "year", "ncount")
 
-# Getting rid of rows with less than 180 observations
+# Getting rid of rows with less than 171 observations
 TmaxDataYear <- subset(TmaxDataYear, TmaxDataYear$ncount >= 171)
 
 # Counting observations per year for the tmin data
@@ -93,7 +97,7 @@ TminDataYear <- aggregate(TminData$tmin, by=list(TminData$id,TminData$year), FUN
 # Changing column names
 colnames(TminDataYear) <- c("station", "year", "ncount")
 
-# Getting rid of rows with less than 180 observations
+# Getting rid of rows with less than 171 observations
 TminDataYear <- subset(TminDataYear, TminDataYear$ncount >= 171)
 
 # Counting observations per year for the prcp data
@@ -129,7 +133,7 @@ TmaxStn$pctcont <- TmaxStn$ycount/TmaxStn$range
 # Getting rid of rows with less than 75% of years in their range
 TmaxStn <- subset(TmaxStn, TmaxStn$pctcont >= .75)
 
-# Setting the max year to 2019
+# Narrow down to rows with max year = 2019
 TmaxStn <- subset(TmaxStn, TmaxStn$max == 2019)
 
 # Counting number of years per station for tmin
@@ -156,8 +160,8 @@ TminStn$pctcont <- TminStn$ycount/TminStn$range
 # Getting rid of rows with less than 75% of years in their range
 TminStn <- subset(TminStn, TminStn$pctcont >= .75)
 
-# Setting the max year to 2019
-TminStn <- subset(TminStn, TminStn$max == 2019)
+# Narrow down to rows with max year = 2019
+TminStn <-subset(TminStn, TminStn$max == 2019)
 
 # Counting number of years per station for prcp
 PrcpStn <- aggregate(PrcpDataYear$year, by=list(PrcpDataYear$station), FUN="length")
@@ -183,8 +187,9 @@ PrcpStn$pctcont <- PrcpStn$ycount/PrcpStn$range
 # Getting rid of rows with less than 75% of years in their range
 PrcpStn <- subset(PrcpStn, PrcpStn$pctcont >= .75)
 
-# Setting the max year to 2019
+# narrow down to rows with max year = 2019
 PrcpStn <- subset(PrcpStn, PrcpStn$max == 2019)
+
 
 ### Map sites ----
 #start by mapping all sites
@@ -219,10 +224,11 @@ maxPoints <- SpatialPoints(matrix(c(sitesMax $long,sitesMax $lat), ncol=2,byrow=
 #reproject points into the ez coordinate system (utm)
 maxP <- spTransform(maxPoints ,ez@proj4string)
 plot(maxP, col="grey25",pch=19, add=TRUE)
-title(main = "Map of TMAX Stations")
+title(main= "Map of TMax Stations")
 
-#now looking at tmin
-#start by mapping all sites
+
+##now look at Tmin
+#look at weather stations
 plot(siteP, pch=19)
 #set up colors based on major zone
 MajorZones <- data.frame(MAJOR = unique(ez@data$MAJOR))
@@ -236,19 +242,19 @@ ez@data <- left_join(ez@data,MajorZones, by="MAJOR")
 plot(ez, col=ez@data$col, border=NA)
 legend("topleft", paste(MajorZones$MAJOR),fill=MajorZones$col, bty="n", cex=0.35)
 plot(siteP, add=TRUE, pch=19, col=rgb(0.5,0.5,0.5,0.45), cex=0.5)
-#look at Tmax
+#look at Tmin
 TminStn$station_id <- TminStn$station
 sitesMin <- left_join(TminStn,StationInfo, by ="station_id")
 minPoints <- SpatialPoints(matrix(c(sitesMin $long,sitesMin $lat), ncol=2,byrow=FALSE),
                            CRS( "+init=epsg:4326") )
 #reproject points into the ez coordinate system (utm)
 minP <- spTransform(minPoints ,ez@proj4string)
-plot(minP, col="grey25",pch=19, add=TRUE)
-title(main = "Map of TMIN Stations")
+plot(maxP, col="grey25",pch=19, add=TRUE)
+title(main= "Map of TMin Stations")
 
 
-#now looking at prcp
-#start by mapping all sites
+#Now look at PRCP
+#look at weather stations
 plot(siteP, pch=19)
 #set up colors based on major zone
 MajorZones <- data.frame(MAJOR = unique(ez@data$MAJOR))
@@ -265,24 +271,20 @@ plot(siteP, add=TRUE, pch=19, col=rgb(0.5,0.5,0.5,0.45), cex=0.5)
 #look at Prcp
 PrcpStn$station_id <- PrcpStn$station
 sitesPrcp <- left_join(PrcpStn,StationInfo, by ="station_id")
-PrcpPoints <- SpatialPoints(matrix(c(sitesPrcp $long,sitesPrcp $lat), ncol=2,byrow=FALSE),
-                           CRS( "+init=epsg:4326") )
+prcpPoints <- SpatialPoints(matrix(c(sitesPrcp $long,sitesPrcp $lat), ncol=2,byrow=FALSE),
+                            CRS( "+init=epsg:4326") )
 #reproject points into the ez coordinate system (utm)
-PrcpP <- spTransform(PrcpPoints ,ez@proj4string)
-plot(PrcpP, col="grey25",pch=19, add=TRUE)
-title(main = "Map of PRCP Stations")
+prcpP <- spTransform(prcpPoints ,ez@proj4string)
+plot(prcpP, col="grey25",pch=19, add=TRUE)
+title(main= "Map of Precip Stations")
 
 
-### Sites with all data ----
-# creating new data frame with stations that have tmax, tmin, and prcp
-AllStn <- data.frame(station_id = sitesMax$station_id, name = sitesMax$name, 
-                     lat = sitesMax$lat, long = sitesMax$long)
-AllStn <- left_join(AllStn, sitesMin, by="station_id")
-
+### identify sites with all data ---
+AllStn <- data.frame(station_id = sitesMax$station_id, lat = sitesMax$lat, long = sitesMax$long, name = sitesMax$name) 
+AllStn <- inner_join(AllStn, sitesMin, by="station_id")
 AllStn <- inner_join(AllStn, sitesPrcp, by="station_id")
 
-#now looking at all stations
-#start by mapping all sites
+# map the stations that have all data
 #look at weather stations
 plot(siteP, pch=19)
 #set up colors based on major zone
@@ -297,23 +299,22 @@ ez@data <- left_join(ez@data,MajorZones, by="MAJOR")
 plot(ez, col=ez@data$col, border=NA)
 legend("topleft", paste(MajorZones$MAJOR),fill=MajorZones$col, bty="n", cex=0.35)
 plot(siteP, add=TRUE, pch=19, col=rgb(0.5,0.5,0.5,0.45), cex=0.5)
-#look at all stations
-AllPoints <- SpatialPoints(matrix(c(AllStn$long, AllStn$lat), ncol=2,byrow=FALSE),
-                            CRS( "+init=epsg:4326") )
+#look at Stations
+allPoints <- SpatialPoints(matrix(c(AllStn $long,AllStn $lat), ncol=2,byrow=FALSE),
+                           CRS( "+init=epsg:4326") )
 #reproject points into the ez coordinate system (utm)
-AllP <- spTransform(AllPoints ,ez@proj4string)
-plot(AllP, col="grey25",pch=19, add=TRUE)
-title(main = "Map of Stations With All Data Types")
+allP <- spTransform(allPoints ,ez@proj4string)
+plot(allP, col="grey25",pch=19, add=TRUE)
+title(main= "Map of Stations with Tmax, Tmin, and Prcp")
 
-
-### Getting general trends for stations with all data ----
-BoonvilleTmin <- subset(TminData, TminData$id == "USC00300785")
-BoonvilleYear <- aggregate(BoonvilleTmin$tmin, by=list(BoonvilleTmin$year), FUN="mean")
-colnames(BoonvilleYear) <- c("year", "tmin_av")
-
-ggplot(data = BoonvilleYear, aes(x = year, y=tmin_av))+
+### start getting trends for tmin data ---
+TminBoonville <- subset(TminData, TminData$id == "USC00300785")
+BoonvilleYear <- aggregate(TminBoonville$tmin, by=list(TminBoonville$year), FUN="mean")
+colnames(BoonvilleYear) <- c("year", "tminAVG")
+ggplot(data = BoonvilleYear, aes(x=year, y=tminAVG))+
   geom_line()+
   theme_classic()+
-  labs(title = "Average Annual Minimum Temperature for Boonville, NY",
-       x = "Year",
-       y = "Minimum Temperature (˚C)")
+  labs(title="Average Annual Minimum Temperature for Boonville, NY",
+       x= "year",
+       y= "average minimum temperature (C)")
+
