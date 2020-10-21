@@ -308,6 +308,7 @@ plot(allP, col="grey25",pch=19, add=TRUE)
 title(main= "Map of Stations with Tmax, Tmin, and Prcp")
 
 ### start getting trends for tmin data ---
+# Boonville
 TminBoonville <- subset(TminData, TminData$id == "USC00300785")
 BoonvilleYear <- aggregate(TminBoonville$tmin, by=list(TminBoonville$year), FUN="mean")
 colnames(BoonvilleYear) <- c("year", "tminAVG")
@@ -315,6 +316,127 @@ ggplot(data = BoonvilleYear, aes(x=year, y=tminAVG))+
   geom_line()+
   theme_classic()+
   labs(title="Average Annual Minimum Temperature for Boonville, NY",
-       x= "year",
-       y= "average minimum temperature (C)")
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+# Cooperstown
+TminCoop <- subset(TminData, TminData$id == "USC00301752")
+CoopYear <- aggregate(TminCoop$tmin, by=list(TminCoop$year), FUN="mean")
+colnames(CoopYear) <- c("year", "tminAVG")
+ggplot(data = CoopYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Cooperstown, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+# Indian Lake
+TminIL <- subset(TminData, TminData$id == "USC00304102")
+ILYear <- aggregate(TminIL$tmin, by=list(TminIL$year), FUN="mean")
+colnames(ILYear) <- c("year", "tminAVG")
+ggplot(data = ILYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Indian Lake, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+# Lowville
+TminLowville <- subset(TminData, TminData$id == "USC00304912")
+LowvilleYear <- aggregate(TminLowville$tmin, by=list(TminLowville$year), FUN="mean")
+colnames(LowvilleYear) <- c("year", "tminAVG")
+ggplot(data = LowvilleYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Lowville, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+# Norwich
+TminNorwich <- subset(TminData, TminData$id == "USC00306085")
+NorwichYear <- aggregate(TminNorwich$tmin, by=list(TminNorwich$year), FUN="mean")
+colnames(NorwichYear) <- c("year", "tminAVG")
+ggplot(data = NorwichYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Norwich, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+# Oswego
+TminOswego <- subset(TminData, TminData$id == "USC00306314")
+OswegoYear <- aggregate(TminOswego$tmin, by=list(TminOswego$year), FUN="mean")
+colnames(OswegoYear) <- c("year", "tminAVG")
+ggplot(data = OswegoYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Oswego, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+# Watertown
+TminWater <- subset(TminData, TminData$id == "USC00309000")
+WaterYear <- aggregate(TminWater$tmin, by=list(TminWater$year), FUN="mean")
+colnames(WaterYear) <- c("year", "tminAVG")
+ggplot(data = WaterYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Watertown, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+# Albany
+TminAlb <- subset(TminData, TminData$id == "USW00014735")
+AlbYear <- aggregate(TminAlb$tmin, by=list(TminAlb$year), FUN="mean")
+colnames(AlbYear) <- c("year", "tminAVG")
+ggplot(data = AlbYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Albany, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+# Glens Falls
+TminGF <- subset(TminData, TminData$id == "USW00014750")
+GFYear <- aggregate(TminGF$tmin, by=list(TminGF$year), FUN="mean")
+colnames(GFYear) <- c("year", "tminAVG")
+ggplot(data = GFYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Glens Falls, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+# Syracuse
+TminSyr <- subset(TminData, TminData$id == "USW00014771")
+SyrYear <- aggregate(TminSyr$tmin, by=list(TminSyr$year), FUN="mean")
+colnames(SyrYear) <- c("year", "tminAVG")
+ggplot(data = SyrYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Syracuse, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+# Massena
+TminMass <- subset(TminData, TminData$id == "USW00094725")
+MassYear <- aggregate(TminMass$tmin, by=list(TminMass$year), FUN="mean")
+colnames(MassYear) <- c("year", "tminAVG")
+ggplot(data = MassYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Massena, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
+
+# Watertown Airport
+TminWaterAP <- subset(TminData, TminData$id == "USW00094790")
+WaterAPYear <- aggregate(TminWaterAP$tmin, by=list(TminWaterAP$year), FUN="mean")
+colnames(WaterAPYear) <- c("year", "tminAVG")
+ggplot(data = WaterAPYear, aes(x=year, y=tminAVG))+
+  geom_line()+
+  theme_classic()+
+  labs(title="Average Annual Minimum Temperature for Watertown Airport, NY",
+       x= "Year",
+       y= "Average Minimum Temperature (˚C)")
 
