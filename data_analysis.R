@@ -30,7 +30,7 @@ diru = c("/Users/abby/Documents/NYweather/data",
          "/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/data")
 
 # Choosing the user number - CHANGE THIS VALUE 
-usernumber = 2
+usernumber = 3
 
 ### Read in data   -----
 #csv with weather data
