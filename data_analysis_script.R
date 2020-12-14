@@ -71,6 +71,8 @@ PrcpData <- subset(PrcpData, PrcpData$DOY < 182)
 TmaxData <- subset(TmaxData, TmaxData$DOY < 182)
 TminData <- subset(TminData, TminData$DOY < 182)
 
+<<<<<<< Updated upstream
+=======
 # Converting temperature data to degrees Celsius
 TmaxData$tmax <- TmaxData$tmax/10
 TminData$tmin <- TminData$tmin/10
@@ -78,6 +80,7 @@ TminData$tmin <- TminData$tmin/10
 PrcpData$prcp <- PrcpData$prcp/10
 
 ### Narrow down to good stations ----
+>>>>>>> Stashed changes
 # Counting observations per year for the tmax data
 # Make new data frame with just the id, tmax value, and year
 TmaxDataYear <- aggregate(TmaxData$tmax, by=list(TmaxData$id,TmaxData$year), FUN="length")
@@ -203,7 +206,7 @@ AllData <- data.frame(Station = AllData$id, DOY = AllData$DOY, Year = AllData$ye
                       prcp = AllData$prcp, tmax = AllData$tmax, tmin = AllData$tmin)
 
 # Adding average temperature column
-AllData$tav <- (AllData$tmax + AllData$tmin)/2
+AllData$tav <- ((AllData$tmax - AllData$tmin)/2) + AllData$tmin 
 
 # Adding freeze-thaw flag (less than -2.2 degrees and higher than 0 degrees in the same day)
 # Maybe change these numbers?
@@ -221,8 +224,10 @@ AllData <- subset(AllData, AllData$Station %in% c("USC00300785", "USC00301752", 
                                                   "USC00309000", "USW00014735", "USW00014750",
                                                   "USW00014771", "USW00094725", "USW00094790"))
 
-# Extreme values (occur >5% of the time) ??
-
+# Extreme values (occur <5% of the time) ??
+## make table of extreme values for each station, then can join into AllData, then can highlight tmax higher than extreme value
+## by decade 
+ExtrVals <- aggregate(AllData$tmax, by = list(AllData$Station), FUN = "quantile", prob = 0.95, na.rm = TRUE)
 
 
 
@@ -470,6 +475,7 @@ ggplot(data = WaterAPYear, aes(x=year, y=tminAVG))+
        y= "Average Minimum Temperature (˚C)")
 
 ### trends for precip data ---
+<<<<<<< Updated upstream
 # Boonville
 PrcpBoonville <- subset(PrcpData, PrcpData$id == "USC00300785")
 BoonvilleYearPr <- aggregate(PrcpBoonville$prcp, by=list(PrcpBoonville$year), FUN="sum")
@@ -735,3 +741,4 @@ ggplot(data = WaterAPYearPr, aes(x=year, y=totalPRCP))+
 #        y= "Total Precipitation (mm)")
 
 
+>>>>>>> Stashed changes
