@@ -231,6 +231,24 @@ ExtrVals <- aggregate(AllData$tmax, by = list(AllData$Station), FUN = "quantile"
 
 
 
+## next steps 12/14
+# add station name from station info to all data with a left join 
+# add month column to all data
+# add decade column??
+# make table of extreme values for each station by month
+
+## for later
+# add in maple sap freeze-thaw threshold 
+# look for more plant-specific thresholds
+# look into station data collection 
+
+
+
+
+
+
+
+
 
 
 # ### Map sites ----
