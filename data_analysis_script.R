@@ -10,8 +10,6 @@ library(ggplot2)
 
 ### Set up directories   -----
 
-
-
 # Creating user numbers for each person
 Users = c(1, # Abby
           2, # Professor Kropp
@@ -73,6 +71,13 @@ PrcpData <- subset(PrcpData, PrcpData$DOY < 182)
 TmaxData <- subset(TmaxData, TmaxData$DOY < 182)
 TminData <- subset(TminData, TminData$DOY < 182)
 
+# Converting temperature data to degrees Celsius
+TmaxData$tmax <- TmaxData$tmax/10
+TminData$tmin <- TminData$tmin/10
+# Converting precipitation data to millimeters
+PrcpData$prcp <- PrcpData$prcp/10
+
+### Narrow down to good stations ----
 # Counting observations per year for the tmax data
 # Make new data frame with just the id, tmax value, and year
 TmaxDataYear <- aggregate(TmaxData$tmax, by=list(TmaxData$id,TmaxData$year), FUN="length")
@@ -183,6 +188,43 @@ PrcpStn <- subset(PrcpStn, PrcpStn$pctcont >= .75)
 # narrow down to rows with max year = 2019
 PrcpStn <- subset(PrcpStn, PrcpStn$max == 2019)
 
+### identify sites with all data types ----
+AllStn <- data.frame(station_id = sitesMax$station_id, lat = sitesMax$lat, long = sitesMax$long, name = sitesMax$name) 
+AllStn <- inner_join(AllStn, sitesMin, by="station_id")
+AllStn <- inner_join(AllStn, sitesPrcp, by="station_id")
+
+### Creating one large data frame with all data types, all good sites
+AllData <- full_join(TmaxData, TminData, by = c("id"="id", "year"="year", "DOY" = "DOY"), copy = FALSE)
+
+AllData <- full_join(AllData, PrcpData, by = c("id"="id", "year"="year", "DOY" = "DOY"), copy = FALSE)
+
+# Subset to just keep id, tmin, tmax, year, doy
+AllData <- data.frame(Station = AllData$id, DOY = AllData$DOY, Year = AllData$year, 
+                      prcp = AllData$prcp, tmax = AllData$tmax, tmin = AllData$tmin)
+
+# Adding average temperature column
+AllData$tav <- (AllData$tmax + AllData$tmin)/2
+
+# Adding freeze-thaw flag (less than -2.2 degrees and higher than 0 degrees in the same day)
+# Maybe change these numbers?
+AllData$FreezeThaw <- ifelse(AllData$tmin<(-2.2) & AllData$tmax>0,"X", NA)
+
+# Making station column a factor
+AllData$Station <- as.factor(AllData$Station)
+
+# station_test <- subset(AllData, AllData$Station %in% c("USC00300785", "USC00301752", "USC00304102"))
+
+# Subsetting to just 12 stations from above
+# ASK ABOUT THIS STEP, what does %in% mean?
+AllData <- subset(AllData, AllData$Station %in% c("USC00300785", "USC00301752", "USC00304102",
+                                                  "USC00304912", "USC00306085", "USC00306314",
+                                                  "USC00309000", "USW00014735", "USW00014750",
+                                                  "USW00014771", "USW00094725", "USW00094790"))
+
+# Extreme values (occur >5% of the time) ??
+
+
+
 
 ### Map sites ----
 #start by mapping all sites
@@ -271,11 +313,6 @@ prcpP <- spTransform(prcpPoints ,ez@proj4string)
 plot(prcpP, col="grey25",pch=19, add=TRUE)
 title(main= "Map of Precip Stations")
 
-
-### identify sites with all data ---
-AllStn <- data.frame(station_id = sitesMax$station_id, lat = sitesMax$lat, long = sitesMax$long, name = sitesMax$name) 
-AllStn <- inner_join(AllStn, sitesMin, by="station_id")
-AllStn <- inner_join(AllStn, sitesPrcp, by="station_id")
 
 # map the stations that have all data
 #look at weather stations
@@ -564,3 +601,137 @@ ggplot(data = WaterAPYearPr, aes(x=year, y=totalPRCP))+
   labs(title="Total Precipitation (January-June) for Watertown Airport, NY",
        x= "Year",
        y= "Total Precipitation (mm)")
+=======
+# # Boonville
+# PrcpBoonville <- subset(PrcpData, PrcpData$id == "USC00300785")
+# BoonvilleYearPr <- aggregate(PrcpBoonville$prcp, by=list(PrcpBoonville$year), FUN="sum")
+# colnames(BoonvilleYearPr) <-c("year","totalPRCP")
+# ggplot(data = BoonvilleYearPr, aes(x=year, y=totalPRCP))+
+#   geom_line()+
+#   theme_classic()+
+#   labs(title="Total Precipitation (January-June) for Boonville, NY",
+#        x= "Year",
+#        y= "Total Precipitation (mm)")
+# # Cooperstown
+# PrcpCoop <- subset(PrcpData, PrcpData$id == "USC00301752")
+# CoopYearPr <- aggregate(PrcpCoop$prcp, by=list(PrcpCoop$year), FUN="sum")
+# colnames(CoopYearPr) <- c("year", "totalPRCP")
+# ggplot(data = CoopYearPr, aes(x=year, y=totalPRCP))+
+#   geom_line()+
+#   theme_classic()+
+#   labs(title="Total Precipitation (January-June) for Cooperstown, NY",
+#        x= "Year",
+#        y= "Total Precipitation (mm)")
+# 
+# # Indian Lake
+# PrcpIL <- subset(PrcpData, PrcpData$id == "USC00304102")
+# ILYearPr <- aggregate(PrcpIL$prcp, by=list(PrcpIL$year), FUN="sum")
+# colnames(ILYearPr) <- c("year", "totalPRCP")
+# ggplot(data = ILYearPr, aes(x=year, y=totalPRCP))+
+#   geom_line()+
+#   theme_classic()+
+#   labs(title="Total Precipitation (January-June) for Indian Lake, NY",
+#        x= "Year",
+#        y= "Total Precipitation (mm)")
+# 
+# # Lowville
+# PrcpLowville <- subset(PrcpData, PrcpData$id == "USC00304912")
+# LowvilleYearPr <- aggregate(PrcpLowville$prcp, by=list(PrcpLowville$year), FUN="sum")
+# colnames(LowvilleYearPr) <- c("year", "totalPRCP")
+# ggplot(data = LowvilleYearPr, aes(x=year, y=totalPRCP))+
+#   geom_line()+
+#   theme_classic()+
+#   labs(title="Total Precipitation (January-June) for Lowville, NY",
+#        x= "Year",
+#        y= "Total Precipitation (mm)")
+# 
+# # Norwich
+# PrcpNorwich <- subset(PrcpData, PrcpData$id == "USC00306085")
+# NorwichYearPr <- aggregate(PrcpNorwich$prcp, by=list(PrcpNorwich$year), FUN="sum")
+# colnames(NorwichYearPr) <- c("year", "totalPRCP")
+# ggplot(data = NorwichYearPr, aes(x=year, y=totalPRCP))+
+#   geom_line()+
+#   theme_classic()+
+#   labs(title="Total Precipitation (January-June) for Norwich, NY",
+#        x= "Year",
+#        y= "Total Precipitation (mm)")
+# 
+# # Oswego
+# PrcpOswego <- subset(PrcpData, PrcpData$id == "USC00306314")
+# OswegoYearPr <- aggregate(PrcpOswego$prcp, by=list(PrcpOswego$year), FUN="sum")
+# colnames(OswegoYearPr) <-c("year", "totalPRCP")
+# ggplot(data = OswegoYearPr, aes(x=year, y=totalPRCP))+
+#   geom_line()+
+#   theme_classic()+
+#   labs(title="Total Precipitation (January-June) for Oswego, NY",
+#        x= "Year",
+#        y= "Total Precipitation (mm)")
+# 
+# # Watertown
+# PrcpWater <- subset(PrcpData, PrcpData$id =="USC00309000")
+# WaterYearPr <- aggregate(PrcpWater$prcp, by=list(PrcpWater$year), FUN="sum")
+# colnames(WaterYearPr) <-c("year", "totalPRCP")
+# ggplot(data = WaterYearPr, aes(x=year, y=totalPRCP))+
+#   geom_line()+
+#   theme_classic()+
+#   labs(title="Total Precipitation (January-June) for Watertown, NY",
+#        x= "Year",
+#        y= "Total Precipitation (mm)")
+# 
+# # Albany
+# PrcpAlb <-subset(PrcpData, PrcpData$id == "USW00014735")
+# AlbYearPr <- aggregate(PrcpAlb$prcp, by=list(PrcpAlb$year), FUN="sum")
+# colnames(AlbYearPr) <-c("year", "totalPRCP")
+# ggplot(data = AlbYearPr, aes(x=year, y=totalPRCP))+
+#   geom_line()+
+#   theme_classic()+
+#   labs(title="Total Precipitation (January-June) for Albany, NY",
+#        x= "Year",
+#        y= "Total Precipitation (mm)")
+# 
+# # Glens Falls
+# PrcpGF <- subset(PrcpData, PrcpData$id == "USW00014750")
+# GFYearPr <- aggregate(PrcpGF$prcp, by=list(PrcpGF$year), FUN="sum")
+# colnames(GFYearPr) <-c("year", "totalPRCP")
+# ggplot(data = GFYearPr, aes(x=year, y=totalPRCP))+
+#   geom_line()+
+#   theme_classic()+
+#   labs(title="Total Precipitation (January-June) for Glens Falls, NY",
+#        x= "Year",
+#        y= "Total Precipitation (mm)")
+# 
+# # Syracuse
+# PrcpSyr <- subset(PrcpData, PrcpData$id == "USW00014771")
+# SyrYearPr <- aggregate(PrcpSyr$prcp, by=list(PrcpSyr$year), FUN="sum")
+# colnames(SyrYearPr) <-c("year", "totalPRCP")
+# ggplot(data = SyrYearPr, aes(x=year, y=totalPRCP))+
+#   geom_line()+
+#   theme_classic()+
+#   labs(title="Total Precipitation (January-June) for Syracuse, NY",
+#        x= "Year",
+#        y= "Total Precipitation (mm)")
+# 
+# 
+# # Massena
+# PrcpMass <-subset(PrcpData, PrcpData$id == "USW00094725")
+# MassYearPr <- aggregate(PrcpMass$prcp, by=list(PrcpMass$year), FUN="sum")
+# colnames(MassYearPr) <-c("year", "totalPRCP")
+# ggplot(data = MassYearPr, aes(x=year, y=totalPRCP))+
+#   geom_line()+
+#   theme_classic()+
+#   labs(title="Total Precipitation (January-June) for Massena, NY",
+#        x= "Year",
+#        y= "Total Precipitation (mm)")
+# 
+# # Watertown Airport
+# PrcpWaterAP <- subset(PrcpData, PrcpData$id == "USW00094790")
+# WaterAPYearPr <- aggregate(PrcpWaterAP$prcp, by=list(PrcpWaterAP$year), FUN="sum")
+# colnames(WaterAPYearPr) <-c("year", "totalPRCP")
+# ggplot(data = WaterAPYearPr, aes(x=year, y=totalPRCP))+
+#   geom_line()+
+#   theme_classic()+
+#   labs(title="Total Precipitation (January-June) for Watertown Airport, NY",
+#        x= "Year",
+#        y= "Total Precipitation (mm)")
+
+
