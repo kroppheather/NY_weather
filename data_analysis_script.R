@@ -71,8 +71,7 @@ PrcpData <- subset(PrcpData, PrcpData$DOY < 182)
 TmaxData <- subset(TmaxData, TmaxData$DOY < 182)
 TminData <- subset(TminData, TminData$DOY < 182)
 
-<<<<<<< Updated upstream
-=======
+
 # Converting temperature data to degrees Celsius
 TmaxData$tmax <- TmaxData$tmax/10
 TminData$tmin <- TminData$tmin/10
@@ -80,7 +79,6 @@ TminData$tmin <- TminData$tmin/10
 PrcpData$prcp <- PrcpData$prcp/10
 
 ### Narrow down to good stations ----
->>>>>>> Stashed changes
 # Counting observations per year for the tmax data
 # Make new data frame with just the id, tmax value, and year
 TmaxDataYear <- aggregate(TmaxData$tmax, by=list(TmaxData$id,TmaxData$year), FUN="length")
@@ -191,19 +189,33 @@ PrcpStn <- subset(PrcpStn, PrcpStn$pctcont >= .75)
 # narrow down to rows with max year = 2019
 PrcpStn <- subset(PrcpStn, PrcpStn$max == 2019)
 
+
+
 ### identify sites with all data types ----
 AllStn <- data.frame(station_id = sitesMax$station_id, lat = sitesMax$lat, long = sitesMax$long, name = sitesMax$name) 
 AllStn <- inner_join(AllStn, sitesMin, by="station_id")
 AllStn <- inner_join(AllStn, sitesPrcp, by="station_id")
 
-### Creating one large data frame with all data types, all good sites
+
+### Creating one large data frame ----
+# with all data types, all good sites
 AllData <- full_join(TmaxData, TminData, by = c("id"="id", "year"="year", "DOY" = "DOY"), copy = FALSE)
 
 AllData <- full_join(AllData, PrcpData, by = c("id"="id", "year"="year", "DOY" = "DOY"), copy = FALSE)
 
+AllData <- left_join(AllData, StationInfo, by = c("id"="station_id"))
+
+AllData$Month <- month(AllData$date)
+
 # Subset to just keep id, tmin, tmax, year, doy
-AllData <- data.frame(Station = AllData$id, DOY = AllData$DOY, Year = AllData$year, 
-                      prcp = AllData$prcp, tmax = AllData$tmax, tmin = AllData$tmin)
+AllData <- data.frame(StationID = AllData$id, 
+                      StationName = AllData$name, 
+                      DOY = AllData$DOY, 
+                      Month = AllData$Month,
+                      Year = AllData$year, 
+                      prcp = AllData$prcp, 
+                      tmax = AllData$tmax, 
+                      tmin = AllData$tmin)
 
 # Adding average temperature column
 AllData$tav <- ((AllData$tmax - AllData$tmin)/2) + AllData$tmin 
@@ -213,13 +225,13 @@ AllData$tav <- ((AllData$tmax - AllData$tmin)/2) + AllData$tmin
 AllData$FreezeThaw <- ifelse(AllData$tmin<(-2.2) & AllData$tmax>0,"X", NA)
 
 # Making station column a factor
-AllData$Station <- as.factor(AllData$Station)
+AllData$StationID <- as.factor(AllData$StationID)
 
 # station_test <- subset(AllData, AllData$Station %in% c("USC00300785", "USC00301752", "USC00304102"))
 
 # Subsetting to just 12 stations from above
 # ASK ABOUT THIS STEP, what does %in% mean?
-AllData <- subset(AllData, AllData$Station %in% c("USC00300785", "USC00301752", "USC00304102",
+AllData <- subset(AllData, AllData$StationID %in% c("USC00300785", "USC00301752", "USC00304102",
                                                   "USC00304912", "USC00306085", "USC00306314",
                                                   "USC00309000", "USW00014735", "USW00014750",
                                                   "USW00014771", "USW00094725", "USW00094790"))
@@ -227,21 +239,34 @@ AllData <- subset(AllData, AllData$Station %in% c("USC00300785", "USC00301752", 
 # Extreme values (occur <5% of the time) ??
 ## make table of extreme values for each station, then can join into AllData, then can highlight tmax higher than extreme value
 ## by decade 
-ExtrVals <- aggregate(AllData$tmax, by = list(AllData$Station), FUN = "quantile", prob = 0.95, na.rm = TRUE)
+# highest 5% tmax
+ExtrVals <- aggregate(AllData$tmax, by = list(AllData$StationID, AllData$Month), FUN = "quantile", prob = 0.95, na.rm = TRUE)
+# lowest 5% tmin
+ExtrVals$tmin <- aggregate(AllData$tmin, by = list(AllData$StationID, AllData$Month), FUN = "quantile", prob = 0.05, na.rm = TRUE)$x
+# max tmax
+ExtrVals$max <- aggregate(AllData$tmax, by = list(AllData$StationID, AllData$Month), max, na.rm = TRUE)$x
+# min tmin
+ExtrVals$min <- aggregate(AllData$tmin, by = list(AllData$StationID, AllData$Month), min, na.rm = TRUE)$x
 
+# clean up data table 
+ExtrVals <- data.frame(StationID = ExtrVals$Group.1,
+                       Month = ExtrVals$Group.2,
+                       MinTmin = ExtrVals$min,
+                       LowTmin = ExtrVals$tmin,
+                       HighTmax = ExtrVals$x,
+                       MaxTmax = ExtrVals$max)
 
+# join to AllData
+AllData <- left_join(AllData, ExtrVals, by = c("StationID", "Month"))
 
-## next steps 12/14
-# add station name from station info to all data with a left join 
-# add month column to all data
-# add decade column??
-# make table of extreme values for each station by month
+# add flag for extreme high tmax
+AllData$ExtrHi <- ifelse(AllData$tmax>=AllData$HighTmax, "X", NA)
 
-## for later
-# add in maple sap freeze-thaw threshold 
-# look for more plant-specific thresholds
-# look into station data collection 
+# add flag for extreme low tmin
+AllData$ExtrLo <- ifelse(AllData$tmin<=AllData$LowTmin,"X",NA)
 
+## subset to spring data frame
+SpringData <- subset(AllData, AllData$Month %in% c(3,4,5))
 
 
 
