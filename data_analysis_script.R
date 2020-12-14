@@ -1,4 +1,4 @@
-#updated 12/11
+#updated 12/14
 
 library(dplyr)
 library(tidyr)
@@ -23,7 +23,7 @@ diru = c("/Users/abby/Documents/NYweather",
          "/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/data")
 
 # Choosing the user number - CHANGE THIS VALUE 
-usernumber = 3
+usernumber = 1
 
 ### Read in data   -----
 #csv with weather data
