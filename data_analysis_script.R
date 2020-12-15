@@ -6,6 +6,7 @@ library(lubridate)
 library(rgdal)
 library(sp)
 library(ggplot2)
+library(cowplot)
 
 
 ### Set up directories   -----
@@ -331,7 +332,10 @@ AllData$tav <- ((AllData$tmax - AllData$tmin)/2) + AllData$tmin
 
 # Adding freeze-thaw flag (less than -2.2 degrees and higher than 0 degrees in the same day)
 # Maybe change these numbers?
-AllData$FreezeThaw <- ifelse(AllData$tmin<(-2.2) & AllData$tmax>0,"X", NA)
+AllData$FreezeThaw <- ifelse(AllData$tmin<(-2.2) & AllData$tmax>0, 1 , NA)
+
+# Adding range of freeze thaw column
+AllData$FTrange <- ifelse(AllData$FreezeThaw == 1, AllData$tmax - AllData$tmin, NA)
 
 # Making station column a factor
 AllData$StationID <- as.factor(AllData$StationID)
@@ -361,17 +365,17 @@ ExtrVals <- data.frame(StationID = ExtrVals$Group.1,
 AllData <- left_join(AllData, ExtrVals, by = c("StationID", "Month"))
 
 # add flag for extreme high tmax
-AllData$ExtrHi <- ifelse(AllData$tmax>=AllData$HighTmax, "X", NA)
+AllData$ExtrHi <- ifelse(AllData$tmax>=AllData$HighTmax, 1, NA)
 
 # add flag for extreme low tmin
-AllData$ExtrLo <- ifelse(AllData$tmin<=AllData$LowTmin,"X",NA)
+AllData$ExtrLo <- ifelse(AllData$tmin<=AllData$LowTmin, 1,NA)
 
 ## subset to spring data frame
 SpringData <- subset(AllData, AllData$Month %in% c(3,4,5))
 
 
 
-### general and extreme temperature trends ----
+### general temperature trends ----
 # started 12/15
 
 # make a data frame of yearly averages of all 3 temperature variables
@@ -379,6 +383,9 @@ SpringYear <- aggregate(SpringData$tmax, by=list(SpringData$Year,SpringData$Stat
 colnames(SpringYear) <- c("year","station","tmax")
 SpringYear$tmin <- aggregate(SpringData$tmin, by=list(SpringData$Year,SpringData$StationID), FUN="mean", na.rm = TRUE)$x
 SpringYear$tav <- aggregate(SpringData$tav, by=list(SpringData$Year,SpringData$StationID), FUN="mean", na.rm = TRUE)$x
+SpringYear$FTdays <- aggregate(SpringData$FreezeThaw, by=list(SpringData$Year, SpringData$StationID), FUN="sum", na.rm = TRUE)$x
+SpringYear$FTrange <- aggregate(SpringData$FTrange, by=list(SpringData$Year, SpringData$StationID), FUN="mean", na.rm = TRUE)$x
+
 
 ## use AllStn for subsetting ##
 
@@ -412,7 +419,6 @@ ggplot(data = stn3, aes(x = year))+
   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
   theme_classic()+
   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Indian Lake, NY")
-
 
 # station 4 - Lowville
 stn4 <- subset(SpringYear, SpringYear$station == "USC00304912")
@@ -503,5 +509,156 @@ ggplot(data = stn12, aes(x = year))+
   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
   theme_classic()+
   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Watertown Airport, NY")
+
+# Number of Freeze Thaw Days Graphs
+# have 20 as differentiating mark but we could look up how many in one year is problematic and use that as a threshold
+
+# station 1
+ggplot(data = stn1, aes(x = year, y = FTdays)) +
+  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn1$FTdays > 20, "tomato3", "deepskyblue3"))+
+  theme_classic()+
+  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Boonville, NY")
+
+# station 2
+ggplot(data = stn2, aes(x = year, y = FTdays)) +
+  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn2$FTdays > 20, "tomato3", "deepskyblue3"))+
+  theme_classic()+
+  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Cooperstown, NY")
+
+# station 3
+ggplot(data = stn3, aes(x = year, y = FTdays)) +
+  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn3$FTdays > 20, "tomato3", "deepskyblue3"))+
+  theme_classic()+
+  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Indian Lake, NY")
+
+# station 4
+ggplot(data = stn4, aes(x = year, y = FTdays)) +
+  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn4$FTdays > 20, "tomato3", "deepskyblue3"))+
+  theme_classic()+
+  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Lowville, NY")
+
+# station 5
+ggplot(data = stn5, aes(x = year, y = FTdays)) +
+  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn5$FTdays > 20, "tomato3", "deepskyblue3"))+
+  theme_classic()+
+  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Norwich, NY")
+
+# station 6
+ggplot(data = stn6, aes(x = year, y = FTdays)) +
+  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn6$FTdays > 20, "tomato3", "deepskyblue3"))+
+  theme_classic()+
+  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Oswego, NY")
+
+# station 7
+ggplot(data = stn7, aes(x = year, y = FTdays)) +
+  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn7$FTdays > 20, "tomato3", "deepskyblue3"))+
+  theme_classic()+
+  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Watertown, NY")
+
+# station 8
+ggplot(data = stn8, aes(x = year, y = FTdays)) +
+  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn8$FTdays > 20, "tomato3", "deepskyblue3"))+
+  theme_classic()+
+  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Albany, NY")
+
+# station 9
+ggplot(data = stn9, aes(x = year, y = FTdays)) +
+  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn9$FTdays > 20, "tomato3", "deepskyblue3"))+
+  theme_classic()+
+  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Glens Falls, NY")
+
+# station 10
+ggplot(data = stn10, aes(x = year, y = FTdays)) +
+  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn10$FTdays > 20, "tomato3", "deepskyblue3"))+
+  theme_classic()+
+  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Syracuse, NY")
+
+# station 11
+ggplot(data = stn11, aes(x = year, y = FTdays)) +
+  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn11$FTdays > 20, "tomato3", "deepskyblue3"))+
+  theme_classic()+
+  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Massena, NY")
+
+# station 12
+ggplot(data = stn12, aes(x = year, y = FTdays)) +
+  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn12$FTdays > 20, "tomato3", "deepskyblue3"))+
+  theme_classic()+
+  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Watertown Airport, NY")
+
+# Freeze Thaw Amplitude Graphs
+# maybe we can find a better style of graph to represent these numebrs
+# does mean amplitude really mean that much on a yearly basis?
+
+# station 1
+ggplot(data = stn1, aes(x = year, y = FTrange))+
+  geom_line(color = "deepskyblue3") +
+  theme_classic()+
+  labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Boonville, NY")
+
+# station 2
+ggplot(data = stn2, aes(x = year, y = FTrange))+
+  geom_line(color = "deepskyblue3") +
+  theme_classic()+
+  labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Cooperstown Airport, NY")
+
+# station 3
+ggplot(data = stn1, aes(x = year, y = FTrange))+
+  geom_line(color = "deepskyblue3") +
+  theme_classic()+
+  labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Indian Lake, NY")
+
+# station 4
+ggplot(data = stn4, aes(x = year, y = FTrange))+
+  geom_line(color = "deepskyblue3") +
+  theme_classic()+
+  labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Lowville, NY")
+
+# station 5
+ggplot(data = stn5, aes(x = year, y = FTrange))+
+  geom_line(color = "deepskyblue3") +
+  theme_classic()+
+  labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Norwich, NY")
+
+# station 6
+ggplot(data = stn6, aes(x = year, y = FTrange))+
+  geom_line(color = "deepskyblue3") +
+  theme_classic()+
+  labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Oswego, NY")
+
+# station 7
+ggplot(data = stn7, aes(x = year, y = FTrange))+
+  geom_line(color = "deepskyblue3") +
+  theme_classic()+
+  labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Watertown, NY")
+
+# station 8
+ggplot(data = stn1, aes(x = year, y = FTrange))+
+  geom_line(color = "deepskyblue3") +
+  theme_classic()+
+  labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Albany, NY")
+
+# station 9
+ggplot(data = stn9, aes(x = year, y = FTrange))+
+  geom_line(color = "deepskyblue3") +
+  theme_classic()+
+  labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Glens Falls, NY")
+
+# station 10
+ggplot(data = stn10, aes(x = year, y = FTrange))+
+  geom_line(color = "deepskyblue3") +
+  theme_classic()+
+  labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Syracuse, NY")
+
+# station 11
+ggplot(data = stn11, aes(x = year, y = FTrange))+
+  geom_line(color = "deepskyblue3") +
+  theme_classic()+
+  labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Massena, NY")
+
+# station 12
+ggplot(data = stn12, aes(x = year, y = FTrange))+
+  geom_line(color = "deepskyblue3") +
+  theme_classic()+
+  labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Watertown Airport, NY")
 
 
