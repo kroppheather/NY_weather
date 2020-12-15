@@ -375,10 +375,10 @@ SpringData <- subset(AllData, AllData$Month %in% c(3,4,5))
 # start 12/15
 
 # make a data frame of yearly averages of all 3 temperature variables
-SpringYear <- aggregate(SpringData$tmax, by=list(SpringData$Year,SpringData$StationID), FUN="mean")
+SpringYear <- aggregate(SpringData$tmax, by=list(SpringData$Year,SpringData$StationID), FUN="mean", na.rm = TRUE)
 colnames(SpringYear) <- c("year","station","tmax")
-SpringYear$tmin <- aggregate(SpringData$tmin, by=list(SpringData$Year,SpringData$StationID), FUN="mean")$x
-SpringYear$tav <- aggregate(SpringData$tav, by=list(SpringData$Year,SpringData$StationID), FUN="mean")$x
+SpringYear$tmin <- aggregate(SpringData$tmin, by=list(SpringData$Year,SpringData$StationID), FUN="mean", na.rm = TRUE)$x
+SpringYear$tav <- aggregate(SpringData$tav, by=list(SpringData$Year,SpringData$StationID), FUN="mean", na.rm = TRUE)$x
 
 ## use AllStn for subsetting ##
 
