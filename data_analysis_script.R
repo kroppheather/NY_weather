@@ -445,7 +445,71 @@ ggplot(data = stn6, aes(x = year))+
   theme_classic()+
   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Oswego, NY")
 
+# station 7 - Watertown
+stn7 <- subset(SpringYear, SpringYear$station == "USC00309000")
+ggplot(data = stn7, aes(x = year))+
+  geom_line(aes(y = tav, color = "average temp"))+ 
+  geom_line(aes(y = tmax, color = "maximum temp"))+
+  geom_line(aes(y = tmin, color = "minimum temp"))+
+  scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Watertown, NY")
 
+# station 8 - Albany
+stn8 <- subset(SpringYear, SpringYear$station == "USW00014735")
+ggplot(data = stn8, aes(x = year))+
+  geom_line(aes(y = tav, color = "average temp"))+ 
+  geom_line(aes(y = tmax, color = "maximum temp"))+
+  geom_line(aes(y = tmin, color = "minimum temp"))+
+  scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Albany, NY")
+
+# station 9 - Glens Falls
+stn9 <- subset(SpringYear, SpringYear$station == "USW00014750")
+ggplot(data = stn9, aes(x = year))+
+  geom_line(aes(y = tav, color = "average temp"))+ 
+  geom_line(aes(y = tmax, color = "maximum temp"))+
+  geom_line(aes(y = tmin, color = "minimum temp"))+
+  scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Glens Falls, NY")
+
+# station 10 - Syracuse
+stn10 <- subset(SpringYear, SpringYear$station == "USW00014771")
+ggplot(data = stn10, aes(x = year))+
+  geom_line(aes(y = tav, color = "average temp"))+ 
+  geom_line(aes(y = tmax, color = "maximum temp"))+
+  geom_line(aes(y = tmin, color = "minimum temp"))+
+  scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Syracuse, NY")
+
+# station 11 - Massena
+stn11 <- subset(SpringYear, SpringYear$station == "USW00094725")
+ggplot(data = stn11, aes(x = year))+
+  geom_line(aes(y = tav, color = "average temp"))+ 
+  geom_line(aes(y = tmax, color = "maximum temp"))+
+  geom_line(aes(y = tmin, color = "minimum temp"))+
+  scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Massena, NY")
+
+# station 12 - Watertown Airport
+stn12 <- subset(SpringYear, SpringYear$station == "USW00094790")
+ggplot(data = stn12, aes(x = year))+
+  geom_line(aes(y = tav, color = "average temp"))+ 
+  geom_line(aes(y = tmax, color = "maximum temp"))+
+  geom_line(aes(y = tmin, color = "minimum temp"))+
+  scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Watertown Airport, NY")
+
+
+
+## extreme temperature graphs
+# add columns counting extreme high temp days
+SpringYear$ExtrHi <- aggregate(SpringData$ExtrHi, by=list(SpringData$Year, SpringData$StationID) , FUN = "length", na.rm = TRUE)$x
 
 
  
