@@ -71,7 +71,6 @@ PrcpData <- subset(PrcpData, PrcpData$DOY < 182)
 TmaxData <- subset(TmaxData, TmaxData$DOY < 182)
 TminData <- subset(TminData, TminData$DOY < 182)
 
-
 # Converting temperature data to degrees Celsius
 TmaxData$tmax <- TmaxData$tmax/10
 TminData$tmin <- TminData$tmin/10
@@ -189,27 +188,137 @@ PrcpStn <- subset(PrcpStn, PrcpStn$pctcont >= .75)
 # narrow down to rows with max year = 2019
 PrcpStn <- subset(PrcpStn, PrcpStn$max == 2019)
 
+### Map stations ----
+#start by mapping all stations
+#assume coordinates are in WGS 84
+#epsg 4326
+#turn stations into spatial points
+siteLL <- SpatialPoints(matrix(c(StationInfo$long,StationInfo$lat), ncol=2,byrow=FALSE),
+                        CRS( "+init=epsg:4326") )
+#reproject points into the ez coordinate system (utm)
+siteP <- spTransform(siteLL,ez@proj4string)
+ez@data$MINOR_DESC <- as.factor(ez@data$MINOR_DESC )
+ez@data$MAJOR<- as.factor(ez@data$MAJOR )
+#look at weather stations
+plot(siteP, pch=19)
+#set up colors based on major zone
+MajorZones <- data.frame(MAJOR = unique(ez@data$MAJOR))
+#colors
+MajorZones$col <- c("#e28946",	"#ebb355","#db5236","#36638f","#74a1c3",
+                    "#df9880",	"#8687c1","#4069bf","#0d4247",	"#ff5b3e",
+                    "#576356","#31474f" )
+#add colors to plot back in
+ez@data <- left_join(ez@data,MajorZones, by="MAJOR")
+#make a map of all weather sites
+plot(ez, col=ez@data$col, border=NA)
+legend("topleft", paste(MajorZones$MAJOR),fill=MajorZones$col, bty="n", cex=0.35)
+plot(siteP, add=TRUE, pch=19, col=rgb(0.5,0.5,0.5,0.45), cex=0.5)
+#look at Tmax
+TmaxStn$station_id <- TmaxStn$station
+sitesMax <- left_join(TmaxStn,StationInfo, by ="station_id")
+maxPoints <- SpatialPoints(matrix(c(sitesMax $long,sitesMax $lat), ncol=2,byrow=FALSE),
+                           CRS( "+init=epsg:4326") )
+#reproject points into the ez coordinate system (utm)
+maxP <- spTransform(maxPoints ,ez@proj4string)
+plot(maxP, col="grey25",pch=19, add=TRUE)
+title(main= "Map of TMax Stations")
 
+
+##now look at Tmin
+#look at weather stations
+plot(siteP, pch=19)
+#set up colors based on major zone
+MajorZones <- data.frame(MAJOR = unique(ez@data$MAJOR))
+#colors
+MajorZones$col <- c("#e28946",	"#ebb355","#db5236","#36638f","#74a1c3",
+                    "#df9880",	"#8687c1","#4069bf","#0d4247",	"#ff5b3e",
+                    "#576356","#31474f" )
+#add colors to plot back in
+ez@data <- left_join(ez@data,MajorZones, by="MAJOR")
+#make a map of all weather sites
+plot(ez, col=ez@data$col, border=NA)
+legend("topleft", paste(MajorZones$MAJOR),fill=MajorZones$col, bty="n", cex=0.35)
+plot(siteP, add=TRUE, pch=19, col=rgb(0.5,0.5,0.5,0.45), cex=0.5)
+#look at Tmin
+TminStn$station_id <- TminStn$station
+sitesMin <- left_join(TminStn,StationInfo, by ="station_id")
+minPoints <- SpatialPoints(matrix(c(sitesMin $long,sitesMin $lat), ncol=2,byrow=FALSE),
+                           CRS( "+init=epsg:4326") )
+#reproject points into the ez coordinate system (utm)
+minP <- spTransform(minPoints ,ez@proj4string)
+plot(maxP, col="grey25",pch=19, add=TRUE)
+title(main= "Map of TMin Stations")
+
+
+#Now look at PRCP
+#look at weather stations
+plot(siteP, pch=19)
+#set up colors based on major zone
+MajorZones <- data.frame(MAJOR = unique(ez@data$MAJOR))
+#colors
+MajorZones$col <- c("#e28946",	"#ebb355","#db5236","#36638f","#74a1c3",
+                    "#df9880",	"#8687c1","#4069bf","#0d4247",	"#ff5b3e",
+                    "#576356","#31474f" )
+#add colors to plot back in
+ez@data <- left_join(ez@data,MajorZones, by="MAJOR")
+#make a map of all weather sites
+plot(ez, col=ez@data$col, border=NA)
+legend("topleft", paste(MajorZones$MAJOR),fill=MajorZones$col, bty="n", cex=0.35)
+plot(siteP, add=TRUE, pch=19, col=rgb(0.5,0.5,0.5,0.45), cex=0.5)
+#look at Prcp
+PrcpStn$station_id <- PrcpStn$station
+sitesPrcp <- left_join(PrcpStn,StationInfo, by ="station_id")
+prcpPoints <- SpatialPoints(matrix(c(sitesPrcp $long,sitesPrcp $lat), ncol=2,byrow=FALSE),
+                            CRS( "+init=epsg:4326") )
+#reproject points into the ez coordinate system (utm)
+prcpP <- spTransform(prcpPoints ,ez@proj4string)
+plot(prcpP, col="grey25",pch=19, add=TRUE)
+title(main= "Map of Precip Stations")
 
 ### identify sites with all data types ----
 AllStn <- data.frame(station_id = sitesMax$station_id, lat = sitesMax$lat, long = sitesMax$long, name = sitesMax$name) 
 AllStn <- inner_join(AllStn, sitesMin, by="station_id")
 AllStn <- inner_join(AllStn, sitesPrcp, by="station_id")
 
+# map the stations that have all data
+#look at weather stations
+plot(siteP, pch=19)
+#set up colors based on major zone
+MajorZones <- data.frame(MAJOR = unique(ez@data$MAJOR))
+#colors
+MajorZones$col <- c("#e28946",	"#ebb355","#db5236","#36638f","#74a1c3",
+                    "#df9880",	"#8687c1","#4069bf","#0d4247",	"#ff5b3e",
+                    "#576356","#31474f" )
+#add colors to plot back in
+ez@data <- left_join(ez@data,MajorZones, by="MAJOR")
+#make a map of all weather sites
+plot(ez, col=ez@data$col, border=NA)
+legend("topleft", paste(MajorZones$MAJOR),fill=MajorZones$col, bty="n", cex=0.35)
+plot(siteP, add=TRUE, pch=19, col=rgb(0.5,0.5,0.5,0.45), cex=0.5)
+#look at Stations
+allPoints <- SpatialPoints(matrix(c(AllStn $long,AllStn $lat), ncol=2,byrow=FALSE),
+                           CRS( "+init=epsg:4326") )
+#reproject points into the ez coordinate system (utm)
+allP <- spTransform(allPoints ,ez@proj4string)
+plot(allP, col="grey25",pch=19, add=TRUE)
+title(main= "Map of Stations with Tmax, Tmin, and Prcp")
+
+
 
 ### Creating one large data frame ----
-# with all data types, all good sites
+# join tmax, tmin, and prcp data
 AllData <- full_join(TmaxData, TminData, by = c("id"="id", "year"="year", "DOY" = "DOY"), copy = FALSE)
-
 AllData <- full_join(AllData, PrcpData, by = c("id"="id", "year"="year", "DOY" = "DOY"), copy = FALSE)
 
-AllData <- left_join(AllData, StationInfo, by = c("id"="station_id"))
+# add station names of the 12 good stations
+AllData <- inner_join(AllData, AllStn, by = c("id"="station_id"))
 
+# add month column
 AllData$Month <- month(AllData$date)
 
 # Subset to just keep id, tmin, tmax, year, doy
 AllData <- data.frame(StationID = AllData$id, 
-                      StationName = AllData$name, 
+                      StationName = AllData$name.x, 
                       DOY = AllData$DOY, 
                       Month = AllData$Month,
                       Year = AllData$year, 
@@ -227,16 +336,8 @@ AllData$FreezeThaw <- ifelse(AllData$tmin<(-2.2) & AllData$tmax>0,"X", NA)
 # Making station column a factor
 AllData$StationID <- as.factor(AllData$StationID)
 
-# station_test <- subset(AllData, AllData$Station %in% c("USC00300785", "USC00301752", "USC00304102"))
 
-# Subsetting to just 12 stations from above
-# ASK ABOUT THIS STEP, what does %in% mean?
-AllData <- subset(AllData, AllData$StationID %in% c("USC00300785", "USC00301752", "USC00304102",
-                                                  "USC00304912", "USC00306085", "USC00306314",
-                                                  "USC00309000", "USW00014735", "USW00014750",
-                                                  "USW00014771", "USW00094725", "USW00094790"))
-
-# Extreme values (occur <5% of the time) ??
+# Extreme values (occur <5% of the time) 
 ## make table of extreme values for each station, then can join into AllData, then can highlight tmax higher than extreme value
 ## by decade 
 # highest 5% tmax
@@ -270,123 +371,84 @@ SpringData <- subset(AllData, AllData$Month %in% c(3,4,5))
 
 
 
+### general and extreme temperature trends ----
+# start 12/15
+
+# make a data frame of yearly averages of all 3 temperature variables
+SpringYear <- aggregate(SpringData$tmax, by=list(SpringData$Year,SpringData$StationID), FUN="mean")
+colnames(SpringYear) <- c("year","station","tmax")
+SpringYear$tmin <- aggregate(SpringData$tmin, by=list(SpringData$Year,SpringData$StationID), FUN="mean")$x
+SpringYear$tav <- aggregate(SpringData$tav, by=list(SpringData$Year,SpringData$StationID), FUN="mean")$x
+
+## use AllStn for subsetting ##
+
+# line graphs of tmax, tmin, tav over time
+# station 1 - Boonville 
+stn1 <- subset(SpringYear, SpringYear$station == "USC00300785")
+ggplot(data = stn1, aes(x = year))+
+  geom_line(aes(y = tav, color = "average temp"))+ 
+  geom_line(aes(y = tmax, color = "maximum temp"))+
+  geom_line(aes(y = tmin, color = "minimum temp"))+
+  scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Boonville, NY")
+
+# station 2 - Cooperstown
+stn2 <- subset(SpringYear, SpringYear$station == "USC00301752")
+ggplot(data = stn2, aes(x = year))+
+  geom_line(aes(y = tav, color = "average temp"))+ 
+  geom_line(aes(y = tmax, color = "maximum temp"))+
+  geom_line(aes(y = tmin, color = "minimum temp"))+
+  scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Cooperstown, NY")
+
+# station 3 - Indian Lake
+stn3 <- subset(SpringYear, SpringYear$station == "USC00304102")
+ggplot(data = stn3, aes(x = year))+
+  geom_line(aes(y = tav, color = "average temp"))+ 
+  geom_line(aes(y = tmax, color = "maximum temp"))+
+  geom_line(aes(y = tmin, color = "minimum temp"))+
+  scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Indian Lake, NY")
+
+
+# station 4 - Lowville
+stn4 <- subset(SpringYear, SpringYear$station == "USC00304912")
+ggplot(data = stn4, aes(x = year))+
+  geom_line(aes(y = tav, color = "average temp"))+ 
+  geom_line(aes(y = tmax, color = "maximum temp"))+
+  geom_line(aes(y = tmin, color = "minimum temp"))+
+  scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Lowville, NY")
+
+# station 5 - Norwich
+stn5 <- subset(SpringYear, SpringYear$station == "USC00306085")
+ggplot(data = stn5, aes(x = year))+
+  geom_line(aes(y = tav, color = "average temp"))+ 
+  geom_line(aes(y = tmax, color = "maximum temp"))+
+  geom_line(aes(y = tmin, color = "minimum temp"))+
+  scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Norwich, NY")
+
+
+# station 6  - Oswego
+stn6 <- subset(SpringYear, SpringYear$station == "USC00306314")
+ggplot(data = stn6, aes(x = year))+
+  geom_line(aes(y = tav, color = "average temp"))+ 
+  geom_line(aes(y = tmax, color = "maximum temp"))+
+  geom_line(aes(y = tmin, color = "minimum temp"))+
+  scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Oswego, NY")
 
 
 
 
-
-
-# ### Map sites ----
-# #start by mapping all sites
-# #assume coordinates are in WGS 84
-# #epsg 4326
-# #turn stations into spatial points
-# siteLL <- SpatialPoints(matrix(c(StationInfo$long,StationInfo$lat), ncol=2,byrow=FALSE),
-#                         CRS( "+init=epsg:4326") )
-# #reproject points into the ez coordinate system (utm)
-# siteP <- spTransform(siteLL,ez@proj4string)
-# ez@data$MINOR_DESC <- as.factor(ez@data$MINOR_DESC )
-# ez@data$MAJOR<- as.factor(ez@data$MAJOR )
-# #look at weather stations
-# plot(siteP, pch=19)
-# #set up colors based on major zone
-# MajorZones <- data.frame(MAJOR = unique(ez@data$MAJOR))
-# #colors
-# MajorZones$col <- c("#e28946",	"#ebb355","#db5236","#36638f","#74a1c3",
-#                     "#df9880",	"#8687c1","#4069bf","#0d4247",	"#ff5b3e",
-#                     "#576356","#31474f" )
-# #add colors to plot back in
-# ez@data <- left_join(ez@data,MajorZones, by="MAJOR")
-# #make a map of all weather sites
-# plot(ez, col=ez@data$col, border=NA)
-# legend("topleft", paste(MajorZones$MAJOR),fill=MajorZones$col, bty="n", cex=0.35)
-# plot(siteP, add=TRUE, pch=19, col=rgb(0.5,0.5,0.5,0.45), cex=0.5)
-# #look at Tmax
-# TmaxStn$station_id <- TmaxStn$station
-# sitesMax <- left_join(TmaxStn,StationInfo, by ="station_id")
-# maxPoints <- SpatialPoints(matrix(c(sitesMax $long,sitesMax $lat), ncol=2,byrow=FALSE),
-#                            CRS( "+init=epsg:4326") )
-# #reproject points into the ez coordinate system (utm)
-# maxP <- spTransform(maxPoints ,ez@proj4string)
-# plot(maxP, col="grey25",pch=19, add=TRUE)
-# title(main= "Map of TMax Stations")
-# 
-# 
-# ##now look at Tmin
-# #look at weather stations
-# plot(siteP, pch=19)
-# #set up colors based on major zone
-# MajorZones <- data.frame(MAJOR = unique(ez@data$MAJOR))
-# #colors
-# MajorZones$col <- c("#e28946",	"#ebb355","#db5236","#36638f","#74a1c3",
-#                     "#df9880",	"#8687c1","#4069bf","#0d4247",	"#ff5b3e",
-#                     "#576356","#31474f" )
-# #add colors to plot back in
-# ez@data <- left_join(ez@data,MajorZones, by="MAJOR")
-# #make a map of all weather sites
-# plot(ez, col=ez@data$col, border=NA)
-# legend("topleft", paste(MajorZones$MAJOR),fill=MajorZones$col, bty="n", cex=0.35)
-# plot(siteP, add=TRUE, pch=19, col=rgb(0.5,0.5,0.5,0.45), cex=0.5)
-# #look at Tmin
-# TminStn$station_id <- TminStn$station
-# sitesMin <- left_join(TminStn,StationInfo, by ="station_id")
-# minPoints <- SpatialPoints(matrix(c(sitesMin $long,sitesMin $lat), ncol=2,byrow=FALSE),
-#                            CRS( "+init=epsg:4326") )
-# #reproject points into the ez coordinate system (utm)
-# minP <- spTransform(minPoints ,ez@proj4string)
-# plot(maxP, col="grey25",pch=19, add=TRUE)
-# title(main= "Map of TMin Stations")
-# 
-# 
-# #Now look at PRCP
-# #look at weather stations
-# plot(siteP, pch=19)
-# #set up colors based on major zone
-# MajorZones <- data.frame(MAJOR = unique(ez@data$MAJOR))
-# #colors
-# MajorZones$col <- c("#e28946",	"#ebb355","#db5236","#36638f","#74a1c3",
-#                     "#df9880",	"#8687c1","#4069bf","#0d4247",	"#ff5b3e",
-#                     "#576356","#31474f" )
-# #add colors to plot back in
-# ez@data <- left_join(ez@data,MajorZones, by="MAJOR")
-# #make a map of all weather sites
-# plot(ez, col=ez@data$col, border=NA)
-# legend("topleft", paste(MajorZones$MAJOR),fill=MajorZones$col, bty="n", cex=0.35)
-# plot(siteP, add=TRUE, pch=19, col=rgb(0.5,0.5,0.5,0.45), cex=0.5)
-# #look at Prcp
-# PrcpStn$station_id <- PrcpStn$station
-# sitesPrcp <- left_join(PrcpStn,StationInfo, by ="station_id")
-# prcpPoints <- SpatialPoints(matrix(c(sitesPrcp $long,sitesPrcp $lat), ncol=2,byrow=FALSE),
-#                            CRS( "+init=epsg:4326") )
-# #reproject points into the ez coordinate system (utm)
-# prcpP <- spTransform(prcpPoints ,ez@proj4string)
-# plot(prcpP, col="grey25",pch=19, add=TRUE)
-# title(main= "Map of Precip Stations")
-# 
-# 
-# # map the stations that have all data
-# #look at weather stations
-# plot(siteP, pch=19)
-# #set up colors based on major zone
-# MajorZones <- data.frame(MAJOR = unique(ez@data$MAJOR))
-# #colors
-# MajorZones$col <- c("#e28946",	"#ebb355","#db5236","#36638f","#74a1c3",
-#                     "#df9880",	"#8687c1","#4069bf","#0d4247",	"#ff5b3e",
-#                     "#576356","#31474f" )
-# #add colors to plot back in
-# ez@data <- left_join(ez@data,MajorZones, by="MAJOR")
-# #make a map of all weather sites
-# plot(ez, col=ez@data$col, border=NA)
-# legend("topleft", paste(MajorZones$MAJOR),fill=MajorZones$col, bty="n", cex=0.35)
-# plot(siteP, add=TRUE, pch=19, col=rgb(0.5,0.5,0.5,0.45), cex=0.5)
-# #look at Stations
-# allPoints <- SpatialPoints(matrix(c(AllStn $long,AllStn $lat), ncol=2,byrow=FALSE),
-#                             CRS( "+init=epsg:4326") )
-# #reproject points into the ez coordinate system (utm)
-# allP <- spTransform(allPoints ,ez@proj4string)
-# plot(allP, col="grey25",pch=19, add=TRUE)
-# title(main= "Map of Stations with Tmax, Tmin, and Prcp")
-# 
+ 
 # ### start getting trends for tmin data ---
 # TminBoonville <- subset(TminData, TminData$id == "USC00300785")
 # BoonvilleYear <- aggregate(TminBoonville$tmin, by=list(TminBoonville$year), FUN="mean")
