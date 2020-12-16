@@ -6,7 +6,7 @@ library(lubridate)
 library(rgdal)
 library(sp)
 library(ggplot2)
-library(cowplot)
+
 
 
 ### Set up directories   -----
@@ -22,7 +22,7 @@ diru = c("/Users/abby/Documents/NYweather",
          "/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/data")
 
 # Choosing the user number - CHANGE THIS VALUE 
-usernumber = 3
+usernumber = 1
 
 ### Read in data   -----
 #csv with weather data
@@ -317,12 +317,16 @@ AllData <- inner_join(AllData, AllStn, by = c("id"="station_id"))
 # add month column
 AllData$Month <- month(AllData$date)
 
+# add decade column
+AllData$Decade <- AllData$year - (AllData$year %% 10)
+
 # Subset to just keep id, tmin, tmax, year, doy
 AllData <- data.frame(StationID = AllData$id, 
                       StationName = AllData$name.x, 
                       DOY = AllData$DOY, 
                       Month = AllData$Month,
                       Year = AllData$year, 
+                      Decade = AllData$Decade,
                       prcp = AllData$prcp, 
                       tmax = AllData$tmax, 
                       tmin = AllData$tmin)
@@ -345,34 +349,42 @@ AllData$StationID <- as.factor(AllData$StationID)
 ## make table of extreme values for each station, then can join into AllData, then can highlight tmax higher than extreme value
 ## by decade 
 # highest 5% tmax
-ExtrVals <- aggregate(AllData$tmax, by = list(AllData$StationID, AllData$Month), FUN = "quantile", prob = 0.95, na.rm = TRUE)
+ExtRef <- aggregate(AllData$tmax, by = list(AllData$StationID, AllData$Month), FUN = "quantile", prob = 0.95, na.rm = TRUE)
 # lowest 5% tmin
-ExtrVals$tmin <- aggregate(AllData$tmin, by = list(AllData$StationID, AllData$Month), FUN = "quantile", prob = 0.05, na.rm = TRUE)$x
+ExtRef$tmin <- aggregate(AllData$tmin, by = list(AllData$StationID, AllData$Month), FUN = "quantile", prob = 0.05, na.rm = TRUE)$x
 # max tmax
-ExtrVals$max <- aggregate(AllData$tmax, by = list(AllData$StationID, AllData$Month), max, na.rm = TRUE)$x
+ExtRef$max <- aggregate(AllData$tmax, by = list(AllData$StationID, AllData$Month), max, na.rm = TRUE)$x
 # min tmin
-ExtrVals$min <- aggregate(AllData$tmin, by = list(AllData$StationID, AllData$Month), min, na.rm = TRUE)$x
+ExtRef$min <- aggregate(AllData$tmin, by = list(AllData$StationID, AllData$Month), min, na.rm = TRUE)$x
 
 # clean up data table 
-ExtrVals <- data.frame(StationID = ExtrVals$Group.1,
-                       Month = ExtrVals$Group.2,
-                       MinTmin = ExtrVals$min,
-                       LowTmin = ExtrVals$tmin,
-                       HighTmax = ExtrVals$x,
-                       MaxTmax = ExtrVals$max)
+ExtRef <- data.frame(StationID = ExtRef$Group.1,
+                       Month = ExtRef$Group.2,
+                       RefMin = ExtRef$min,
+                       RefLo = ExtRef$tmin,
+                       RefHi = ExtRef$x,
+                       RefMax = ExtRef$max)
 
 # join to AllData
-AllData <- left_join(AllData, ExtrVals, by = c("StationID", "Month"))
+AllData <- left_join(AllData, ExtRef, by = c("StationID", "Month"))
 
 # add flag for extreme high tmax
-AllData$ExtrHi <- ifelse(AllData$tmax>=AllData$HighTmax, 1, NA)
+AllData$ExtrHi <- ifelse(AllData$tmax>=AllData$RefHi, 1, NA)
 
 # add flag for extreme low tmin
-AllData$ExtrLo <- ifelse(AllData$tmin<=AllData$LowTmin,1,NA)
+AllData$ExtrLo <- ifelse(AllData$tmin<=AllData$RefLo,1,NA)
+
+
+# make extreme values dataframe
+ExtVals <- aggregate(AllData$tmax, by = list(AllData$StationID, AllData$Month, AllData$Year), FUN = "quantile", prob = 0.95, na.rm = TRUE)
+colnames(ExtVals) <- c("StationID", "Month", "Year", "HiTmax")
+ExtVals$LoTmin <- aggregate(AllData$tmin, by = list(AllData$StationID, AllData$Month, AllData$Year), FUN = "quantile", prob = 0.05, na.rm = TRUE)$x
+
+# join extreme values to alldata
+AllData <- left_join(AllData, ExtVals, by = c("StationID", "Month","Year"))
 
 ## subset to spring data frame
 SpringData <- subset(AllData, AllData$Month %in% c(3,4,5))
-
 
 ### general temperature trends ----
 # started 12/15
@@ -386,8 +398,8 @@ SpringYear$tav <- aggregate(SpringData$tav, by=list(SpringData$Year,SpringData$S
 
 
 # add columns of extreme hi and lo temperature values
-SpringYear$ExHiTmax <- aggregate(SpringData$HighTmax, by=list(SpringData$Year, SpringData$StationID), FUN = "mean", na.rm = TRUE)$x
-SpringYear$ExLoTmin <- aggregate(SpringData$LowTmin, by=list(SpringData$Year, SpringData$StationID), FUN = "mean", na.rm = TRUE)$x
+SpringYear$ExtHi <- aggregate(SpringData$HiTmax, by=list(SpringData$Year, SpringData$StationID), FUN = "mean", na.rm = TRUE)$x
+SpringYear$ExtLo <- aggregate(SpringData$LoTmin, by=list(SpringData$Year, SpringData$StationID), FUN = "mean", na.rm = TRUE)$x
 # add columns counting extreme temp flags
 SpringYear$ExHiCount <- aggregate(SpringData$ExtrHi, by=list(SpringData$Year, SpringData$StationID) , FUN = "sum", na.rm = TRUE)$x
 SpringYear$ExLoCount <- aggregate(SpringData$ExtrLo, by=list(SpringData$Year, SpringData$StationID), FUN = "sum", na.rm = TRUE)$x
