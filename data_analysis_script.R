@@ -406,11 +406,13 @@ SpringYear$FTdays <- aggregate(SpringData$FreezeThaw, by=list(SpringData$Year, S
 SpringYear$FTrange <- aggregate(SpringData$FTrange, by=list(SpringData$Year, SpringData$StationID, SpringData$StationName,SpringData$Month), FUN="mean", na.rm = TRUE)$x
 
 # create new data frame by decade
-SpringDecade <- aggregate(SpringData$HiTmax, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade, SpringData$Month), FUN = "mean", na.rm = TRUE)
-colnames(SpringDecade) <- c("StationID", "StationName", "Decade", "Month", "ExtHi")
-SpringDecade$ExtLo <- aggregate(SpringData$LoTmin, by = list(SpringData$StationID, SpringData$Decade, SpringData$Month), FUN = "mean", na.rm = TRUE)$x
-SpringDecade$FTdays <- aggregate(SpringData$FreezeThaw, by = list(SpringData$StationID, SpringData$Decade, SpringData$Month), FUN = "sum", na.rm = TRUE)$x / 30
-SpringDecade$FTrange <- aggregate(SpringData$FTrange, by = list(SpringData$StationID, SpringData$Decade, SpringData$Month), FUN = "mean", na.rm = TRUE)$x
+SpringDecade <- aggregate(SpringData$HiTmax, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade, SpringData$Month, SpringData$Year), FUN = "mean", na.rm = TRUE)
+colnames(SpringDecade) <- c("StationID", "StationName", "Decade", "Month", "Year", "ExtHi")
+SpringDecade$ExtLo <- aggregate(SpringData$LoTmin, by = list(SpringData$StationID, SpringData$Decade, SpringData$Month, SpringData$Year), FUN = "mean", na.rm = TRUE)$x
+SpringDecade$ExHiCount <- aggregate(SpringData$ExtrHi, by=list(SpringData$StationID, SpringData$Decade, SpringData$Month, SpringData$Year), FUN="sum", na.rm = TRUE)$x
+SpringDecade$ExLoCount <- aggregate(SpringData$ExtrLo,by=list(SpringData$StationID, SpringData$Decade, SpringData$Month, SpringData$Year), FUN="sum", na.rm = TRUE)$x
+SpringDecade$FTdays <- aggregate(SpringData$FreezeThaw, by = list(SpringData$StationID, SpringData$Decade, SpringData$Month, SpringData$Year), FUN = "sum", na.rm = TRUE)$x / 30
+SpringDecade$FTrange <- aggregate(SpringData$FTrange, by = list(SpringData$StationID, SpringData$Decade, SpringData$Month, SpringData$Year), FUN = "mean", na.rm = TRUE)$x
 
 
 # subset to specific months
@@ -1451,7 +1453,7 @@ legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue")
 
 
 
-# graph number of extreme temperature days in each month
+# number of extreme days by year ----
 # ONLY BOONVILLE RN, COPY FOR THE REST OF THE STATIONS
 
 # MARCH
@@ -1510,6 +1512,67 @@ plot(MayYear$year[MayYear$StationID=="USC00300785"], MayYear$ExLoCount[MayYear$S
      xlab = "Year",
      ylab = "Number of Days",
      ylim = c(0,16))
+
+
+# number of extreme days by decade ----
+
+# MARCH
+MarDecade$ExHiCount <- as.vector(MarDecade$ExHiCount)
+MarDecade$ExLoCount <- as.vector(MarDecade$ExLoCount)
+# station 1
+plot(MarDecade$year[MarDecade$StationID=="USC00300785"], MarDecade$ExHiCount[MarDecade$StationID=="USC00300785"], 
+     type = "h",
+     col = "tomato3",
+     main = "March Extreme High Temperature Days in Boonville, NY",
+     xlab = "Year",
+     ylab = "Number of Days",
+     ylim = c(0,16))
+plot(MarDecade$year[MarDecade$StationID=="USC00300785"], MarDecade$ExLoCount[MarDecade$StationID=="USC00300785"], 
+     type = "h",
+     col = "skyblue",
+     main = "March Extreme Low Temperature Days in Boonville, NY",
+     xlab = "Year",
+     ylab = "Number of Days",
+     ylim = c(0,16))
+
+# APRIL
+AprYear$ExHiCount <- as.vector(AprYear$ExHiCount)
+AprYear$ExLoCount <- as.vector(AprYear$ExLoCount)
+# station 1
+plot(AprYear$year[AprYear$StationID=="USC00300785"], AprYear$ExHiCount[AprYear$StationID=="USC00300785"], 
+     type = "h",
+     col = "tomato3",
+     main = "April Extreme High Temperature Days in Boonville, NY",
+     xlab = "Year",
+     ylab = "Number of Days",
+     ylim = c(0,16))
+plot(AprYear$year[AprYear$StationID=="USC00300785"], AprYear$ExLoCount[AprYear$StationID=="USC00300785"], 
+     type = "h",
+     col = "skyblue",
+     main = "April Extreme Low Temperature Days in Boonville, NY",
+     xlab = "Year",
+     ylab = "Number of Days",
+     ylim = c(0,16))
+
+# MAY
+MayYear$ExHiCount <- as.vector(MayYear$ExHiCount)
+MayYear$ExLoCount <- as.vector(MayYear$ExLoCount)
+#station 1
+plot(MayYear$year[MayYear$StationID=="USC00300785"], MayYear$ExHiCount[MayYear$StationID=="USC00300785"], 
+     type = "h",
+     col = "tomato3",
+     main = "May Extreme High Temperature Days in Boonville, NY",
+     xlab = "Year",
+     ylab = "Number of Days",
+     ylim = c(0,16))
+plot(MayYear$year[MayYear$StationID=="USC00300785"], MayYear$ExLoCount[MayYear$StationID=="USC00300785"], 
+     type = "h",
+     col = "skyblue",
+     main = "May Extreme Low Temperature Days in Boonville, NY",
+     xlab = "Year",
+     ylab = "Number of Days",
+     ylim = c(0,16))
+
 
 
 
