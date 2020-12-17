@@ -420,8 +420,11 @@ SpringYear$FTrange <- aggregate(SpringData$FTrange, by=list(SpringData$Year, Spr
 
 
 # decade averages by month
-SpringDecade <- aggregate(SpringData$HiTmax, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade, SpringData$Month, SpringData$Year), FUN = "mean", na.rm = TRUE)
-colnames(SpringDecade) <- c("StationID", "StationName", "Decade", "Month", "Year", "ExtHi")
+SpringDecade<- aggregate(SpringData$tmax, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade, SpringData$Month, SpringData$Year), FUN = "mean", na.rm = TRUE)
+colnames(SpringDecade) <- c("StationID", "StationName", "Decade", "Month", "Year", "tmax")
+SpringDecade$tmin <- aggregate(SpringData$tmin, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade, SpringData$Month, SpringData$Year), FUN = "mean", na.rm = TRUE)$x
+SpringDecade$tav <- aggregate(SpringData$tav, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade, SpringData$Month, SpringData$Year), FUN = "mean", na.rm = TRUE)$x
+SpringDecade$ExtHi <- aggregate(SpringData$HiTmax, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade, SpringData$Month, SpringData$Year), FUN = "mean", na.rm = TRUE)$x
 SpringDecade$ExtLo <- aggregate(SpringData$LoTmin, by = list(SpringData$StationID, SpringData$Decade, SpringData$Month, SpringData$Year), FUN = "mean", na.rm = TRUE)$x
 SpringDecade$ExHiCount <- aggregate(SpringData$ExtrHi, by=list(SpringData$StationID, SpringData$Decade, SpringData$Month, SpringData$Year), FUN="sum", na.rm = TRUE)$x
 SpringDecade$ExLoCount <- aggregate(SpringData$ExtrLo,by=list(SpringData$StationID, SpringData$Decade, SpringData$Month, SpringData$Year), FUN="sum", na.rm = TRUE)$x
@@ -429,8 +432,11 @@ SpringDecade$FTdays <- aggregate(SpringData$FreezeThaw, by = list(SpringData$Sta
 SpringDecade$FTrange <- aggregate(SpringData$FTrange, by = list(SpringData$StationID, SpringData$Decade, SpringData$Month, SpringData$Year), FUN = "mean", na.rm = TRUE)$x
 
 # decade averages with spring months averaged together
-SpringDecadeAv <- aggregate(SpringData$HiTmax, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade, SpringData$Year), FUN = "mean", na.rm = TRUE)
-colnames(SpringDecadeAv) <- c("StationID", "StationName", "Decade", "Year", "ExtHi")
+SpringDecadeAv <- aggregate(SpringData$tmax, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade, SpringData$Year), FUN = "mean", na.rm = TRUE)
+colnames(SpringDecadeAv) <- c("StationID", "StationName", "Decade", "Year", "tmax")
+SpringDecadeAv$tmin <- aggregate(SpringData$tmin, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade, SpringData$Year), FUN = "mean", na.rm = TRUE)$x
+SpringDecadeAv$tav <- aggregate(SpringData$tav, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade, SpringData$Year), FUN = "mean", na.rm = TRUE)$x
+SpringDecadeAv$ExtHi <- aggregate(SpringData$HiTmax, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade, SpringData$Year), FUN = "mean", na.rm = TRUE)$x
 SpringDecadeAv$ExtLo <- aggregate(SpringData$LoTmin, by = list(SpringData$StationID, SpringData$Decade, SpringData$Year), FUN = "mean", na.rm = TRUE)$x
 SpringDecadeAv$ExHiCount <- aggregate(SpringData$ExtrHi, by=list(SpringData$StationID, SpringData$Decade, SpringData$Year), FUN="sum", na.rm = TRUE)$x
 SpringDecadeAv$ExLoCount <- aggregate(SpringData$ExtrLo,by=list(SpringData$StationID, SpringData$Decade, SpringData$Year), FUN="sum", na.rm = TRUE)$x
@@ -460,11 +466,39 @@ MayYear <- subset(SpringYear, SpringYear$month == 5)
 # may decade averages
 MayDecade <- subset(SpringDecade, SpringDecade$Month == 5)
 
+# subset to specific stations
+# yearly averages
+stn1 <- subset(SpringYear, SpringYear$StationID == "USC00300785")
+stn2 <- subset(SpringYear, SpringYear$StationID == "USC00301752")
+stn3 <- subset(SpringYear, SpringYear$StationID == "USC00304102")
+stn4 <- subset(SpringYear, SpringYear$StationID == "USC00304912")
+stn5 <- subset(SpringYear, SpringYear$StationID == "USC00306085")
+stn6 <- subset(SpringYear, SpringYear$StationID == "USC00306314")
+stn7 <- subset(SpringYear, SpringYear$StationID == "USC00309000")
+stn8 <- subset(SpringYear, SpringYear$StationID == "USW00014735")
+stn9 <- subset(SpringYear, SpringYear$StationID == "USW00014750")
+stn10 <- subset(SpringYear, SpringYear$StationID == "USW00014771")
+stn11 <- subset(SpringYear, SpringYear$StationID == "USW00094725")
+stn12 <- subset(SpringYear, SpringYear$StationID == "USW00094790")
+
+#decadal averages
+stn1dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00300785")
+stn2dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00301752")
+stn3dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00304102")
+stn4dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00304912")
+stn5dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00306085")
+stn6dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00306314")
+stn7dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00309000")
+stn8dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USW00014735")
+stn9dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USW00014750")
+stn10dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USW00014771")
+stn11dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USW00094725")
+stn12dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USW00094790")
+
 ### general temperature trends ----
 
 # line graphs of tmax, tmin, tav over time
 # station 1 - Boonville 
-stn1 <- subset(SpringYear, SpringYear$StationID == "USC00300785")
 ggplot(data = stn1, aes(x = year))+
   geom_line(aes(y = tav, color = "average temp"))+ 
   geom_line(aes(y = tmax, color = "maximum temp"))+
@@ -474,7 +508,6 @@ ggplot(data = stn1, aes(x = year))+
   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Boonville, NY")
 
 # station 2 - Cooperstown
-stn2 <- subset(SpringYear, SpringYear$StationID == "USC00301752")
 ggplot(data = stn2, aes(x = year))+
   geom_line(aes(y = tav, color = "average temp"))+ 
   geom_line(aes(y = tmax, color = "maximum temp"))+
@@ -484,7 +517,6 @@ ggplot(data = stn2, aes(x = year))+
   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Cooperstown, NY")
 
 # station 3 - Indian Lake
-stn3 <- subset(SpringYear, SpringYear$StationID == "USC00304102")
 ggplot(data = stn3, aes(x = year))+
   geom_line(aes(y = tav, color = "average temp"))+ 
   geom_line(aes(y = tmax, color = "maximum temp"))+
@@ -494,7 +526,6 @@ ggplot(data = stn3, aes(x = year))+
   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Indian Lake, NY")
 
 # station 4 - Lowville
-stn4 <- subset(SpringYear, SpringYear$StationID == "USC00304912")
 ggplot(data = stn4, aes(x = year))+
   geom_line(aes(y = tav, color = "average temp"))+ 
   geom_line(aes(y = tmax, color = "maximum temp"))+
@@ -504,7 +535,6 @@ ggplot(data = stn4, aes(x = year))+
   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Lowville, NY")
 
 # station 5 - Norwich
-stn5 <- subset(SpringYear, SpringYear$StationID == "USC00306085")
 ggplot(data = stn5, aes(x = year))+
   geom_line(aes(y = tav, color = "average temp"))+ 
   geom_line(aes(y = tmax, color = "maximum temp"))+
@@ -514,7 +544,6 @@ ggplot(data = stn5, aes(x = year))+
   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Norwich, NY")
 
 # station 6  - Oswego
-stn6 <- subset(SpringYear, SpringYear$StationID == "USC00306314")
 ggplot(data = stn6, aes(x = year))+
   geom_line(aes(y = tav, color = "average temp"))+ 
   geom_line(aes(y = tmax, color = "maximum temp"))+
@@ -524,7 +553,6 @@ ggplot(data = stn6, aes(x = year))+
   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Oswego, NY")
 
 # station 7 - Watertown
-stn7 <- subset(SpringYear, SpringYear$StationID == "USC00309000")
 ggplot(data = stn7, aes(x = year))+
   geom_line(aes(y = tav, color = "average temp"))+ 
   geom_line(aes(y = tmax, color = "maximum temp"))+
@@ -534,7 +562,6 @@ ggplot(data = stn7, aes(x = year))+
   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Watertown, NY")
 
 # station 8 - Albany
-stn8 <- subset(SpringYear, SpringYear$StationID == "USW00014735")
 ggplot(data = stn8, aes(x = year))+
   geom_line(aes(y = tav, color = "average temp"))+ 
   geom_line(aes(y = tmax, color = "maximum temp"))+
@@ -544,7 +571,6 @@ ggplot(data = stn8, aes(x = year))+
   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Albany, NY")
 
 # station 9 - Glens Falls
-stn9 <- subset(SpringYear, SpringYear$StationID == "USW00014750")
 ggplot(data = stn9, aes(x = year))+
   geom_line(aes(y = tav, color = "average temp"))+ 
   geom_line(aes(y = tmax, color = "maximum temp"))+
@@ -554,7 +580,6 @@ ggplot(data = stn9, aes(x = year))+
   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Glens Falls, NY")
 
 # station 10 - Syracuse
-stn10 <- subset(SpringYear, SpringYear$StationID == "USW00014771")
 ggplot(data = stn10, aes(x = year))+
   geom_line(aes(y = tav, color = "average temp"))+ 
   geom_line(aes(y = tmax, color = "maximum temp"))+
@@ -564,7 +589,6 @@ ggplot(data = stn10, aes(x = year))+
   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Syracuse, NY")
 
 # station 11 - Massena
-stn11 <- subset(SpringYear, SpringYear$StationID == "USW00094725")
 ggplot(data = stn11, aes(x = year))+
   geom_line(aes(y = tav, color = "average temp"))+ 
   geom_line(aes(y = tmax, color = "maximum temp"))+
@@ -574,7 +598,6 @@ ggplot(data = stn11, aes(x = year))+
   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Massena, NY")
 
 # station 12 - Watertown Airport
-stn12 <- subset(SpringYear, SpringYear$StationID == "USW00094790")
 ggplot(data = stn12, aes(x = year))+
   geom_line(aes(y = tav, color = "average temp"))+ 
   geom_line(aes(y = tmax, color = "maximum temp"))+
@@ -584,6 +607,7 @@ ggplot(data = stn12, aes(x = year))+
   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Watertown Airport, NY")
 
 ## linear regressions for tav ----
+# by year 
 # station 1 model
 stn1.mod <- lm(stn1$tav ~ stn1$year)
 # assumptions
@@ -616,6 +640,171 @@ plot(stn2$year, stn2$tav,
      xlab = "year")
 abline(stn2.mod)
 
+# station 3 model
+stn3.mod <- lm(stn3$tav ~ stn3$year)
+# assumptions
+stn3.res <- rstandard(stn3.mod)
+qqnorm(stn3.res)
+qqline(stn3.res)
+plot(stn3$year, stn3.res,
+     xlab = "average temp",
+     ylab = "standardized residual")
+# regression
+summary(stn3.mod)
+plot(stn3$year, stn3$tav,
+     ylab = "average temp",
+     xlab = "year")
+abline(stn3.mod)
+
+# station 4 model
+stn4.mod <- lm(stn4$tav ~ stn4$year)
+# assumptions
+stn4.res <- rstandard(stn4.mod)
+qqnorm(stn4.res)
+qqline(stn4.res)
+plot(stn4$year, stn4.res,
+     xlab = "average temp",
+     ylab = "standardized residual")
+# regression
+summary(stn4.mod)
+plot(stn4$year, stn4$tav,
+     ylab = "average temp",
+     xlab = "year")
+abline(stn4.mod)
+
+# station 5 model
+stn5.mod <- lm(stn5$tav ~ stn5$year)
+# assumptions
+stn5.res <- rstandard(stn5.mod)
+qqnorm(stn5.res)
+qqline(stn5.res)
+plot(stn5$year, stn5.res,
+     xlab = "average temp",
+     ylab = "standardized residual")
+# regression
+summary(stn5.mod)
+plot(stn5$year, stn5$tav,
+     ylab = "average temp",
+     xlab = "year")
+abline(stn5.mod)
+
+# station 6 model
+stn6.mod <- lm(stn6$tav ~ stn6$year)
+# assumptions
+stn6.res <- rstandard(stn6.mod)
+qqnorm(stn6.res)
+qqline(stn6.res)
+plot(stn6$year, stn6.res,
+     xlab = "average temp",
+     ylab = "standardized residual")
+# regression
+summary(stn6.mod)
+plot(stn6$year, stn6$tav,
+     pch = 19,
+     ylab = "average temp",
+     xlab = "year",
+     main = "Average Spring Temperatures: Oswego, NY")
+abline(stn6.mod)
+
+
+# by decade
+# station 1 model
+stn1dc.mod <- lm(stn1dc$tav ~ stn1dc$year)
+# assumptions
+stn1.res <- rstandard(stn1.mod)
+qqnorm(stn1.res)
+qqline(stn1.res)
+plot(stn1$year, stn1.res,
+     xlab = "average temp",
+     ylab = "standardized residual")
+# regression
+summary(stn1.mod)
+plot(stn1$year, stn1$tav,
+     ylab = "average temp",
+     xlab = "year")
+abline(stn1.mod)
+
+# station 2 model
+stn2.mod <- lm(stn2$tav ~ stn2$year)
+# assumptions
+stn2.res <- rstandard(stn2.mod)
+qqnorm(stn2.res)
+qqline(stn2.res)
+plot(stn2$year, stn2.res,
+     xlab = "average temp",
+     ylab = "standardized residual")
+# regression
+summary(stn2.mod)
+plot(stn2$year, stn2$tav,
+     ylab = "average temp",
+     xlab = "year")
+abline(stn2.mod)
+
+# station 3 model
+stn3.mod <- lm(stn3$tav ~ stn3$year)
+# assumptions
+stn3.res <- rstandard(stn3.mod)
+qqnorm(stn3.res)
+qqline(stn3.res)
+plot(stn3$year, stn3.res,
+     xlab = "average temp",
+     ylab = "standardized residual")
+# regression
+summary(stn3.mod)
+plot(stn3$year, stn3$tav,
+     ylab = "average temp",
+     xlab = "year")
+abline(stn3.mod)
+
+# station 4 model
+stn4.mod <- lm(stn4$tav ~ stn4$year)
+# assumptions
+stn4.res <- rstandard(stn4.mod)
+qqnorm(stn4.res)
+qqline(stn4.res)
+plot(stn4$year, stn4.res,
+     xlab = "average temp",
+     ylab = "standardized residual")
+# regression
+summary(stn4.mod)
+plot(stn4$year, stn4$tav,
+     ylab = "average temp",
+     xlab = "year")
+abline(stn4.mod)
+
+# station 5 model
+stn5.mod <- lm(stn5$tav ~ stn5$year)
+# assumptions
+stn5.res <- rstandard(stn5.mod)
+qqnorm(stn5.res)
+qqline(stn5.res)
+plot(stn5$year, stn5.res,
+     xlab = "average temp",
+     ylab = "standardized residual")
+# regression
+summary(stn5.mod)
+plot(stn5$year, stn5$tav,
+     ylab = "average temp",
+     xlab = "year")
+abline(stn5.mod)
+
+# station 6 model
+stn6.mod <- lm(stn6$tav ~ stn6$year)
+# assumptions
+stn6.res <- rstandard(stn6.mod)
+qqnorm(stn6.res)
+qqline(stn6.res)
+plot(stn6$year, stn6.res,
+     xlab = "average temp",
+     ylab = "standardized residual")
+# regression
+summary(stn6.mod)
+plot(stn6$year, stn6$tav,
+     pch = 19,
+     ylab = "average temp",
+     xlab = "year",
+     main = "Average Spring Temperatures: Oswego, NY")
+abline(stn6.mod)
 
 ### EXTREME TEMPERATURES ----
 
