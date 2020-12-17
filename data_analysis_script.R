@@ -432,16 +432,16 @@ SpringDecade$FTdays <- aggregate(SpringData$FreezeThaw, by = list(SpringData$Sta
 SpringDecade$FTrange <- aggregate(SpringData$FTrange, by = list(SpringData$StationID, SpringData$Decade, SpringData$Month, SpringData$Year), FUN = "mean", na.rm = TRUE)$x
 
 # decade averages with spring months averaged together
-SpringDecadeAv <- aggregate(SpringData$tmax, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade, SpringData$Year), FUN = "mean", na.rm = TRUE)
-colnames(SpringDecadeAv) <- c("StationID", "StationName", "Decade", "Year", "tmax")
-SpringDecadeAv$tmin <- aggregate(SpringData$tmin, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade, SpringData$Year), FUN = "mean", na.rm = TRUE)$x
-SpringDecadeAv$tav <- aggregate(SpringData$tav, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade, SpringData$Year), FUN = "mean", na.rm = TRUE)$x
-SpringDecadeAv$ExtHi <- aggregate(SpringData$HiTmax, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade, SpringData$Year), FUN = "mean", na.rm = TRUE)$x
-SpringDecadeAv$ExtLo <- aggregate(SpringData$LoTmin, by = list(SpringData$StationID, SpringData$Decade, SpringData$Year), FUN = "mean", na.rm = TRUE)$x
-SpringDecadeAv$ExHiCount <- aggregate(SpringData$ExtrHi, by=list(SpringData$StationID, SpringData$Decade, SpringData$Year), FUN="sum", na.rm = TRUE)$x
-SpringDecadeAv$ExLoCount <- aggregate(SpringData$ExtrLo,by=list(SpringData$StationID, SpringData$Decade, SpringData$Year), FUN="sum", na.rm = TRUE)$x
-SpringDecadeAv$FTdays <- aggregate(SpringData$FreezeThaw, by = list(SpringData$StationID, SpringData$Decade, SpringData$Year), FUN = "sum", na.rm = TRUE)$x / 30
-SpringDecadeAv$FTrange <- aggregate(SpringData$FTrange, by = list(SpringData$StationID, SpringData$Decade, SpringData$Year), FUN = "mean", na.rm = TRUE)$x
+SpringDecadeAv <- aggregate(SpringData$tmax, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade), FUN = "mean", na.rm = TRUE)
+colnames(SpringDecadeAv) <- c("StationID", "StationName", "Decade", "tmax")
+SpringDecadeAv$tmin <- aggregate(SpringData$tmin, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade), FUN = "mean", na.rm = TRUE)$x
+SpringDecadeAv$tav <- aggregate(SpringData$tav, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade), FUN = "mean", na.rm = TRUE)$x
+SpringDecadeAv$ExtHi <- aggregate(SpringData$HiTmax, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade), FUN = "mean", na.rm = TRUE)$x
+SpringDecadeAv$ExtLo <- aggregate(SpringData$LoTmin, by = list(SpringData$StationID, SpringData$Decade), FUN = "mean", na.rm = TRUE)$x
+SpringDecadeAv$ExHiCount <- aggregate(SpringData$ExtrHi, by=list(SpringData$StationID, SpringData$Decade), FUN="sum", na.rm = TRUE)$x
+SpringDecadeAv$ExLoCount <- aggregate(SpringData$ExtrLo,by=list(SpringData$StationID, SpringData$Decade), FUN="sum", na.rm = TRUE)$x
+SpringDecadeAv$FTdays <- aggregate(SpringData$FreezeThaw, by = list(SpringData$StationID, SpringData$Decade), FUN = "sum", na.rm = TRUE)$x / 30
+SpringDecadeAv$FTrange <- aggregate(SpringData$FTrange, by = list(SpringData$StationID, SpringData$Decade, FUN = "mean", na.rm = TRUE)$x
 
 
 # subset to specific months
@@ -455,14 +455,14 @@ MarDecade <- subset(SpringDecade, SpringDecade$Month == 3)
 # all april data
 AprData <- subset(AllData, AllData$Month == 4)
 # april yearly averages
-AprYear <- subset(SpringYear, SpringYear$month == 4)
+AprYear <- subset(SpringMonths, SpringMonths$month == 4)
 # april decade averages
 AprDecade <- subset(SpringDecade, SpringDecade$Month == 4)
 
 # all may data
 MayData <- subset(AllData, AllData$Month == 5)
 # may yearly averages
-MayYear <- subset(SpringYear, SpringYear$month == 5)
+MayYear <- subset(SpringMonths, SpringMonths$Months == 5)
 # may decade averages
 MayDecade <- subset(SpringDecade, SpringDecade$Month == 5)
 
@@ -482,6 +482,7 @@ stn11 <- subset(SpringYear, SpringYear$StationID == "USW00094725")
 stn12 <- subset(SpringYear, SpringYear$StationID == "USW00094790")
 
 #decadal averages
+
 stn1dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00300785")
 stn2dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00301752")
 stn3dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00304102")
@@ -709,102 +710,100 @@ abline(stn6.mod)
 
 # by decade
 # station 1 model
-stn1dc.mod <- lm(stn1dc$tav ~ stn1dc$year)
+stn1dc.mod <- lm(stn1dc$tav ~ stn1dc$Decade)
 # assumptions
-stn1.res <- rstandard(stn1.mod)
-qqnorm(stn1.res)
-qqline(stn1.res)
-plot(stn1$year, stn1.res,
+stn1dc.res <- rstandard(stn1dc.mod)
+qqnorm(stn1dc.res)
+qqline(stn1dc.res)
+plot(stn1dc$Decade, stn1dc.res,
      xlab = "average temp",
      ylab = "standardized residual")
 # regression
-summary(stn1.mod)
-plot(stn1$year, stn1$tav,
+summary(stn1dc.mod)
+plot(stn1dc$Decade, stn1dc$tav,
      ylab = "average temp",
-     xlab = "year")
-abline(stn1.mod)
+     xlab = "decade")
+abline(stn1dc.mod)
 
 # station 2 model
-stn2.mod <- lm(stn2$tav ~ stn2$year)
+stn2dc.mod <- lm(stn2dc$tav ~ stn2dc$Decade)
 # assumptions
-stn2.res <- rstandard(stn2.mod)
-qqnorm(stn2.res)
-qqline(stn2.res)
-plot(stn2$year, stn2.res,
+stn2dc.res <- rstandard(stn2dc.mod)
+qqnorm(stn2dc.res)
+qqline(stn2dc.res)
+plot(stn2dc$Decade, stn2dc.res,
      xlab = "average temp",
      ylab = "standardized residual")
 # regression
-summary(stn2.mod)
-plot(stn2$year, stn2$tav,
+summary(stn2dc.mod)
+plot(stn2dc$Decade, stn2dc$tav,
      ylab = "average temp",
-     xlab = "year")
-abline(stn2.mod)
+     xlab = "decade")
+abline(stn2dc.mod)
 
 # station 3 model
-stn3.mod <- lm(stn3$tav ~ stn3$year)
+stn3dc.mod <- lm(stn3dc$tav ~ stn3dc$Decade)
 # assumptions
-stn3.res <- rstandard(stn3.mod)
-qqnorm(stn3.res)
-qqline(stn3.res)
-plot(stn3$year, stn3.res,
+stn3dc.res <- rstandard(stn3dc.mod)
+qqnorm(stn3dc.res)
+qqline(stn3dc.res)
+plot(stn3dc$Decade, stn3dc.res,
      xlab = "average temp",
      ylab = "standardized residual")
 # regression
-summary(stn3.mod)
-plot(stn3$year, stn3$tav,
+summary(stn3dc.mod)
+plot(stn3dc$Decade, stn3dc$tav,
      ylab = "average temp",
-     xlab = "year")
-abline(stn3.mod)
+     xlab = "decade")
+abline(stn3dc.mod)
 
 # station 4 model
-stn4.mod <- lm(stn4$tav ~ stn4$year)
+stn4dc.mod <- lm(stn4dc$tav ~ stn4dc$Decade)
 # assumptions
-stn4.res <- rstandard(stn4.mod)
-qqnorm(stn4.res)
-qqline(stn4.res)
-plot(stn4$year, stn4.res,
+stn4dc.res <- rstandard(stn4dc.mod)
+qqnorm(stn4dc.res)
+qqline(stn4dc.res)
+plot(stn4dc$Decade, stn4dc.res,
      xlab = "average temp",
      ylab = "standardized residual")
 # regression
-summary(stn4.mod)
-plot(stn4$year, stn4$tav,
+summary(stn4dc.mod)
+plot(stn4dc$Decade, stn4dc$tav,
      ylab = "average temp",
-     xlab = "year")
-abline(stn4.mod)
+     xlab = "decade")
+abline(stn4dc.mod)
 
 # station 5 model
-stn5.mod <- lm(stn5$tav ~ stn5$year)
+stn5dc.mod <- lm(stn5dc$tav ~ stn5dc$Decade)
 # assumptions
-stn5.res <- rstandard(stn5.mod)
-qqnorm(stn5.res)
-qqline(stn5.res)
-plot(stn5$year, stn5.res,
+stn5dc.res <- rstandard(stn5dc.mod)
+qqnorm(stn5dc.res)
+qqline(stn5dc.res)
+plot(stn5dc$Decade, stn5dc.res,
      xlab = "average temp",
      ylab = "standardized residual")
 # regression
-summary(stn5.mod)
-plot(stn5$year, stn5$tav,
+summary(stn5dc.mod)
+plot(stn5dc$Decade, stn5dc$tav,
      ylab = "average temp",
-     xlab = "year")
-abline(stn5.mod)
+     xlab = "decade")
+abline(stn5dc.mod)
 
 # station 6 model
-stn6.mod <- lm(stn6$tav ~ stn6$year)
+stn6dc.mod <- lm(stn6dc$tav ~ stn6dc$Decade)
 # assumptions
-stn6.res <- rstandard(stn6.mod)
-qqnorm(stn6.res)
-qqline(stn6.res)
-plot(stn6$year, stn6.res,
+stn6dc.res <- rstandard(stn6dc.mod)
+qqnorm(stn6dc.res)
+qqline(stn6dc.res)
+plot(stn6dc$Decade, stn6dc.res,
      xlab = "average temp",
      ylab = "standardized residual")
 # regression
-summary(stn6.mod)
-plot(stn6$year, stn6$tav,
-     pch = 19,
+summary(stn6dc.mod)
+plot(stn6dc$Decade, stn6dc$tav,
      ylab = "average temp",
-     xlab = "year",
-     main = "Average Spring Temperatures: Oswego, NY")
-abline(stn6.mod)
+     xlab = "decade")
+abline(stn6dc.mod)
 
 ### EXTREME TEMPERATURES ----
 
