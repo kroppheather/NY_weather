@@ -863,6 +863,7 @@ ggplot(data = stn12, aes(x = year, y = FTdays)) +
 
 # Freeze Thaw Amplitude Graphs
 ### first three graphs show three options for visualizing this
+### add standard deviation as error bar on scatter plot by decade
 
 # station 1
 ggplot(data = SpringDecade[SpringDecade$StationID == "USC00300785",], aes(x = Decade, y = FTrange, color = Month))+
