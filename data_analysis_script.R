@@ -295,7 +295,7 @@ ez@data <- left_join(ez@data,MajorZones, by="MAJOR")
 #make a map of all weather sites
 plot(ez, col=ez@data$col, border=NA)
 legend("topleft", paste(MajorZones$MAJOR),fill=MajorZones$col, bty="n", cex=0.35)
-plot(siteP, add=TRUE, pch=19, col=rgb(0.5,0.5,0.5,0.45), cex=0.5)
+#plot(siteP, add=TRUE, pch=19, col=rgb(0.5,0.5,0.5,0.45), cex=0.5)
 #look at Stations
 allPoints <- SpatialPoints(matrix(c(AllStn $long,AllStn $lat), ncol=2,byrow=FALSE),
                            CRS( "+init=epsg:4326") )
@@ -783,7 +783,6 @@ ggplot(data = MayEx, aes(x = Decade, y = AvExLo, color = StationName))+
   geom_hline(yintercept = MayLoAv)+
   theme_classic()+
   labs(title = "May Extreme Low Temperatures by Decade", x = "Decade", y = "Temperature (celcius)")
-
 
 ### freeze thaw ----
 # Number of Freeze Thaw Days Graphs
