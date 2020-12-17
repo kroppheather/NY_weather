@@ -6,7 +6,7 @@ library(lubridate)
 library(rgdal)
 library(sp)
 library(ggplot2)
-library(cowplot)
+
 
 
 ### Set up directories   -----
@@ -315,7 +315,10 @@ AllData <- full_join(AllData, PrcpData, by = c("id"="id", "year"="year", "DOY" =
 AllData <- inner_join(AllData, AllStn, by = c("id"="station_id"))
 
 # add month column
-AllData$Month <- month(AllData$date)
+AllData$Month <- month(AllData$date, label = TRUE)
+
+# add decade column
+AllData$Decade <- AllData$year - (AllData$year %% 10)
 
 # Subset to just keep id, tmin, tmax, year, doy
 AllData <- data.frame(StationID = AllData$id, 
@@ -323,6 +326,7 @@ AllData <- data.frame(StationID = AllData$id,
                       DOY = AllData$DOY, 
                       Month = AllData$Month,
                       Year = AllData$year, 
+                      Decade = AllData$Decade,
                       prcp = AllData$prcp, 
                       tmax = AllData$tmax, 
                       tmin = AllData$tmin)
@@ -345,47 +349,71 @@ AllData$StationID <- as.factor(AllData$StationID)
 ## make table of extreme values for each station, then can join into AllData, then can highlight tmax higher than extreme value
 ## by decade 
 # highest 5% tmax
-ExtrVals <- aggregate(AllData$tmax, by = list(AllData$StationID, AllData$Month), FUN = "quantile", prob = 0.95, na.rm = TRUE)
+ExtRef <- aggregate(AllData$tmax, by = list(AllData$StationID, AllData$Month), FUN = "quantile", prob = 0.95, na.rm = TRUE)
 # lowest 5% tmin
-ExtrVals$tmin <- aggregate(AllData$tmin, by = list(AllData$StationID, AllData$Month), FUN = "quantile", prob = 0.05, na.rm = TRUE)$x
+ExtRef$tmin <- aggregate(AllData$tmin, by = list(AllData$StationID, AllData$Month), FUN = "quantile", prob = 0.05, na.rm = TRUE)$x
 # max tmax
-ExtrVals$max <- aggregate(AllData$tmax, by = list(AllData$StationID, AllData$Month), max, na.rm = TRUE)$x
+ExtRef$max <- aggregate(AllData$tmax, by = list(AllData$StationID, AllData$Month), max, na.rm = TRUE)$x
 # min tmin
-ExtrVals$min <- aggregate(AllData$tmin, by = list(AllData$StationID, AllData$Month), min, na.rm = TRUE)$x
+ExtRef$min <- aggregate(AllData$tmin, by = list(AllData$StationID, AllData$Month), min, na.rm = TRUE)$x
 
 # clean up data table 
-ExtrVals <- data.frame(StationID = ExtrVals$Group.1,
-                       Month = ExtrVals$Group.2,
-                       MinTmin = ExtrVals$min,
-                       LowTmin = ExtrVals$tmin,
-                       HighTmax = ExtrVals$x,
-                       MaxTmax = ExtrVals$max)
+ExtRef <- data.frame(StationID = ExtRef$Group.1,
+                     Month = ExtRef$Group.2,
+                     RefMin = ExtRef$min,
+                     RefLo = ExtRef$tmin,
+                     RefHi = ExtRef$x,
+                     RefMax = ExtRef$max)
 
 # join to AllData
-AllData <- left_join(AllData, ExtrVals, by = c("StationID", "Month"))
+AllData <- left_join(AllData, ExtRef, by = c("StationID", "Month"))
 
 # add flag for extreme high tmax
-AllData$ExtrHi <- ifelse(AllData$tmax>=AllData$HighTmax, 1, NA)
+AllData$ExtrHi <- ifelse(AllData$tmax>=AllData$RefHi, 1, NA)
 
 # add flag for extreme low tmin
-AllData$ExtrLo <- ifelse(AllData$tmin<=AllData$LowTmin, 1,NA)
+AllData$ExtrLo <- ifelse(AllData$tmin<=AllData$RefLo,1,NA)
+
+
+# make extreme values dataframe
+ExtVals <- aggregate(AllData$tmax, by = list(AllData$StationID, AllData$Month, AllData$Year), FUN = "quantile", prob = 0.95, na.rm = TRUE)
+colnames(ExtVals) <- c("StationID", "Month", "Year", "HiTmax")
+ExtVals$LoTmin <- aggregate(AllData$tmin, by = list(AllData$StationID, AllData$Month, AllData$Year), FUN = "quantile", prob = 0.05, na.rm = TRUE)$x
+
+# join extreme values to alldata
+AllData <- left_join(AllData, ExtVals, by = c("StationID", "Month","Year"))
 
 ## subset to spring data frame
-SpringData <- subset(AllData, AllData$Month %in% c(3,4,5))
-
-
+SpringData <- subset(AllData, AllData$Month %in% c("Mar","Apr","May"))
 
 ### general temperature trends ----
 # started 12/15
+
 
 # make a data frame of yearly averages of all 3 temperature variables
 SpringYear <- aggregate(SpringData$tmax, by=list(SpringData$Year,SpringData$StationID), FUN="mean", na.rm = TRUE)
 colnames(SpringYear) <- c("year","station","tmax")
 SpringYear$tmin <- aggregate(SpringData$tmin, by=list(SpringData$Year,SpringData$StationID), FUN="mean", na.rm = TRUE)$x
 SpringYear$tav <- aggregate(SpringData$tav, by=list(SpringData$Year,SpringData$StationID), FUN="mean", na.rm = TRUE)$x
+
+
+# add columns of extreme hi and lo temperature values
+SpringYear$ExtHi <- aggregate(SpringData$HiTmax, by=list(SpringData$Year, SpringData$StationID), FUN = "mean", na.rm = TRUE)$x
+SpringYear$ExtLo <- aggregate(SpringData$LoTmin, by=list(SpringData$Year, SpringData$StationID), FUN = "mean", na.rm = TRUE)$x
+# add columns counting extreme temp flags
+SpringYear$ExHiCount <- aggregate(SpringData$ExtrHi, by=list(SpringData$Year, SpringData$StationID) , FUN = "sum", na.rm = TRUE)$x
+SpringYear$ExLoCount <- aggregate(SpringData$ExtrLo, by=list(SpringData$Year, SpringData$StationID), FUN = "sum", na.rm = TRUE)$x
+
+# add columns with freeze thaw flags and range
 SpringYear$FTdays <- aggregate(SpringData$FreezeThaw, by=list(SpringData$Year, SpringData$StationID), FUN="sum", na.rm = TRUE)$x
 SpringYear$FTrange <- aggregate(SpringData$FTrange, by=list(SpringData$Year, SpringData$StationID), FUN="mean", na.rm = TRUE)$x
 
+# create new data frame by decade
+SpringDecade <- aggregate(SpringData$HiTmax, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade, SpringData$Month), FUN = "mean", na.rm = TRUE)
+colnames(SpringDecade) <- c("StationID", "StationName", "Decade", "Month", "AvExHi")
+SpringDecade$AvExLo <- aggregate(SpringData$LoTmin, by = list(SpringData$StationID, SpringData$Decade, SpringData$Month), FUN = "mean", na.rm = TRUE)$x
+SpringDecade$FTdays <- aggregate(SpringData$FreezeThaw, by = list(SpringData$StationID, SpringData$Decade, SpringData$Month), FUN = "sum", na.rm = TRUE)$x / 30
+SpringDecade$FTrange <- aggregate(SpringData$FTrange, by = list(SpringData$StationID, SpringData$Decade, SpringData$Month), FUN = "mean", na.rm = TRUE)$x
 
 ## use AllStn for subsetting ##
 
@@ -510,6 +538,254 @@ ggplot(data = stn12, aes(x = year))+
   theme_classic()+
   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Watertown Airport, NY")
 
+
+### extreme temperatures ----
+
+# graph number of extreme temperature days per year
+# station 1 - Boonville 
+Stn1 <- pivot_longer(stn1, cols=c("ExHiCount", "ExLoCount"), names_to = "variable", values_to = "value")
+ggplot(data = Stn1, aes(x = year, y = value, fill = variable))+
+  geom_bar(stat = "identity", position = "dodge")+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Days with Extreme Temperatures", title = "Extreme Temperatures in Boonville, NY")
+
+# station 2 - Cooperstown
+Stn2 <- pivot_longer(stn2, cols=c("ExHiCount", "ExLoCount"), names_to = "variable", values_to = "value")
+ggplot(data = Stn2, aes(x = year, y = value, fill = variable))+
+  geom_bar(stat = "identity", position = "dodge")+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Days with Extreme Temperatures", title = "Extreme Temperatures in Cooperstown, NY")
+
+# station 3 - Indian Lake
+Stn3 <- pivot_longer(stn3, cols=c("ExHiCount", "ExLoCount"), names_to = "variable", values_to = "value")
+ggplot(data = Stn1, aes(x = year, y = value, fill = variable))+
+  geom_bar(stat = "identity", position = "dodge")+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Days with Extreme Temperatures", title = "Extreme Temperatures in Boonville, NY")
+
+# station 4 - Lowville
+Stn4 <- pivot_longer(stn4, cols=c("ExHiCount", "ExLoCount"), names_to = "variable", values_to = "value")
+ggplot(data = Stn4, aes(x = year, y = value, fill = variable))+
+  geom_bar(stat = "identity", position = "dodge")+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Days with Extreme Temperatures", title = "Extreme Temperatures in Lowville, NY")
+
+# station 5 - Norwich
+Stn5 <- pivot_longer(stn5, cols=c("ExHiCount", "ExLoCount"), names_to = "variable", values_to = "value")
+ggplot(data = Stn5, aes(x = year, y = value, fill = variable))+
+  geom_bar(stat = "identity", position = "dodge")+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Days with Extreme Temperatures", title = "Extreme Temperatures in Norwich, NY")
+
+# station 6  - Oswego
+Stn6 <- pivot_longer(stn6, cols=c("ExHiCount", "ExLoCount"), names_to = "variable", values_to = "value")
+ggplot(data = Stn6, aes(x = year, y = value, fill = variable))+
+  geom_bar(stat = "identity", position = "dodge")+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Days with Extreme Temperatures", title = "Extreme Temperatures in Oswego, NY")
+
+# station 7 - Watertown
+Stn7 <- pivot_longer(stn7, cols=c("ExHiCount", "ExLoCount"), names_to = "variable", values_to = "value")
+ggplot(data = Stn7, aes(x = year, y = value, fill = variable))+
+  geom_bar(stat = "identity", position = "dodge")+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Days with Extreme Temperatures", title = "Extreme Temperatures in Watertown, NY")
+
+# station 8 - Albany
+Stn8 <- pivot_longer(stn8, cols=c("ExHiCount", "ExLoCount"), names_to = "variable", values_to = "value")
+ggplot(data = Stn8, aes(x = year, y = value, fill = variable))+
+  geom_bar(stat = "identity", position = "dodge")+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Days with Extreme Temperatures", title = "Extreme Temperatures in Albany, NY")
+
+# station 9 - Glens Falls
+Stn9 <- pivot_longer(stn9, cols=c("ExHiCount", "ExLoCount"), names_to = "variable", values_to = "value")
+ggplot(data = Stn9, aes(x = year, y = value, fill = variable))+
+  geom_bar(stat = "identity", position = "dodge")+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Days with Extreme Temperatures", title = "Extreme Temperatures in Glens Falls, NY")
+
+# station 10 - Syracuse
+Stn10 <- pivot_longer(stn10, cols=c("ExHiCount", "ExLoCount"), names_to = "variable", values_to = "value")
+ggplot(data = Stn10, aes(x = year, y = value, fill = variable))+
+  geom_bar(stat = "identity", position = "dodge")+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Days with Extreme Temperatures", title = "Extreme Temperatures in Syracuse, NY")
+
+# station 11 - Massena
+Stn11 <- pivot_longer(stn11, cols=c("ExHiCount", "ExLoCount"), names_to = "variable", values_to = "value")
+ggplot(data = Stn11, aes(x = year, y = value, fill = variable))+
+  geom_bar(stat = "identity", position = "dodge")+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Days with Extreme Temperatures", title = "Extreme Temperatures in Massena, NY")
+
+# station 12 - Watertown Airport
+Stn12 <- pivot_longer(stn12, cols=c("ExHiCount", "ExLoCount"), names_to = "variable", values_to = "value")
+ggplot(data = Stn12, aes(x = year, y = value, fill = variable))+
+  geom_bar(stat = "identity", position = "dodge")+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Days with Extreme Temperatures", title = "Extreme Temperatures in Watertown Airport, NY")
+
+# graph the extreme high and low temperatures 
+### need to fix something with the hi/low temp column
+### right now they are almost all the same for every year 
+ggplot(data = stn1, aes(x = year))+
+  geom_line(aes(y = ExtHi, color = "High"))+ 
+  geom_line(aes(y = ExtLo, color = "Low"))+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Extreme High and Low Temperatures in Boonville, NY")
+
+ggplot(data = stn2, aes(x = year))+
+  geom_line(aes(y = ExtHi, color = "High"))+ 
+  geom_line(aes(y = ExtLo, color = "Low"))+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Extreme High and Low Temperatures in Cooperstown, NY")
+
+ggplot(data = stn3, aes(x = year))+
+  geom_line(aes(y = ExtHi, color = "High"))+ 
+  geom_line(aes(y = ExtLo, color = "Low"))+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Extreme High and Low Temperatures in Indian Lake, NY")
+
+ggplot(data = stn4, aes(x = year))+
+  geom_line(aes(y = ExtHi, color = "High"))+ 
+  geom_line(aes(y = ExtLo, color = "Low"))+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Extreme High and Low Temperatures in Lowville, NY")
+
+ggplot(data = stn5, aes(x = year))+
+  geom_line(aes(y = ExtHi, color = "High"))+ 
+  geom_line(aes(y = ExtLo, color = "Low"))+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Extreme High and Low Temperatures in Norwich, NY")
+
+ggplot(data = stn6, aes(x = year))+
+  geom_line(aes(y = ExtHi, color = "High"))+ 
+  geom_line(aes(y = ExtLo, color = "Low"))+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Extreme High and Low Temperatures in Oswego, NY")
+
+ggplot(data = stn7, aes(x = year))+
+  geom_line(aes(y = ExtHi, color = "High"))+ 
+  geom_line(aes(y = ExtLo, color = "Low"))+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Extreme High and Low Temperatures in Watertown, NY")
+
+ggplot(data = stn8, aes(x = year))+
+  geom_line(aes(y = ExtHi, color = "High"))+ 
+  geom_line(aes(y = ExtLo, color = "Low"))+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Extreme High and Low Temperatures in Albany, NY")
+
+ggplot(data = stn9, aes(x = year))+
+  geom_line(aes(y = ExtHi, color = "High"))+ 
+  geom_line(aes(y = ExtLo, color = "Low"))+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Extreme High and Low Temperatures in Glens Falls, NY")
+
+ggplot(data = stn10, aes(x = year))+
+  geom_line(aes(y = ExtHi, color = "High"))+ 
+  geom_line(aes(y = ExtLo, color = "Low"))+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Extreme High and Low Temperatures in Syracuse, NY")
+
+ggplot(data = stn11, aes(x = year))+
+  geom_line(aes(y = ExtHi, color = "High"))+ 
+  geom_line(aes(y = ExtLo, color = "Low"))+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Extreme High and Low Temperatures in Massena, NY")
+
+ggplot(data = stn12, aes(x = year))+
+  geom_line(aes(y = ExtHi, color = "High"))+ 
+  geom_line(aes(y = ExtLo, color = "Low"))+
+  scale_color_manual(values = c("tomato3","skyblue"))+
+  theme_classic()+
+  labs(x = "Year", y = "Temperature (celsius)", title = "Extreme High and Low Temperatures in Watertown Airport, NY")
+
+### Extreme Temperatures by decade
+
+# create scatter plot march high temperatures
+MarchEx <- subset(SpringDecade, SpringDecade$Month == "Mar")
+MarchHiAv <- mean(AllData$HiTmax[AllData$Month == "Mar"], na.rm = TRUE)
+ggplot(data = MarchEx, aes(x = Decade, y = AvExHi, color = StationName))+
+  geom_point()+
+  geom_line()+
+  geom_hline(yintercept = MarchHiAv)+
+  theme_classic()+
+  labs(title = "March Extreme High Temperatures by Decade", x = "Decade", y = "Temperature (celcius)")
+
+# scatter plot march low temperatures
+MarchLoAv <- mean(AllData$LoTmin[AllData$Month == "Mar"], na.rm = TRUE)
+ggplot(data = MarchEx, aes(x = Decade, y = AvExLo, color = StationName))+
+  geom_point()+
+  geom_line()+
+  geom_hline(yintercept = MarchLoAv)+
+  theme_classic()+
+  labs(title = "March Extreme Low Temperatures by Decade", x = "Decade", y = "Temperature (celcius)")
+
+# create scatter plot april high temperatures
+AprilEx <- subset(SpringDecade, SpringDecade$Month == "Apr")
+AprilHiAv <- mean(AllData$HiTmax[AllData$Month == "Apr"], na.rm = TRUE)
+ggplot(data = AprilEx, aes(x = Decade, y = AvExHi, color = StationName))+
+  geom_point()+
+  geom_line()+
+  geom_hline(yintercept = AprilHiAv)+
+  theme_classic()+
+  labs(title = "April Extreme High Temperatures by Decade", x = "Decade", y = "Temperature (celcius)")
+
+# scatter plot april low temperatures
+AprilLoAv <- mean(AllData$LoTmin[AllData$Month == "Apr"], na.rm = TRUE)
+ggplot(data = AprilEx, aes(x = Decade, y = AvExLo, color = StationName))+
+  geom_point()+
+  geom_line()+
+  geom_hline(yintercept = AprilLoAv)+
+  theme_classic()+
+  labs(title = "April Extreme Low Temperatures by Decade", x = "Decade", y = "Temperature (celcius)")
+
+# create scatter plot may high temperatures
+MayEx <- subset(SpringDecade, SpringDecade$Month == "May")
+MayHiAv <- mean(AllData$HiTmax[AllData$Month == "May"], na.rm = TRUE)
+ggplot(data = MayEx, aes(x = Decade, y = AvExHi, color = StationName))+
+  geom_point()+
+  geom_line()+
+  geom_hline(yintercept = MayHiAv)+
+  theme_classic()+
+  labs(title = "May Extreme High Temperatures by Decade", x = "Decade", y = "Temperature (celcius)")
+
+# scatter plot march low temperatures
+MayLoAv <- mean(AllData$LoTmin[AllData$Month == "May"], na.rm = TRUE)
+ggplot(data = MayEx, aes(x = Decade, y = AvExLo, color = StationName))+
+  geom_point()+
+  geom_line()+
+  geom_hline(yintercept = MayLoAv)+
+  theme_classic()+
+  labs(title = "May Extreme Low Temperatures by Decade", x = "Decade", y = "Temperature (celcius)")
+
+
+### freeze thaw ----
 # Number of Freeze Thaw Days Graphs
 # have 20 as differentiating mark but we could look up how many in one year is problematic and use that as a threshold
 
@@ -586,18 +862,18 @@ ggplot(data = stn12, aes(x = year, y = FTdays)) +
   labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Watertown Airport, NY")
 
 # Freeze Thaw Amplitude Graphs
-# maybe we can find a better style of graph to represent these numebrs
-# does mean amplitude really mean that much on a yearly basis?
+### first three graphs show three options for visualizing this
 
 # station 1
-ggplot(data = stn1, aes(x = year, y = FTrange))+
-  geom_line(color = "deepskyblue3") +
+ggplot(data = SpringDecade[SpringDecade$StationID == "USC00300785",], aes(x = Decade, y = FTrange, color = Month))+
+  geom_point() +
+  geom_line() +
   theme_classic()+
   labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Boonville, NY")
 
 # station 2
 ggplot(data = stn2, aes(x = year, y = FTrange))+
-  geom_line(color = "deepskyblue3") +
+  geom_point(color = "deepskyblue3") +
   theme_classic()+
   labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Cooperstown Airport, NY")
 
@@ -660,5 +936,4 @@ ggplot(data = stn12, aes(x = year, y = FTrange))+
   geom_line(color = "deepskyblue3") +
   theme_classic()+
   labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Watertown Airport, NY")
-
 
