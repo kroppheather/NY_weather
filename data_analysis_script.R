@@ -409,8 +409,11 @@ SpringYear$FTdays <- aggregate(SpringData$FreezeThaw, by=list(SpringData$Year, S
 SpringYear$FTrange <- aggregate(SpringData$FTrange, by=list(SpringData$Year, SpringData$StationID), FUN="mean", na.rm = TRUE)$x
 
 # create new data frame by decade
-SpringDecade <- aggregate(SpringData$HiTmax, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade, SpringData$Month), FUN = "mean", na.rm = TRUE)
-colnames(SpringDecade) <- c("StationID", "StationName", "Decade", "Month", "AvExHi")
+SpringDecade <- aggregate(SpringData$tav, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade, SpringData$Month), FUN = "mean", na.rm = TRUE)
+colnames(SpringDecade) <- c("StationID", "StationName", "Decade", "Month", "tav")
+SpringDecade$tmax <- aggregate(SpringData$tmax, by = list(SpringData$StationID, SpringData$Decade, SpringData$Month), FUN = "mean", na.rm = TRUE)$x
+SpringDecade$tmin <- aggregate(SpringData$tmin, by = list(SpringData$StationID, SpringData$Decade, SpringData$Month), FUN = "mean", na.rm = TRUE)$x
+SpringDecade$AvExHi <- aggregate(SpringData$HiTmax, by = list(SpringData$StationID, SpringData$Decade, SpringData$Month), FUN = "mean", na.rm = TRUE)$x
 SpringDecade$AvExLo <- aggregate(SpringData$LoTmin, by = list(SpringData$StationID, SpringData$Decade, SpringData$Month), FUN = "mean", na.rm = TRUE)$x
 SpringDecade$FTdays <- aggregate(SpringData$FreezeThaw, by = list(SpringData$StationID, SpringData$Decade, SpringData$Month), FUN = "sum", na.rm = TRUE)$x / 30
 SpringDecade$FTrange <- aggregate(SpringData$FTrange, by = list(SpringData$StationID, SpringData$Decade, SpringData$Month), FUN = "mean", na.rm = TRUE)$x
@@ -936,4 +939,63 @@ ggplot(data = stn12, aes(x = year, y = FTrange))+
   geom_line(color = "deepskyblue3") +
   theme_classic()+
   labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Watertown Airport, NY")
+
+### Linear regression for temperature and year
+# create model for station 1 by year
+stn1yr.mod <- lm(stn1$tav ~ stn1$year)
+# get residuals
+stn1yr.res <- rstandard(stn1.mod)
+# set up qq plot
+qqnorm(stn1yr.res)
+# add qq line
+qqline(stn1yr.res)
+
+# make residual plot
+plot(stn1$year, stn1.res, 
+     xlab = "average temperature (celcis)", 
+     ylab = "standardized residual")
+# add a horizontal line at zero
+abline(h=0)
+
+# get summary
+summary(stn1yr.mod)
+
+# make plot year and average temperature
+plot(stn1$year, stn1$tav, 
+     pch = 19, 
+     col = "royalblue4",
+     ylab = "Average Temperature (celcius)",
+     xlab =  "Year")
+#add regression line
+#make line width thicker
+abline(stn1yr.mod, lwd=2)
+
+# create model for station 1 by decade
+stn1dc.mod <- lm(SpringDecade[SpringDecade$StationID == "USC00300785", 5] ~ SpringDecade[SpringDecade$StationID == "USC00300785", 3])
+# get residuals
+stn1dc.res <- rstandard(stn1dc.mod)
+# set up qq plot
+qqnorm(stn1dc.res)
+# add qq line
+qqline(stn1dc.res)
+
+# make residual plot
+plot(SpringDecade[SpringDecade$StationID == "USC00300785", 3], stn1dc.res, 
+     xlab = "average temperature (celcis)", 
+     ylab = "standardized residual")
+# add a horizontal line at zero
+abline(h=0)
+
+# get summary
+summary(stn1yr.mod)
+
+# make plot year and average temperature
+plot(SpringDecade[SpringDecade$StationID == "USC00300785", 3], SpringDecade[SpringDecade$StationID == "USC00300785", 5],
+     pch = 19, 
+     col = "royalblue4",
+     ylab = "Average Temperature (celcius)",
+     xlab =  "Decade")
+#add regression line
+#make line width thicker
+abline(stn1yr.mod, lwd=2)
 
