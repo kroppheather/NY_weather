@@ -607,6 +607,15 @@ ggplot(data = stn12, aes(x = year))+
   theme_classic()+
   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Watertown Airport, NY")
 
+
+# average temperatures by decade for all stations
+ggplot(data = SpringDecadeAv, aes(x = Decade, y = tav, color = StationName))+
+  geom_line()+
+  scale_color_brewer(palette = "Paired")+
+  theme_classic()+
+  xlim(1950,2020)+
+  labs(x = "Decade", y = "Temperature (celsius)", title = "Average Spring Temperatures")
+
 ## linear regressions for tav ----
 # by year 
 # station 1 model
@@ -805,6 +814,115 @@ plot(stn6dc$Decade, stn6dc$tav,
      xlab = "decade")
 abline(stn6dc.mod)
 
+# station 7 model
+stn7dc.mod <- lm(stn7dc$tav ~ stn7dc$Decade)
+# assumptions
+stn7dc.res <- rstandard(stn7dc.mod)
+qqnorm(stn7dc.res)
+qqline(stn7dc.res)
+plot(stn7dc$Decade, stn7dc.res,
+     xlab = "average temp",
+     ylab = "standardized residual")
+# add a horizontal line at zero
+abline(h=0)
+# regression
+summary(stn7dc.mod)
+plot(stn7dc$Decade, stn7dc$tav,
+     ylab = "average temp",
+     xlab = "decade")
+abline(stn7dc.mod)
+
+# station 8 model -- SIGNIFICANT!
+stn8dc.mod <- lm(stn8dc$tav ~ stn8dc$Decade)
+# assumptions
+stn8dc.res <- rstandard(stn8dc.mod)
+qqnorm(stn8dc.res)
+qqline(stn8dc.res)
+plot(stn8dc$Decade, stn8dc.res,
+     xlab = "average temp",
+     ylab = "standardized residual")
+# add a horizontal line at zero
+abline(h=0)
+# regression
+summary(stn8dc.mod)
+plot(stn8dc$Decade, stn8dc$tav,
+     ylab = "average temp",
+     xlab = "decade")
+abline(stn8dc.mod)
+
+# station 9 model
+stn9dc.mod <- lm(stn9dc$tav ~ stn9dc$Decade)
+# assumptions
+stn9dc.res <- rstandard(stn9dc.mod)
+qqnorm(stn9dc.res)
+qqline(stn9dc.res)
+plot(stn9dc$Decade, stn9dc.res,
+     xlab = "average temp",
+     ylab = "standardized residual")
+# add a horizontal line at zero
+abline(h=0)
+# regression
+summary(stn9dc.mod)
+plot(stn9dc$Decade, stn9dc$tav,
+     ylab = "average temp",
+     xlab = "decade")
+abline(stn9dc.mod)
+
+# station 10 model
+stn10dc.mod <- lm(stn10dc$tav ~ stn10dc$Decade)
+# assumptions
+stn10dc.res <- rstandard(stn10dc.mod)
+qqnorm(stn10dc.res)
+qqline(stn10dc.res)
+plot(stn10dc$Decade, stn10dc.res,
+     xlab = "average temp",
+     ylab = "standardized residual")
+# add a horizontal line at zero
+abline(h=0)
+# regression
+summary(stn10dc.mod)
+plot(stn10dc$Decade, stn10dc$tav,
+     ylab = "average temp",
+     xlab = "decade")
+abline(stn10dc.mod)
+
+# station 11 model
+stn11dc.mod <- lm(stn11dc$tav ~ stn11dc$Decade)
+# assumptions
+stn11dc.res <- rstandard(stn11dc.mod)
+qqnorm(stn11dc.res)
+qqline(stn11dc.res)
+plot(stn11dc$Decade, stn11dc.res,
+     xlab = "average temp",
+     ylab = "standardized residual")
+# add a horizontal line at zero
+abline(h=0)
+# regression
+summary(stn11dc.mod)
+plot(stn11dc$Decade, stn11dc$tav,
+     ylab = "average temp",
+     xlab = "decade")
+abline(stn11dc.mod)
+
+# station 12 model
+stn12dc.mod <- lm(stn12dc$tav ~ stn12dc$Decade)
+# assumptions
+stn12dc.res <- rstandard(stn12dc.mod)
+qqnorm(stn12dc.res)
+qqline(stn12dc.res)
+plot(stn12dc$Decade, stn12dc.res,
+     xlab = "average temp",
+     ylab = "standardized residual")
+# add a horizontal line at zero
+abline(h=0)
+# regression
+summary(stn12dc.mod)
+plot(stn12dc$Decade, stn12dc$tav,
+     ylab = "average temp",
+     xlab = "decade")
+abline(stn12dc.mod)
+
+
 ### EXTREME TEMPERATURES ----
 
 # extreme temperatures by year ----
@@ -843,7 +961,7 @@ plot(MarYear$year[MarYear$StationID=="USC00304102"], MarYear$ExtHi[MarYear$Stati
      ylim = c(-30, 30))
 lines(MarYear$year[MarYear$StationID=="USC00304102"], MarYear$ExtLo[MarYear$StationID=="USC00304102"],
       col = "skyblue")     
-legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
+legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n", cex=.75)
 
 # station 4 - Lowville
 plot(MarYear$year[MarYear$StationID=="USC00304912"], MarYear$ExtHi[MarYear$StationID=="USC00304912"],
@@ -1680,8 +1798,30 @@ lines(MayDecade$Decade[MayDecade$StationID=="USW00094790"], MayDecade$ExtLo[MayD
 legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
 
 
-# number of extreme days by year ----
+# all months on same graph -- BOONVILLE EXAMPLE
+plot(MarDecade$Decade[MarDecade$StationID=="USC00300785"], MarDecade$ExtHi[MarDecade$StationID=="USC00300785"],
+     type = "l",
+     col = "tomato3",
+     xlab = "Decade",
+     ylab = "Temperature (Celsius)",
+     main = "Extreme March Temperatures in Boonville, NY",
+     ylim = c(-30,30))
+lines(MarDecade$Decade[MarDecade$StationID=="USC00300785"], MarDecade$ExtLo[MarDecade$StationID=="USC00300785"],
+      col = "skyblue") 
+lines(AprDecade$Decade[AprDecade$StationID=="USC00300785"], AprDecade$ExtHi[AprDecade$StationID=="USC00300785"],
+      col = "tomato3", lty = "dashed")
+lines(AprDecade$Decade[AprDecade$StationID=="USC00300785"], AprDecade$ExtLo[AprDecade$StationID=="USC00300785"],
+             col = "skyblue", lty = "dashed")
+lines(MayDecade$Decade[MayDecade$StationID=="USC00300785"], MayDecade$ExtHi[MayDecade$StationID=="USC00300785"],
+      col = "tomato3", lty = "dotted")
+lines(MayDecade$Decade[MayDecade$StationID=="USC00300785"], MayDecade$ExtLo[MayDecade$StationID=="USC00300785"],
+      col = "skyblue", lty = "dotted")
+legend("bottomright", c("May Hi", "April Hi", "March Hi", "May Lo", "April Lo", "March Lo"), col = c("tomato3", "tomato3", "tomato3","skyblue","skyblue","skyblue"), lty = 3:1, bty="n", cex=.75)
 
+
+
+# number of extreme days by year ----
+## is there a better type of graph to use??
 # boonville 
 # MARCH
 MarYear$ExHiCount <- as.vector(MarYear$ExHiCount)
