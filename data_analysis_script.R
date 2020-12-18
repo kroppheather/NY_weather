@@ -1298,6 +1298,7 @@ lines(AprYear$year[AprYear$StationID=="USW00014735"], AprYear$ExtLo[AprYear$Stat
 legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
 
 # station 9 - Glens Falls
+plot(AprYear$year[AprYear$StationID=="USW00014750"], AprYear$ExtHi[AprYear$StationID=="USW00014750"],
      type = "l",
      col = "tomato3",
      xlab = "Year",
