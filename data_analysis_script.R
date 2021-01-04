@@ -2942,6 +2942,7 @@ ggplot(data = stn1all, mapping = aes(x = Year, y = DayID, fill = tav)) +
   geom_tile() +
   theme_classic() +
   labs(title = "Daily Spring Temperatures: Boonville, NY")+
+  geom_hline(yintercept = c(1, 32, 62))+
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature (c)",
                        low = "#2166ac",
@@ -2954,24 +2955,26 @@ ggplot(data = stn1all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
   geom_tile() +
   theme_classic() +
   labs(title = "Standardized Daily Temperature Anomalies: Boonville, NY")+
+  geom_hline(yintercept = c(1, 32, 62))+
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature Anomaly",
-                       low = "#2166ac",
-                       mid = "#d8daeb",
-                       high = "#b2182b",
-                       na.value = "white")
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") 
 
 # raw anomalies
 ggplot(data = stn1all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
   geom_tile() +
   theme_classic() +
   labs(title = "Daily Temperature Anomalies: Boonville, NY")+
+  geom_hline(yintercept = c(1, 32, 62))+
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature Anomaly",
-                       low = "#2166ac",
-                       mid = "#d8daeb",
-                       high = "#b2182b",
-                       na.value = "white")
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") 
 # Station 2
 # raw temps
 stn2all <- subset(SpringData, SpringData$StationID == "USC00301752")
@@ -2979,6 +2982,7 @@ ggplot(data = stn2all, mapping = aes(x = Year, y = DayID, fill = tav)) +
   geom_tile() +
   theme_classic() +
   labs(title = "Daily Spring Temperatures: Cooperstown, NY")+
+  geom_hline(yintercept = c(1, 32, 62))+
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature (c)",
                        low = "#2166ac",
@@ -2990,23 +2994,25 @@ ggplot(data = stn2all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
   geom_tile() +
   theme_classic() +
   labs(title = "Standardized Daily Temperature Anomalies: Cooperstown, NY")+
+  geom_hline(yintercept = c(1, 32, 62))+
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature Anomaly",
-                       low = "#2166ac",
-                       mid = "#d8daeb",
-                       high = "#b2182b",
-                       na.value = "white")
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") 
 # raw anomalies
 ggplot(data = stn1all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
   geom_tile() +
   theme_classic() +
   labs(title = "Daily Temperature Anomalies: Cooperstown, NY")+
+  geom_hline(yintercept = c(1, 32, 62))+
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature Anomaly",
-                       low = "#2166ac",
-                       mid = "#d8daeb",
-                       high = "#b2182b",
-                       na.value = "white")
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") 
 # Station 3
 # raw temps
 stn3all <- subset(SpringData, SpringData$StationID == "USC00304102")
@@ -3014,6 +3020,7 @@ ggplot(data = stn3all, mapping = aes(x = Year, y = DayID, fill = tav)) +
   geom_tile() +
   theme_classic() +
   labs(title = "Daily Spring Temperatures: Indian Lake, NY")+
+  geom_hline(yintercept = c(1, 32, 62))+
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature (c)",
                        low = "#2166ac",
@@ -3025,23 +3032,25 @@ ggplot(data = stn3all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
   geom_tile() +
   theme_classic() +
   labs(title = "Standardized Daily Temperature Anomalies: Indian Lake, NY")+
+  geom_hline(yintercept = c(1, 32, 62))+
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature Anomaly",
-                       low = "#2166ac",
-                       mid = "#d8daeb",
-                       high = "#b2182b",
-                       na.value = "white")
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") 
 # raw anomalies
 ggplot(data = stn3all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
   geom_tile() +
   theme_classic() +
   labs(title = "Daily Temperature Anomalies: Indian Lake, NY")+
+  geom_hline(yintercept = c(1, 32, 62))+
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature Anomaly",
-                       low = "#2166ac",
-                       mid = "#d8daeb",
-                       high = "#b2182b",
-                       na.value = "white")
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") 
 # Station 4
 # raw temps
 stn4all <- subset(SpringData, SpringData$StationID == "USC00304912")
@@ -3049,6 +3058,7 @@ ggplot(data = stn3all, mapping = aes(x = Year, y = DayID, fill = tav)) +
   geom_tile() +
   theme_classic() +
   labs(title = "Daily Spring Temperatures: Lowville, NY")+
+  geom_hline(yintercept = c(1, 32, 62))+
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature (c)",
                        low = "#2166ac",
@@ -3059,23 +3069,25 @@ ggplot(data = stn4all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
   geom_tile() +
   theme_classic() +
   labs(title = "Standardized Daily Temperature Anomalies: Lowville, NY")+
+  geom_hline(yintercept = c(1, 32, 62))+
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature Anomaly",
-                       low = "#2166ac",
-                       mid = "#d8daeb",
-                       high = "#b2182b",
-                       na.value = "white")
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") 
 # raw anomalies
 ggplot(data = stn4all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
   geom_tile() +
   theme_classic() +
   labs(title = "Daily Temperature Anomalies: Lowville, NY")+
+  geom_hline(yintercept = c(1, 32, 62))+
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature Anomaly",
-                       low = "#2166ac",
-                       mid = "#d8daeb",
-                       high = "#b2182b",
-                       na.value = "white")
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") 
 
 # Station 5
 # raw temps
@@ -3084,6 +3096,7 @@ ggplot(data = stn5all, mapping = aes(x = Year, y = DayID, fill = tav)) +
   geom_tile() +
   theme_classic() +
   labs(title = "Daily Spring Temperatures: Norwich, NY")+
+  geom_hline(yintercept = c(1, 32, 62))+
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature (c)",
                        low = "#2166ac",
@@ -3095,23 +3108,25 @@ ggplot(data = stn5all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
   geom_tile() +
   theme_classic() +
   labs(title = "Standardized Daily Temperature Anomalies: Norwich, NY")+
+  geom_hline(yintercept = c(1, 32, 62))+
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature Anomaly",
-                       low = "#2166ac",
-                       mid = "#d8daeb",
-                       high = "#b2182b",
-                       na.value = "white")
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") 
 # raw anomalies
 ggplot(data = stn5all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
   geom_tile() +
   theme_classic() +
   labs(title = "Daily Temperature Anomalies: Norwich, NY")+
+  geom_hline(yintercept = c(1, 32, 62))+
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature Anomaly",
-                       low = "#2166ac",
-                       mid = "#d8daeb",
-                       high = "#b2182b",
-                       na.value = "white")
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") 
 
 # Station 6
 # raw temps
@@ -3121,9 +3136,9 @@ ggplot(data = stn6all, mapping = aes(x = Year, y = DayID, fill = tav)) +
   theme_classic() +
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature (c)",
-                       low = "#4393c3",
-                       mid = "#d1e5f0",
-                       high = "#d6604d",
+                       low = "#2166ac",
+                       mid = "#d8daeb",
+                       high = "#b2182b",
                        na.value = "white") +
   geom_hline(yintercept = c(1, 32, 62))+
   labs(title = "Spring Temperatures in Oswego, NY")
@@ -3162,9 +3177,9 @@ ggplot(data = stn7all, mapping = aes(x = Year, y = DayID, fill = tav)) +
   theme_classic() +
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature (c)",
-                       low = "#4393c3",
-                       mid = "#d1e5f0",
-                       high = "#d6604d",
+                       low = "#2166ac",
+                       mid = "#d8daeb",
+                       high = "#b2182b",
                        na.value = "white") +
   geom_hline(yintercept = c(1, 32, 62))+
   labs(title = "Spring Temperatures in Watertown, NY")
@@ -3203,9 +3218,9 @@ ggplot(data = stn8all, mapping = aes(x = Year, y = DayID, fill = tav)) +
   theme_classic() +
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature (c)",
-                       low = "#4393c3",
-                       mid = "#d1e5f0",
-                       high = "#d6604d",
+                       low = "#2166ac",
+                       mid = "#d8daeb",
+                       high = "#b2182b",
                        na.value = "white") +
   geom_hline(yintercept = c(1, 32, 62))+
   labs(title = "Spring Temperatures in Albany, NY")
@@ -3244,9 +3259,9 @@ ggplot(data = stn9all, mapping = aes(x = Year, y = DayID, fill = tav)) +
   theme_classic() +
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature (c)",
-                       low = "#4393c3",
-                       mid = "#d1e5f0",
-                       high = "#d6604d",
+                       low = "#2166ac",
+                       mid = "#d8daeb",
+                       high = "#b2182b",
                        na.value = "white") +
   geom_hline(yintercept = c(1, 32, 62))+
   labs(title = "Spring Temperatures in Glens Falls, NY")
@@ -3285,9 +3300,9 @@ ggplot(data = stn10all, mapping = aes(x = Year, y = DayID, fill = tav)) +
   theme_classic() +
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature (c)",
-                       low = "#4393c3",
-                       mid = "#d1e5f0",
-                       high = "#d6604d",
+                       low = "#2166ac",
+                       mid = "#d8daeb",
+                       high = "#b2182b",
                        na.value = "white") +
   geom_hline(yintercept = c(1, 32, 62))+
   labs(title = "Spring Temperatures in Syracuse, NY")
@@ -3326,9 +3341,9 @@ ggplot(data = stn11all, mapping = aes(x = Year, y = DayID, fill = tav)) +
   theme_classic() +
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature (c)",
-                       low = "#4393c3",
-                       mid = "#d1e5f0",
-                       high = "#d6604d",
+                       low = "#2166ac",
+                       mid = "#d8daeb",
+                       high = "#b2182b",
                        na.value = "white") +
   geom_hline(yintercept = c(1, 32, 62))+
   labs(title = "Spring Temperatures in Massena, NY")
@@ -3367,9 +3382,9 @@ ggplot(data = stn12all, mapping = aes(x = Year, y = DayID, fill = tav)) +
   theme_classic() +
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature (c)",
-                       low = "#4393c3",
-                       mid = "#d1e5f0",
-                       high = "#d6604d",
+                       low = "#2166ac",
+                       mid = "#d8daeb",
+                       high = "#b2182b",
                        na.value = "white") +
   geom_hline(yintercept = c(1, 32, 62))+
   labs(title = "Spring Temperatures in Watertown Airport, NY")
