@@ -3812,11 +3812,115 @@ ggplot(data = stn12all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
   labs(title = "Spring Temperature Anomalies in Watertown Airport, NY")
 
 ### WEEK 2 ----
-# Day Type Heat Maps ----
-alldata1 <- subset(AllData, AllData$StationID == "USC00300785")
-ggplot(data = alldata1, mapping = aes(x = Year, y = DOY, fill = DayType)) +
+### Freeze Thaw Day Type Heat Maps----
+# station 1
+alldata1 <- subset(AllData, AllData$StationID=="USC00300785")
+ggplot(data= alldata1, mapping = aes(x= Year, y = DOY, fill = DayType))+
   geom_tile() +
-  theme_classic() +
-  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun")) +
-  scale_fill_manual(name = "Day Type", values = c("#000000", "#3399FF", "#FFFF99", "#EE6F6F", "#80FF00")) +
-  labs(title = "Types of Freeze Thaw Days in Boonville, NY")
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  labs(title = "Boonville, NY")
+
+# station 2 
+alldata2 <- subset(AllData, AllData$StationID=="USC00301752")
+ggplot(data= alldata2, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  labs(title = "Cooperstown, NY")
+
+# station 3 
+alldata3 <- subset(AllData, AllData$StationID=="USC00304102")
+ggplot(data= alldata3, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  labs(title = "Indian Lake, NY")
+
+# station 4
+alldata4 <- subset(AllData, AllData$StationID=="USC00304912")
+ggplot(data= alldata4, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  labs(title = "Lowville, NY")
+
+# station 5
+alldata5 <- subset(AllData, AllData$StationID=="USC00306085")
+ggplot(data= alldata5, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  labs(title = "Norwich, NY")
+
+# station 6
+alldata6 <- subset(AllData, AllData$StationID=="USC00306314")
+ggplot(data= alldata6, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  labs(title = "Oswego, NY")
+
+# station 7
+alldata7 <- subset(AllData, AllData$StationID=="USC00309000")
+ggplot(data= alldata7, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  labs(title = "Watertown, NY")
+
+# station 8
+alldata8 <- subset(AllData, AllData$StationID=="USW00014735")
+ggplot(data= alldata8, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  labs(title = "Albany, NY")
+
+# station 9
+alldata9 <- subset(AllData, AllData$StationID=="USW00014750")
+ggplot(data= alldata9, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  labs(title = "Glens Falls, NY")
+
+# station 10
+alldata10 <- subset(AllData, AllData$StationID=="USW00014771")
+ggplot(data= alldata10, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  labs(title = "Syracuse, NY")
+
+# station 11
+alldata11 <- subset(AllData, AllData$StationID=="USW00094725")
+ggplot(data= alldata11, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  labs(title = "Massena, NY")
+
+# station 12
+alldata12 <- subset(AllData, AllData$StationID=="USW00094790")
+ggplot(data= alldata12, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  labs(title = "Watertown Airport, NY")
+
+
+
+
