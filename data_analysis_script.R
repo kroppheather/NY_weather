@@ -1,4 +1,4 @@
-#updated 12/17
+#updated 1/4
 
 library(dplyr)
 library(tidyr)
@@ -22,7 +22,7 @@ diru = c("/Users/abby/Documents/NYweather",
          "/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/data")
 
 # Choosing the user number - CHANGE THIS VALUE 
-usernumber = 3
+usernumber = 1
 
 ### Read in data   -----
 #csv with weather data
@@ -338,6 +338,16 @@ AllData$tav <- ((AllData$tmax - AllData$tmin)/2) + AllData$tmin
 # Maybe change these numbers?
 AllData$FreezeThaw <- ifelse(AllData$tmin<(-2.2) & AllData$tmax>0, 1 , NA)
 
+# adding column of all freeze-thaw flags
+# 1 - hard freeze
+# 2 - freeze thaw day
+# 3 - warm 
+#
+AllData$DayType <- ifelse(AllData$tmin<=(-2.2) & AllData$tmax<=(-2.2), 1 , (ifelse(AllData$tmin<=(-2.2) & AllData$tmax>=0, 2 , (ifelse(AllData$tmin>=0 & AllData$tmax>=0, 3 , (ifelse(AllData$tmin>=(-2.2) & AllData$tmax<=0, 4, 0)))))))
+
+# format as factor
+AllData$DayType <- as.factor(AllData$DayType)
+
 # Adding range of freeze thaw column
 AllData$FTrange <- ifelse(AllData$FreezeThaw == 1, AllData$tmax - AllData$tmin, NA)
 
@@ -381,6 +391,8 @@ ExtVals$LoTmin <- aggregate(AllData$tmin, by = list(AllData$StationID, AllData$M
 
 # join extreme values to alldata
 AllData <- left_join(AllData, ExtVals, by = c("StationID", "Month","Year"))
+
+
 
 ## subset to spring data frame
 SpringData <- subset(AllData, AllData$Month %in% c("Mar","Apr","May"))
@@ -3789,7 +3801,6 @@ ggplot(data = stn12all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
 # raw anomalies
 ggplot(data = stn12all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
   geom_tile() +
-  theme_classic() +
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature Anomaly",
                        low = "#4575b4",
@@ -3798,3 +3809,63 @@ ggplot(data = stn12all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
                        na.value = "white") +
   geom_hline(yintercept = c(1, 32, 62))+
   labs(title = "Spring Temperature Anomalies in Watertown Airport, NY")
+
+### Freeze Thaw Day Type Heat Maps----
+# station 1
+alldata1 <- subset(AllData, AllData$StationID=="USC00300785")
+ggplot(data= alldata1, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  labs(title = "Boonville, NY")
+  
+# station 2 
+alldata2 <- subset(AllData, AllData$StationID=="USC00301752")
+ggplot(data= alldata2, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  labs(title = "Cooperstown, NY")
+
+# station 3 
+alldata3 <- subset(AllData, AllData$StationID=="USC00304102")
+ggplot(data= alldata3, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  labs(title = "Indian Lake, NY")
+
+# station 4
+alldata4 <- subset(AllData, AllData$StationID=="USC00304912")
+ggplot(data= alldata4, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  labs(title = "Lowville, NY")
+
+
+# station 5
+alldata5 <- subset(AllData, AllData$StationID=="USC00306085")
+ggplot(data= alldata5, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  labs(title = "Norwich, NY")
+
+# station 6
+alldata6 <- subset(AllData, AllData$StationID=="USC00306314")
+ggplot(data= alldata6, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  labs(title = "Oswego, NY")
+
+
+
+
