@@ -2663,7 +2663,6 @@ plot(MayYear$year[MayYear$StationID=="USW00094790"], MayYear$ExLoCount[MayYear$S
 
 
 # number of extreme days by decade ----
-# only boonville right now
 
 # MARCH
 MarDecade$ExHiCount <- as.vector(MarDecade$ExHiCount)
