@@ -1,4 +1,6 @@
+
 #updated 12/18
+
 
 library(dplyr)
 library(tidyr)
@@ -276,7 +278,7 @@ prcpP <- spTransform(prcpPoints ,ez@proj4string)
 plot(prcpP, col="grey25",pch=19, add=TRUE)
 title(main= "Map of Precip Stations")
 
-### identify sites with all data types ----
+### identify sites with all data types
 AllStn <- data.frame(station_id = sitesMax$station_id, lat = sitesMax$lat, long = sitesMax$long, name = sitesMax$name) 
 AllStn <- inner_join(AllStn, sitesMin, by="station_id")
 AllStn <- inner_join(AllStn, sitesPrcp, by="station_id")
@@ -373,7 +375,6 @@ AllData$ExtrHi <- ifelse(AllData$tmax>=AllData$RefHi, 1, NA)
 
 # add flag for extreme low tmin
 AllData$ExtrLo <- ifelse(AllData$tmin<=AllData$RefLo,1,NA)
-
 
 # make extreme values dataframe
 ExtVals <- aggregate(AllData$tmax, by = list(AllData$StationID, AllData$Month, AllData$Year), FUN = "quantile", prob = 0.95, na.rm = TRUE)
@@ -505,7 +506,9 @@ stn10dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USW00014771")
 stn11dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USW00094725")
 stn12dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USW00094790")
 
-### general temperature trends ----
+
+### General temperature trends ----
+
 
 # line graphs of tmax, tmin, tav over time
 # station 1 - Boonville 
@@ -624,6 +627,7 @@ ggplot(data = SpringDecadeAv, aes(x = Decade, y = tav, color = StationName))+
   theme_classic()+
   xlim(1950,2020)+
   labs(x = "Decade", y = "Temperature (celsius)", title = "Average Spring Temperatures")
+
 # average temperatures by year for all stations
 ggplot(data = SpringYear, aes(x = year, y = tav, color = StationName))+
   geom_line()+
@@ -633,7 +637,7 @@ ggplot(data = SpringYear, aes(x = year, y = tav, color = StationName))+
   labs(x = "Year", y = "Temperature (celsius)", title = "Average Spring Temperatures")
 
 
-## linear regressions for tav ----
+## Linear regressions for tav ----
 # by year 
 # station 1 model
 stn1.mod <- lm(stn1$tav ~ stn1$year)
@@ -1084,7 +1088,8 @@ abline(stn12dc.mod)
 
 ### EXTREME TEMPERATURES ----
 
-# extreme temperatures by year ----
+# Extreme temperatures by year ----
+
 # MARCH 
 # station 1 - Boonville 
 plot(MarYear$year[MarYear$StationID=="USC00300785"], MarYear$ExtHi[MarYear$StationID=="USC00300785"],
@@ -1520,7 +1525,9 @@ lines(MayYear$year[MayYear$StationID=="USW00094790"], MayYear$ExtLo[MayYear$Stat
       col = "skyblue")     
 legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
 
-# extreme temperatures by decade ---- 
+
+# Extreme temperatures by decade ---- 
+
 # MARCH 
 # station 1 - Boonville 
 # could points be better than lines?
@@ -1548,7 +1555,7 @@ plot(MarDecade$Decade[MarDecade$StationID=="USC00301752"], MarDecade$ExtHi[MarDe
      main = "Extreme March Temperatures in Cooperstown, NY",
      ylim = c(-30, 30))
 points(MarDecade$Decade[MarDecade$StationID=="USC00301752"], MarDecade$ExtLo[MarDecade$StationID=="USC00301752"],
-       col = "skyblue", pch = 19)
+      col = "skyblue", pch = 19)
 lines(MarDecade$Decade[MarDecade$StationID=="USC00301752"], MarDecade$ExtLo[MarDecade$StationID=="USC00301752"],
       col = "skyblue")     
 legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n", cex=.75)
@@ -1578,7 +1585,7 @@ plot(MarDecade$Decade[MarDecade$StationID=="USC00304912"], MarDecade$ExtHi[MarDe
      main = "Extreme March Temperatures in Lowville, NY",
      ylim = c(-30, 30))
 points(MarDecade$Decade[MarDecade$StationID=="USC00304912"], MarDecade$ExtLo[MarDecade$StationID=="USC00304912"],
-       col = "skyblue", pch = 19) 
+      col = "skyblue", pch = 19) 
 lines(MarDecade$Decade[MarDecade$StationID=="USC00304912"], MarDecade$ExtLo[MarDecade$StationID=="USC00304912"],
       col = "skyblue")     
 legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
@@ -1593,7 +1600,7 @@ plot(MarDecade$Decade[MarDecade$StationID=="USC00306085"], MarDecade$ExtHi[MarDe
      main = "Extreme March Temperatures in Norwich, NY",
      ylim = c(-30, 30))
 points(MarDecade$Decade[MarDecade$StationID=="USC00306085"], MarDecade$ExtLo[MarDecade$StationID=="USC00306085"],
-       col = "skyblue", pch = 19) 
+      col = "skyblue", pch = 19) 
 lines(MarDecade$Decade[MarDecade$StationID=="USC00306085"], MarDecade$ExtLo[MarDecade$StationID=="USC00306085"],
       col = "skyblue")     
 legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
@@ -2083,7 +2090,7 @@ lines(MayDecade$Decade[MayDecade$StationID=="USC00300785"], MayDecade$ExtLo[MayD
 legend("bottomright", c("May Hi", "April Hi", "March Hi", "May Lo", "April Lo", "March Lo"), col = c("tomato3", "tomato3", "tomato3","skyblue","skyblue","skyblue"), lty = 3:1, bty="n", cex=.75)
 
 
-# number of extreme days by year ----
+# Number of extreme days by year ----
 
 # boonville 
 # MARCH
@@ -2662,7 +2669,8 @@ plot(MayYear$year[MayYear$StationID=="USW00094790"], MayYear$ExLoCount[MayYear$S
      ylim = c(0,16))
 
 
-# number of extreme days by decade ----
+
+# Number of extreme days by decade ----
 
 # MARCH
 MarDecade$ExHiCount <- as.vector(MarDecade$ExHiCount)
@@ -2958,6 +2966,7 @@ points(AprDecade$Decade[AprDecade$StationID=="USW00094790"]-.5, AprDecade$ExLoCo
        type = "h",
        col = "skyblue")
 
+
 # MAY
 MayDecade$ExHiCount <- as.vector(MayDecade$ExHiCount)
 MayDecade$ExLoCount <- as.vector(MayDecade$ExLoCount)
@@ -3161,8 +3170,10 @@ ggplot(data = MayDecade, aes(x = Decade, y = ExtLo, color = StationName))+
   theme_classic()+
   labs(title = "May Extreme Low Temperatures by Decade", x = "Decade", y = "Temperature (celcius)")
 
-### freeze thaw ----
-# Number of Freeze Thaw Days Graphs
+
+### FREEZE THAW ----
+# Number of Freeze Thaw Days Graphs ----
+
 # have 20 as differentiating mark but we could look up how many in one year is problematic and use that as a threshold
 
 # station 1
@@ -3238,9 +3249,9 @@ ggplot(data = stn12, aes(x = year, y = FTdays)) +
   labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Watertown Airport, NY")
 
 
-# Freeze Thaw Amplitude Graphs
-### first three graphs show three options for visualizing this
-### add standard deviation as error bar on scatter plot by decade
+# Freeze Thaw Amplitude Graphs ----
+### some graphs missing may data 
+### add standard deviation as error bar on scatter plot by decade (maybe)
 
 # station 1
 ggplot(data = SpringDecade[SpringDecade$StationID == "USC00300785",], aes(x = Decade, y = FTrange, color = Month))+
@@ -3326,7 +3337,9 @@ ggplot(data = SpringDecade[SpringDecade$StationID == "USW00094790",], aes(x = De
   theme_classic()+
   labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Watertown Airport, NY")
 
-### Heat Maps
+
+
+### Heat Maps ----
 # Station 1
 # raw temps
 stn1all <- subset(SpringData, SpringData$StationID == "USC00300785")
@@ -3504,43 +3517,88 @@ ggplot(data = stn5all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
                        mid = "#d8daeb",
                        high = "#b2182b",
                        na.value = "white")
+
 # Station 6
 # raw temps
 stn6all <- subset(SpringData, SpringData$StationID == "USC00306314")
 ggplot(data = stn6all, mapping = aes(x = Year, y = DayID, fill = tav)) +
   geom_tile() +
   theme_classic() +
-  labs(title = "Daily Spring Temperatures: Oswego, NY")+
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature (c)",
-                       low = "#2166ac",
-                       mid = "#d8daeb",
-                       high = "#b2182b",
-                       na.value = "white")
+                       low = "#4393c3",
+                       mid = "#d1e5f0",
+                       high = "#d6604d",
+                       na.value = "white") +
+  geom_hline(yintercept = c(1, 32, 62))+
+  labs(title = "Spring Temperatures in Oswego, NY")
+
 # standardized anomalies
 ggplot(data = stn6all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
   geom_tile() +
   theme_classic() +
-  labs(title = "Standardized Daily Temperature Anomalies: Oswego, NY")+
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature Anomaly",
-                       low = "#2166ac",
-                       mid = "#d8daeb",
-                       high = "#b2182b",
-                       na.value = "white")
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") +
+  geom_hline(yintercept = c(1, 32, 62))+
+  labs(title = "Standardized Spring Temperature Anomalies in Oswego, NY")
+
 # raw anomalies
 ggplot(data = stn6all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
   geom_tile() +
   theme_classic() +
-  labs(title = "Daily Temperature Anomalies: Oswego, NY")+
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature Anomaly",
-                       low = "#2166ac",
-                       mid = "#d8daeb",
-                       high = "#b2182b",
-                       na.value = "white")
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") +
+  geom_hline(yintercept = c(1, 32, 62))+
+  labs(title = "Spring Temperature Anomalies in Oswego, NY")
 
+# Station 7
+# raw temps
+stn7all <- subset(SpringData, SpringData$StationID == "USC00309000")
+ggplot(data = stn7all, mapping = aes(x = Year, y = DayID, fill = tav)) +
+  geom_tile() +
+  theme_classic() +
+  scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
+  scale_fill_gradient2(name = "Temperature (c)",
+                       low = "#4393c3",
+                       mid = "#d1e5f0",
+                       high = "#d6604d",
+                       na.value = "white") +
+  geom_hline(yintercept = c(1, 32, 62))+
+  labs(title = "Spring Temperatures in Watertown, NY")
 
+# standardized anomalies
+ggplot(data = stn7all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
+  geom_tile() +
+  theme_classic() +
+  scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
+  scale_fill_gradient2(name = "Temperature Anomaly",
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") +
+  geom_hline(yintercept = c(1, 32, 62))+
+  labs(title = "Standardized Spring Temperature Anomalies in Watertown, NY")
+
+# raw anomalies
+ggplot(data = stn7all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
+  geom_tile() +
+  theme_classic() +
+  scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
+  scale_fill_gradient2(name = "Temperature Anomaly",
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") +
+  geom_hline(yintercept = c(1, 32, 62))+
+  labs(title = "Spring Temperature Anomalies in Watertown, NY")
 
 # Station 8
 # raw temps
@@ -3553,7 +3611,9 @@ ggplot(data = stn8all, mapping = aes(x = Year, y = DayID, fill = tav)) +
                        low = "#4393c3",
                        mid = "#d1e5f0",
                        high = "#d6604d",
-                       na.value = "white")
+                       na.value = "white") +
+  geom_hline(yintercept = c(1, 32, 62))+
+  labs(title = "Spring Temperatures in Albany, NY")
 
 # standardized anomalies
 ggplot(data = stn8all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
@@ -3564,7 +3624,9 @@ ggplot(data = stn8all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
                        low = "#4575b4",
                        mid = "#ffffbf",
                        high = "#d73027",
-                       na.value = "white")
+                       na.value = "white") +
+  geom_hline(yintercept = c(1, 32, 62))+
+  labs(title = "Standardized Spring Temperature Anomalies in Albany, NY")
 
 # raw anomalies
 ggplot(data = stn8all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
@@ -3572,7 +3634,174 @@ ggplot(data = stn8all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
   theme_classic() +
   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
   scale_fill_gradient2(name = "Temperature Anomaly",
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") +
+  geom_hline(yintercept = c(1, 32, 62))+
+  labs(title = "Spring Temperature Anomalies in Albany, NY")
+
+# Station 9
+# raw temps
+stn9all <- subset(SpringData, SpringData$StationID == "USW00014750")
+ggplot(data = stn9all, mapping = aes(x = Year, y = DayID, fill = tav)) +
+  geom_tile() +
+  theme_classic() +
+  scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
+  scale_fill_gradient2(name = "Temperature (c)",
                        low = "#4393c3",
                        mid = "#d1e5f0",
                        high = "#d6604d",
-                       na.value = "white")
+                       na.value = "white") +
+  geom_hline(yintercept = c(1, 32, 62))+
+  labs(title = "Spring Temperatures in Glens Falls, NY")
+
+# standardized anomalies
+ggplot(data = stn9all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
+  geom_tile() +
+  theme_classic() +
+  scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
+  scale_fill_gradient2(name = "Temperature Anomaly",
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") +
+  geom_hline(yintercept = c(1, 32, 62))+
+  labs(title = "Standardized Spring Temperature Anomalies in Glens Falls, NY")
+
+# raw anomalies
+ggplot(data = stn9all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
+  geom_tile() +
+  theme_classic() +
+  scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
+  scale_fill_gradient2(name = "Temperature Anomaly",
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") +
+  geom_hline(yintercept = c(1, 32, 62))+
+  labs(title = "Spring Temperature Anomalies in Glens Falls, NY")
+
+# Station 10
+# raw temps
+stn10all <- subset(SpringData, SpringData$StationID == "USW00014771")
+ggplot(data = stn10all, mapping = aes(x = Year, y = DayID, fill = tav)) +
+  geom_tile() +
+  theme_classic() +
+  scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
+  scale_fill_gradient2(name = "Temperature (c)",
+                       low = "#4393c3",
+                       mid = "#d1e5f0",
+                       high = "#d6604d",
+                       na.value = "white") +
+  geom_hline(yintercept = c(1, 32, 62))+
+  labs(title = "Spring Temperatures in Syracuse, NY")
+
+# standardized anomalies
+ggplot(data = stn10all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
+  geom_tile() +
+  theme_classic() +
+  scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
+  scale_fill_gradient2(name = "Temperature Anomaly",
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") +
+  geom_hline(yintercept = c(1, 32, 62))+
+  labs(title = "Standardized Spring Temperature Anomalies in Syracuse, NY")
+
+# raw anomalies
+ggplot(data = stn10all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
+  geom_tile() +
+  theme_classic() +
+  scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
+  scale_fill_gradient2(name = "Temperature Anomaly",
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") +
+  geom_hline(yintercept = c(1, 32, 62))+
+  labs(title = "Spring Temperature Anomalies in Syracuse, NY")
+
+# Station 11
+# raw temps
+stn11all <- subset(SpringData, SpringData$StationID == "USW00094725")
+ggplot(data = stn11all, mapping = aes(x = Year, y = DayID, fill = tav)) +
+  geom_tile() +
+  theme_classic() +
+  scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
+  scale_fill_gradient2(name = "Temperature (c)",
+                       low = "#4393c3",
+                       mid = "#d1e5f0",
+                       high = "#d6604d",
+                       na.value = "white") +
+  geom_hline(yintercept = c(1, 32, 62))+
+  labs(title = "Spring Temperatures in Massena, NY")
+
+# standardized anomalies
+ggplot(data = stn11all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
+  geom_tile() +
+  theme_classic() +
+  scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
+  scale_fill_gradient2(name = "Temperature Anomaly",
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") +
+  geom_hline(yintercept = c(1, 32, 62))+
+  labs(title = "Standardized Spring Temperature Anomalies in Massena, NY")
+
+# raw anomalies
+ggplot(data = stn11all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
+  geom_tile() +
+  theme_classic() +
+  scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
+  scale_fill_gradient2(name = "Temperature Anomaly",
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") +
+  geom_hline(yintercept = c(1, 32, 62))+
+  labs(title = "Spring Temperature Anomalies in Massena, NY")
+
+# Station 12
+# raw temps
+stn12all <- subset(SpringData, SpringData$StationID == "USW00094790")
+ggplot(data = stn12all, mapping = aes(x = Year, y = DayID, fill = tav)) +
+  geom_tile() +
+  theme_classic() +
+  scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
+  scale_fill_gradient2(name = "Temperature (c)",
+                       low = "#4393c3",
+                       mid = "#d1e5f0",
+                       high = "#d6604d",
+                       na.value = "white") +
+  geom_hline(yintercept = c(1, 32, 62))+
+  labs(title = "Spring Temperatures in Watertown Airport, NY")
+
+# standardized anomalies
+ggplot(data = stn12all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
+  geom_tile() +
+  theme_classic() +
+  scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
+  scale_fill_gradient2(name = "Temperature Anomaly",
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") +
+  geom_hline(yintercept = c(1, 32, 62))+
+  labs(title = "Standardized Spring Temperature Anomalies in Watertown Airport, NY")
+
+# raw anomalies
+ggplot(data = stn12all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
+  geom_tile() +
+  theme_classic() +
+  scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
+  scale_fill_gradient2(name = "Temperature Anomaly",
+                       low = "#4575b4",
+                       mid = "#ffffbf",
+                       high = "#d73027",
+                       na.value = "white") +
+  geom_hline(yintercept = c(1, 32, 62))+
+  labs(title = "Spring Temperature Anomalies in Watertown Airport, NY")
+
