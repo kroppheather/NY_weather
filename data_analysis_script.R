@@ -305,7 +305,7 @@ plot(allP, col="grey25",pch=19, add=TRUE)
 title(main= "Map of Stations with Tmax, Tmin, and Prcp")
 
 
-
+### WEEK 1 ----
 ### Creating one large data frame ----
 # join tmax, tmin, and prcp data
 AllData <- full_join(TmaxData, TminData, by = c("id"="id", "year"="year", "DOY" = "DOY"), copy = FALSE)
@@ -337,6 +337,17 @@ AllData$tav <- ((AllData$tmax - AllData$tmin)/2) + AllData$tmin
 # Adding freeze-thaw flag (less than -2.2 degrees and higher than 0 degrees in the same day)
 # Maybe change these numbers?
 AllData$FreezeThaw <- ifelse(AllData$tmin<(-2.2) & AllData$tmax>0, 1 , NA)
+
+# Adding Freeze Thaw Flags for types of days
+# Day Types: 1 = min/max < -2.2, 2 = min < -2.2 and max > 0, 3 = min/max > 0, 
+#            4 = min > -2.2 and max < 0
+AllData$DayType <- ifelse(AllData$tmin<=(-2.2) & AllData$tmax<=(-2.2), 1,
+                        ifelse(AllData$tmin<=(-2.2) & AllData$tmax>=0, 2,
+                               ifelse(AllData$tmin>=0 & AllData$tmax>=0, 3, 
+                                      ifelse(AllData$tmin>=(-2.2) & AllData$tmax<=0, 4, 0))))
+
+# Making Day Type a Factor
+AllData$DayType <- as.factor(AllData$DayType)
 
 # Adding range of freeze thaw column
 AllData$FTrange <- ifelse(AllData$FreezeThaw == 1, AllData$tmax - AllData$tmin, NA)
@@ -381,6 +392,7 @@ ExtVals$LoTmin <- aggregate(AllData$tmin, by = list(AllData$StationID, AllData$M
 
 # join extreme values to alldata
 AllData <- left_join(AllData, ExtVals, by = c("StationID", "Month","Year"))
+
 
 ## subset to spring data frame
 SpringData <- subset(AllData, AllData$Month %in% c("Mar","Apr","May"))
@@ -3798,3 +3810,13 @@ ggplot(data = stn12all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
                        na.value = "white") +
   geom_hline(yintercept = c(1, 32, 62))+
   labs(title = "Spring Temperature Anomalies in Watertown Airport, NY")
+
+### WEEK 2 ----
+# Day Type Heat Maps ----
+alldata1 <- subset(AllData, AllData$StationID == "USC00300785")
+ggplot(data = alldata1, mapping = aes(x = Year, y = DOY, fill = DayType)) +
+  geom_tile() +
+  theme_classic() +
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun")) +
+  scale_fill_manual(name = "Day Type", values = c("#000000", "#3399FF", "#FFFF99", "#EE6F6F", "#80FF00")) +
+  labs(title = "Types of Freeze Thaw Days in Boonville, NY")
