@@ -339,12 +339,14 @@ AllData$tav <- ((AllData$tmax - AllData$tmin)/2) + AllData$tmin
 AllData$FreezeThaw <- ifelse(AllData$tmin<(-2.2) & AllData$tmax>0, 1 , NA)
 
 # adding column of all freeze-thaw flags
-# 1 - hard freeze
+# 1 - freeze
 # 2 - freeze thaw day
-# 3 - warm 
-#
-AllData$DayType <- ifelse(AllData$tmin<=(-2.2) & AllData$tmax<=(-2.2), 1 , (ifelse(AllData$tmin<=(-2.2) & AllData$tmax>=0, 2 , (ifelse(AllData$tmin>=0 & AllData$tmax>=0, 3 , (ifelse(AllData$tmin>=(-2.2) & AllData$tmax<=0, 4, 0)))))))
+# 3 - thaw 
 
+
+AllData$DayType <- ifelse(AllData$tmin<0 & AllData$tmax<0, 1,
+                          ifelse(AllData$tmin<=0 & AllData$tmax>=0, 2,
+                                 ifelse(AllData$tmin>0 & AllData$tmax>0, 3, 0)))
 # format as factor
 AllData$DayType <- as.factor(AllData$DayType)
 
@@ -353,6 +355,7 @@ AllData$FTrange <- ifelse(AllData$FreezeThaw == 1, AllData$tmax - AllData$tmin, 
 
 # Making station column a factor
 AllData$StationID <- as.factor(AllData$StationID)
+
 
 
 # Extreme values (occur <5% of the time) 
@@ -392,6 +395,24 @@ ExtVals$LoTmin <- aggregate(AllData$tmin, by = list(AllData$StationID, AllData$M
 # join extreme values to alldata
 AllData <- left_join(AllData, ExtVals, by = c("StationID", "Month","Year"))
 
+# add thawing degree day accumulation
+AllData <- AllData %>%
+  group_by(Year, StationID) %>%
+  mutate(TDD = cumsum(ifelse(is.na(tav), 0, ifelse(tav >= 0, tav, 0))))
+
+# subset to each station 
+alldata1 <- subset(AllData, AllData$StationID=="USC00300785")
+alldata2 <- subset(AllData, AllData$StationID=="USC00301752")
+alldata3 <- subset(AllData, AllData$StationID=="USC00304102")
+alldata4 <- subset(AllData, AllData$StationID=="USC00304912")
+alldata5 <- subset(AllData, AllData$StationID=="USC00306085")
+alldata6 <- subset(AllData, AllData$StationID=="USC00306314")
+alldata7 <- subset(AllData, AllData$StationID=="USC00309000")
+alldata8 <- subset(AllData, AllData$StationID=="USW00014735")
+alldata9 <- subset(AllData, AllData$StationID=="USW00014750")
+alldata10 <- subset(AllData, AllData$StationID=="USW00014771")
+alldata11 <- subset(AllData, AllData$StationID=="USW00094725")
+alldata12 <- subset(AllData, AllData$StationID=="USW00094790")
 
 
 ## subset to spring data frame
@@ -3810,62 +3831,126 @@ ggplot(data = stn12all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
   geom_hline(yintercept = c(1, 32, 62))+
   labs(title = "Spring Temperature Anomalies in Watertown Airport, NY")
 
+
+
 ### Freeze Thaw Day Type Heat Maps----
 # station 1
-alldata1 <- subset(AllData, AllData$StationID=="USC00300785")
 ggplot(data= alldata1, mapping = aes(x= Year, y = DOY, fill = DayType))+
   geom_tile() +
   theme_classic()+
   scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
-  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  scale_fill_manual(values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white")+
   labs(title = "Boonville, NY")
   
 # station 2 
-alldata2 <- subset(AllData, AllData$StationID=="USC00301752")
 ggplot(data= alldata2, mapping = aes(x= Year, y = DOY, fill = DayType))+
   geom_tile() +
   theme_classic()+
   scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
-  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  scale_fill_manual(values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white")+
   labs(title = "Cooperstown, NY")
 
 # station 3 
-alldata3 <- subset(AllData, AllData$StationID=="USC00304102")
 ggplot(data= alldata3, mapping = aes(x= Year, y = DOY, fill = DayType))+
   geom_tile() +
   theme_classic()+
   scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
-  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  scale_fill_manual(values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white")+
   labs(title = "Indian Lake, NY")
 
 # station 4
-alldata4 <- subset(AllData, AllData$StationID=="USC00304912")
 ggplot(data= alldata4, mapping = aes(x= Year, y = DOY, fill = DayType))+
   geom_tile() +
   theme_classic()+
   scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
-  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  scale_fill_manual(values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white")+
   labs(title = "Lowville, NY")
 
 
 # station 5
-alldata5 <- subset(AllData, AllData$StationID=="USC00306085")
 ggplot(data= alldata5, mapping = aes(x= Year, y = DOY, fill = DayType))+
   geom_tile() +
   theme_classic()+
   scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
-  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  scale_fill_manual(values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white")+
   labs(title = "Norwich, NY")
 
 # station 6
-alldata6 <- subset(AllData, AllData$StationID=="USC00306314")
 ggplot(data= alldata6, mapping = aes(x= Year, y = DOY, fill = DayType))+
   geom_tile() +
   theme_classic()+
   scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
-  scale_fill_manual(values = c("#000000","#3399FF", "#FFFF99", "#EE6F6F", "#80FF00"), na.value = "white")+
+  scale_fill_manual(values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white")+
   labs(title = "Oswego, NY")
 
+# station 7
+ggplot(data= alldata7, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white")+
+  labs(title = "Watertown, NY")
 
+# station 8
+ggplot(data= alldata8, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white")+
+  labs(title = "Albany, NY")
+
+# station 9
+ggplot(data= alldata9, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white")+
+  labs(title = "Glens Falls, NY")
+
+# station 10
+ggplot(data= alldata10, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white")+
+  labs(title = "Syracuse, NY")
+
+# station 11
+ggplot(data= alldata11, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white")+
+  labs(title = "Massena, NY")
+
+# station 12
+ggplot(data= alldata12, mapping = aes(x= Year, y = DOY, fill = DayType))+
+  geom_tile() +
+  theme_classic()+
+  scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
+  scale_fill_manual(values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white")+
+  labs(title = "Watertown Airport, NY")
+
+### Thawing Degree Days ----
+# Accumulation Jan 1 - June 30
+
+#station 1 
+plot(alldata1$Year, alldata1$TDD,
+     type = "h",
+     xlab = "Year",
+     ylab = "Degrees (C)",
+     main = "Annual Thawing Degree Day Accumulation (Jan - June) Boonville, NY")
+
+# example of one year of TDD accumulation -- format for putting all years on one plot
+plot(alldata1$DOY[alldata1$Year == "2010"], alldata1$TDD[alldata1$Year == "2010"],
+     type = "l",
+     xlab = "DOY",
+     ylab = "Degrees (C)",
+     main = )
+
+### Day of Last Freeze ----
+LastFreeze <- subset(AllData, AllData$DayType == 1) 
+LastFreeze <- aggregate(LastFreeze$DOY, by = list(LastFreeze$StationID, LastFreeze$StationName, LastFreeze$Year), FUN = "max")
+colnames(LastFreeze) <- c("StationID", "StationName", "Year", "LastFreeze")
 
 
