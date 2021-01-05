@@ -3934,19 +3934,56 @@ ggplot(data= alldata12, mapping = aes(x= Year, y = DOY, fill = DayType))+
 ### Thawing Degree Days ----
 # Accumulation Jan 1 - June 30
 
-#station 1 
+# station 1 
 plot(alldata1$Year, alldata1$TDD,
      type = "h",
      xlab = "Year",
      ylab = "Degrees (C)",
-     main = "Annual Thawing Degree Day Accumulation (Jan - June) Boonville, NY")
+     main = "Thawing Degree Day Accumulation (Jan - June) Boonville, NY")
 
-# example of one year of TDD accumulation -- format for putting all years on one plot
+# station 2
+plot(alldata2$Year, alldata2$TDD,
+     type = "h",
+     xlab = "Year",
+     ylab = "Degrees (C)",
+     main = "Thawing Degree Day Accumulation (Jan - June) Cooperstown, NY")
+
+# station 3
+plot(alldata3$Year, alldata3$TDD,
+     type = "h",
+     xlab = "Year",
+     ylab = "Degrees (C)",
+     main = "Thawing Degree Day Accumulation (Jan - June) Indian Lake, NY")
+
+# station 4
+plot(alldata4$Year, alldata4$TDD,
+     type = "h",
+     xlab = "Year",
+     ylab = "Degrees (C)",
+     main = "Thawing Degree Day Accumulation (Jan - June) Lowville, NY")
+
+# station 5
+plot(alldata5$Year, alldata5$TDD,
+     type = "h",
+     xlab = "Year",
+     ylab = "Degrees (C)",
+     main = "Annual Thawing Degree Day Accumulation (Jan - June) Norwich, NY")
+
+# station 6
+plot(alldata6$Year, alldata6$TDD,
+     type = "h",
+     xlab = "Year",
+     ylab = "Degrees (C)",
+     main = "Annual Thawing Degree Day Accumulation (Jan - June) Oswego, NY")
+
+# example of one year of TDD accumulation 
+# format for putting all years on one plot 
+# make lines transparent
 plot(alldata1$DOY[alldata1$Year == "2010"], alldata1$TDD[alldata1$Year == "2010"],
      type = "l",
      xlab = "DOY",
      ylab = "Degrees (C)",
-     main = )
+     main = "Thawing Degree Days Accumulation Boonville, NY")
 
 ### Day of Last Freeze ----
 LastFreeze <- subset(AllData, AllData$DayType == 1) 
