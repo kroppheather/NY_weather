@@ -4012,14 +4012,54 @@ plot(alldata12$Year, alldata12$TDD,
      ylab = "Degrees (C)",
      main = "Annual Thawing Degree Day Accumulation (Jan - June) Watetown Airport, NY")
 
-# example of one year of TDD accumulation 
-# format for putting all years on one plot 
-# make lines transparent
-plot(alldata1$DOY[alldata1$Year == "2010"], alldata1$TDD[alldata1$Year == "2010"],
+# TJan-Jun TDD Accumulation with multiple years ----
+# station 1
+# original plot idea --> works well for one year
+# plot(alldata1$DOY[alldata1$Year == "1950"], alldata1$TDD[alldata1$Year == "1950"],
+#      type = "l",
+#      col = alpha("black", 0.5),
+#      xlab = "DOY",
+#      ylab = "Degrees (C)",
+#      main = "Thawing Degree Days Accumulation Boonville, NY")
+
+# trying for loop method
+# first create a vector with all the years to loop through (unique makes each year appear once)
+# needs to be a vector to subset i think
+stn1yrs <- unique(alldata1$Year) 
+stn1yrs <- as.vector(stn1yrs)
+# get the base plot with just the first year on there
+plot(alldata1$DOY[alldata1$Year == stn1yrs[1]], alldata1$TDD[alldata1$Year == stn1yrs[1]],
      type = "l",
+     col = alpha("darkblue", 0.5),
      xlab = "DOY",
      ylab = "Degrees (C)",
      main = "Thawing Degree Days Accumulation Boonville, NY")
+# loop through the rest of the years starting at the second index and add the line onto the plot
+# current year just keeps track of what year we're on to make it easier but we don't have to use it
+for (i in 2:length(stn1yrs)){
+  current_year = (stn1yrs[i])
+  lines(alldata1$DOY[alldata1$Year == current_year], alldata1$TDD[alldata1$Year == current_year],
+        col = alpha("darkblue", 0.5))
+}
+
+# station 2
+# first create a vector with all the years to loop through
+stn2yrs <- unique(alldata2$Year) 
+stn2yrs <- as.vector(stn2yrs)
+# get the base plot with just the first year on there
+plot(alldata1$DOY[alldata2$Year == stn2yrs[1]], alldata2$TDD[alldata2$Year == stn2yrs[1]],
+     type = "l",
+     col = alpha("darkblue", 0.5),
+     xlab = "DOY",
+     ylab = "Degrees (C)",
+     main = "Thawing Degree Days Accumulation Cooperstown, NY")
+# loop through the rest of the years starting at the second index and add the line onto the plot
+for (i in 2:length(stn2yrs)){
+  current_year = (stn2yrs[i])
+  lines(alldata2$DOY[alldata2$Year == current_year], alldata2$TDD[alldata2$Year == current_year],
+        col = alpha("darkblue", 0.5))
+}
+
 
 ### Day of Last Freeze ----
 LastFreeze <- subset(AllData, AllData$DayType == 1) 
@@ -4028,7 +4068,52 @@ colnames(LastFreeze) <- c("StationID", "StationName", "Year", "LastFreeze")
 
 # Plots of day of last freeze
 # station 1
+plot(LastFreeze$Year[LastFreeze$StationID == "USC00300785"], LastFreeze$LastFreeze[LastFreeze$StationID == "USC00300785"],
+     type = "o",
+     pch = 20,
+     xlab = "Year",
+     ylab = "DOY of Last Freeze",
+     main = "Day of Year of Last Freeze in Boonville, NY")
 
+# station 2
+plot(LastFreeze$Year[LastFreeze$StationID == "USC00301752"], LastFreeze$LastFreeze[LastFreeze$StationID == "USC00301752"],
+     type = "o",
+     pch = 20,
+     xlab = "Year",
+     ylab = "DOY of Last Freeze",
+     main = "Day of Year of Last Freeze in Cooperstown, NY")
+
+# station 3
+plot(LastFreeze$Year[LastFreeze$StationID == "USC00304102"], LastFreeze$LastFreeze[LastFreeze$StationID == "USC00304102"],
+     type = "o",
+     pch = 20,
+     xlab = "Year",
+     ylab = "DOY of Last Freeze",
+     main = "Day of Year of Last Freeze in Indian Lake, NY")
+
+# station 4
+plot(LastFreeze$Year[LastFreeze$StationID == "USC00304912"], LastFreeze$LastFreeze[LastFreeze$StationID == "USC00304912"],
+     type = "o",
+     pch = 20,
+     xlab = "Year",
+     ylab = "DOY of Last Freeze",
+     main = "Day of Year of Last Freeze in Lowville, NY")
+
+# station 5
+plot(LastFreeze$Year[LastFreeze$StationID == "USC00306085"], LastFreeze$LastFreeze[LastFreeze$StationID == "USC00306085"],
+     type = "o",
+     pch = 20,
+     xlab = "Year",
+     ylab = "DOY of Last Freeze",
+     main = "Day of Year of Last Freeze in Norwich, NY")
+
+# station 6
+plot(LastFreeze$Year[LastFreeze$StationID == "USC00306314"], LastFreeze$LastFreeze[LastFreeze$StationID == "USC00306314"],
+     type = "o",
+     pch = 20,
+     xlab = "Year",
+     ylab = "DOY of Last Freeze",
+     main = "Day of Year of Last Freeze in Oswego, NY")
 
 # station 7
 plot(LastFreeze$Year[LastFreeze$StationID == "USC00309000"], LastFreeze$LastFreeze[LastFreeze$StationID == "USC00309000"],
