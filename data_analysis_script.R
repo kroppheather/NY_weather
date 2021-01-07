@@ -398,6 +398,7 @@ AllData <- left_join(AllData, ExtVals, by = c("StationID", "Month","Year"))
 # add thawing degree day accumulation
 AllData <- AllData %>%
   group_by(Year, StationID) %>%
+  arrange(DOY) %>%
   mutate(TDD = cumsum(ifelse(is.na(tav), 0, ifelse(tav >= 0, tav, 0))))
 
 # subset to each station 
@@ -4031,21 +4032,21 @@ plot(alldata1$DOY[alldata1$Year == "2010"], alldata1$TDD[alldata1$Year == "2010"
 # for loop to add all years
 # first create a vector with all the years to loop through (unique makes each year appear once)
 # needs to be a vector to subset i think
-stn1yrs <- unique(alldata1$Year) 
-stn1yrs <- as.vector(stn1yrs)
+stn1yrs <- unique(data.frame(Year = alldata1$Year, Decade = alldata1$Decade)) 
+stn1yrs$color <- ifelse(stn1yrs$Decade >= 2000, "#8b0000", "#00008b") # can add alpha instead of hex code
 # get the base plot with just the first year on there
-plot(alldata1$DOY[alldata1$Year == stn1yrs[1]], alldata1$TDD[alldata1$Year == stn1yrs[1]],
+plot(alldata1$DOY[alldata1$Year == stn1yrs$Year[1]], alldata1$TDD[alldata1$Year == stn1yrs$Year[1]],
      type = "l",
-     col = alpha("darkblue", 0.5),
+     col = stn1yrs$color[1],
      xlab = "DOY",
      ylab = "Degrees (C)",
      main = "Thawing Degree Days Accumulation Boonville, NY")
 # loop through the rest of the years starting at the second index and add the line onto the plot
 # current year just keeps track of what year we're on to make it easier but we don't have to use it
-for (i in 2:length(stn1yrs)){
-  current_year = (stn1yrs[i])
+for (i in 2:nrow(stn1yrs)){
+  current_year = (stn1yrs$Year[i])
   lines(alldata1$DOY[alldata1$Year == current_year], alldata1$TDD[alldata1$Year == current_year],
-        col = alpha("darkblue", 0.5))
+        col = stn1yrs$color[i])
 }
 
 
@@ -4054,17 +4055,16 @@ for (i in 2:length(stn1yrs)){
 stn2yrs <- unique(alldata2$Year) 
 stn2yrs <- as.vector(stn2yrs)
 # get the base plot with just the first year on there
-plot(alldata1$DOY[alldata2$Year == stn2yrs[1]], alldata2$TDD[alldata2$Year == stn2yrs[1]],
+plot(alldata2$DOY[alldata2$Year == stn2yrs[1]], alldata2$TDD[alldata2$Year == stn2yrs[1]],
      type = "l",
      col = alpha("darkblue", 0.5),
      xlab = "DOY",
      ylab = "Degrees (C)",
      main = "Thawing Degree Days Accumulation Cooperstown, NY")
 # loop through the rest of the years starting at the second index and add the line onto the plot
-for (i in 2:length(stn2yrs)){
-  current_year = (stn2yrs[i])
+for (current_year in stn2yrs[-1]){
   lines(alldata2$DOY[alldata2$Year == current_year], alldata2$TDD[alldata2$Year == current_year],
-        col = alpha("darkblue", 0.5))
+      col = alpha("darkblue", 0.5))
 }
 
 
@@ -4077,6 +4077,8 @@ colnames(LastFreeze) <- c("StationID", "StationName", "Year", "DOY")
 # joining with all data to get the TDD on the day of last freeze
 LastFreeze <- inner_join(LastFreeze, AllData, by = c("StationID", "StationName", "Year","DOY"))
 LastFreeze <- LastFreeze[c("StationID", "StationName", "Year","DOY", "TDD")]
+
+# maybe add in temperature of last freeze day
 
 # Plots of day of last freeze and accumulated TDD
 # station 1
@@ -4232,20 +4234,27 @@ plot(LastFreeze$Year[LastFreeze$StationID == "USW00094790"], LastFreeze$DOY[Last
 
 
 ### number of hard freeze days in march and april ----
-FreezeDays <- subset(AllData, AllData$DayType == 1)
-FreezeDays <- aggregate(FreezeDays$DOY, by = list(FreezeDays$StationID, FreezeDays$StationName, FreezeDays$Year, FreezeDays$Month), FUN = "length", drop = FALSE)
-colnames(FreezeDays) <- c("StationID", "StationName", "Year", "Month","FreezeDays")
-FreezeDays$FreezeDays[is.na(FreezeDays$FreezeDays)] <- 0
+FreezeDay <- AllData[AllData$DayType == 1,1:6]
+FreezeN <- aggregate(FreezeDay$DOY, by = list(FreezeDay$StationID, FreezeDay$StationName, FreezeDay$Year, FreezeDay$Month), FUN = "length")
+colnames(FreezeN) <- c("StationID", "StationName", "year", "month","FreezeCount")
+FreezeN2 <- 
+  # full_join(FreezeN, SpringMonths[,1:4], by = c("StationID", "StationName", "year", "month"))
+
+# fix names of dataframes   
+# type = b for march
+  # pch 19
+  # april: points()
+  
 
 # station 1
 plot(FreezeDays$Year[FreezeDays$StationID == "USC00300785" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00300785" & FreezeDays$Month == "Mar"],
-     type = "l",
+     type = "h",
      col = "lightskyblue",
      xlab = "Year",
      ylab = "Number of Days",
      main = "Days below Freezing in Boonville, NY")
 lines(FreezeDays$Year[FreezeDays$StationID == "USC00300785" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00300785" & FreezeDays$Month == "Apr"],
-      type = "l",
+      type = "h",
       col = "green4")
 legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
 
@@ -4298,14 +4307,14 @@ lines(FreezeDays$Year[FreezeDays$StationID == "USC00306085" & FreezeDays$Month =
 legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
 
 # station 6
-plot(FreezeDays$Year[FreezeDays$StationID == "USC00306314" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00306314" & FreezeDays$Month == "Mar"],
-     type = "l",
+plot(FreezeN2$year[FreezeN2$StationID == "USC00306314" & FreezeN2$month == "Mar"], FreezeN2$FreezeDays[FreezeDays$StationID == "USC00306314" & FreezeDays$Month == "Mar"],
+     type = "h",
      col = "lightskyblue",
      xlab = "Year",
      ylab = "Number of Days",
      main = "Days below Freezing in Oswego, NY")
 lines(FreezeDays$Year[FreezeDays$StationID == "USC00306314" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00306314" & FreezeDays$Month == "Apr"],
-      type = "l",
+      type = "h",
       col = "green4")
 legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
 
