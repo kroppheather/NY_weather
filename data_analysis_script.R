@@ -316,10 +316,18 @@ title(main= "Map of Stations with Tmax, Tmin, and Prcp")
 
 ### WEEK 1 ----
 ### Creating one large data frame ----
+# creating data frame with stations and range of years
+# trying to join a data frame with all years, stations, and months back in with AllData to fill in missing years
+StnList <- as.vector(rep(AllStn$station_id,  times = 6))
+AllYear <- data.frame(year=rep(seq(1890,2020), each = 12, times = 6))
+AllYear$id <- rep(StnList, times = 131)
+AllYear$Month <- rep(c("Jan", "Feb", "Mar", "Apr", "May", "Jun"), each = 12, times = 131)
+
 # join tmax, tmin, and prcp data
 AllData <- full_join(TmaxData, TminData, by = c("id"="id", "date" = "date", "year"="year", "DOY" = "DOY"), copy = FALSE)
-# AllData <- full_join(AllData, PrcpData, by = c("id"="id",  "date" = "date", "year"="year", "DOY" = "DOY"), copy = FALSE)
-AllData <- left_join(AllData, PrcpData, by = c("id"="id",  "date" = "date", "year"="year", "DOY" = "DOY"), copy = FALSE)
+AllData <- full_join(AllData, PrcpData, by = c("id"="id",  "date" = "date", "year"="year", "DOY" = "DOY"), copy = FALSE)
+# added this left join before to only have data where we have tmax, tmin but changed back to full join bc missing years should be blank
+# AllData <- left_join(AllData, PrcpData, by = c("id"="id",  "date" = "date", "year"="year", "DOY" = "DOY"), copy = FALSE)
 
 # add station names of the 12 good stations
 AllData <- inner_join(AllData, AllStn, by = c("id"="station_id"))
@@ -329,6 +337,9 @@ AllData$Month <- month(AllData$date, label = TRUE)
 
 # add decade column
 AllData$Decade <- AllData$year - (AllData$year %% 10)
+
+# adding back in missing years
+AllData <- full_join(AllData, AllYear, by = c("year" = "year", "id" ="id", "Month" = "Month"))
 
 # Subset to just keep id, tmin, tmax, year, doy
 AllData <- data.frame(StationID = AllData$id, 
@@ -426,9 +437,11 @@ alldata10 <- subset(AllData, AllData$StationID=="USW00014771")
 alldata11 <- subset(AllData, AllData$StationID=="USW00094725")
 alldata12 <- subset(AllData, AllData$StationID=="USW00094790")
 
+
 ## subset to spring data frame
 SpringData <- subset(AllData, AllData$Month %in% c("Mar","Apr","May"))
 SpringData$DayID <- ifelse(leap_year(SpringData$Year), SpringData$DOY - 60, SpringData$DOY - 59)
+
 
 # spring anomalies
 SpringAnomaly <- aggregate(SpringData$tav, by = list(SpringData$StationID, SpringData$StationName, SpringData$DOY), FUN = "mean", na.rm = TRUE)
