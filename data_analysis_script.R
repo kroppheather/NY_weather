@@ -4032,6 +4032,93 @@ for (i in 2:nrow(stn1yrs)){
         col = stn1yrs$color[i])
 }
 
+# station 2
+stn2yrs <- unique(data.frame(Year = alldata2$Year, Decade = alldata2$Decade)) 
+stn2yrs$color <- ifelse(stn2yrs$Decade >= 2010, "#FF9900", alpha("#00008b", 0.3))
+# get the base plot with just the first year on there
+plot(alldata2$DOY[alldata2$Year == stn2yrs$Year[1]], alldata2$TDD[alldata2$Year == stn2yrs$Year[1]],
+     type = "l",
+     col = stn2yrs$color[1],
+     xlab = "DOY",
+     ylab = "Degrees (C)",
+     main = "Thawing Degree Days Accumulation Cooperstown, NY")
+# loop through the rest of the years starting at the second index and add the line onto the plot
+for (i in 2:nrow(stn2yrs)){
+  current_year = (stn2yrs$Year[i])
+  lines(alldata2$DOY[alldata2$Year == current_year], alldata2$TDD[alldata2$Year == current_year],
+        col = stn2yrs$color[i])
+}
+
+# station 3
+stn3yrs <- unique(data.frame(Year = alldata3$Year, Decade = alldata3$Decade)) 
+stn3yrs$color <- ifelse(stn3yrs$Decade >= 2010, "#FF9900", alpha("#00008b", 0.3))
+# get the base plot with just the first year on there
+plot(alldata3$DOY[alldata3$Year == stn3yrs$Year[1]], alldata3$TDD[alldata3$Year == stn3yrs$Year[1]],
+     type = "l",
+     col = stn3yrs$color[1],
+     xlab = "DOY",
+     ylab = "Degrees (C)",
+     main = "Thawing Degree Days Accumulation Indian Lake, NY")
+# loop through the rest of the years starting at the second index and add the line onto the plot
+for (i in 2:nrow(stn3yrs)){
+  current_year = (stn3yrs$Year[i])
+  lines(alldata3$DOY[alldata3$Year == current_year], alldata3$TDD[alldata3$Year == current_year],
+        col = stn3yrs$color[i])
+}
+
+# station 4
+stn4yrs <- unique(data.frame(Year = alldata4$Year, Decade = alldata4$Decade)) 
+stn4yrs$color <- ifelse(stn4yrs$Decade >= 2010, "#FF9900", alpha("#00008b", 0.3))
+# get the base plot with just the first year on there
+plot(alldata4$DOY[alldata4$Year == stn4yrs$Year[1]], alldata4$TDD[alldata4$Year == stn4yrs$Year[1]],
+     type = "l",
+     col = stn4yrs$color[1],
+     xlab = "DOY",
+     ylab = "Degrees (C)",
+     main = "Thawing Degree Days Accumulation Lowville, NY")
+# loop through the rest of the years starting at the second index and add the line onto the plot
+for (i in 2:nrow(stn4yrs)){
+  current_year = (stn4yrs$Year[i])
+  lines(alldata4$DOY[alldata4$Year == current_year], alldata4$TDD[alldata4$Year == current_year],
+        col = stn4yrs$color[i])
+}
+
+# station 5
+stn5yrs <- unique(data.frame(Year = alldata5$Year, Decade = alldata5$Decade)) 
+stn5yrs$color <- ifelse(stn5yrs$Decade >= 2010, "#FF9900", alpha("#00008b", 0.3))
+# get the base plot with just the first year on there
+plot(alldata5$DOY[alldata5$Year == stn5yrs$Year[1]], alldata5$TDD[alldata5$Year == stn5yrs$Year[1]],
+     type = "l",
+     col = stn5yrs$color[1],
+     xlab = "DOY",
+     ylab = "Degrees (C)",
+     main = "Thawing Degree Days Accumulation Norwich, NY")
+# loop through the rest of the years starting at the second index and add the line onto the plot
+for (i in 2:nrow(stn5yrs)){
+  current_year = (stn5yrs$Year[i])
+  lines(alldata5$DOY[alldata5$Year == current_year], alldata5$TDD[alldata5$Year == current_year],
+        col = stn5yrs$color[i])
+}
+
+# station 6
+stn6yrs <- unique(data.frame(Year = alldata6$Year, Decade = alldata6$Decade)) 
+stn6yrs$color <- ifelse(stn6yrs$Decade >= 2010, "#FF9900", alpha("#00008b", 0.3))
+# highlight just 2012 
+# stn6yrs$color <- ifelse(stn6yrs$Year == 2012, "#FF9900", alpha("#00008b", 0.3))
+# get the base plot with just the first year on there
+plot(alldata6$DOY[alldata6$Year == stn6yrs$Year[1]], alldata6$TDD[alldata6$Year == stn6yrs$Year[1]],
+     type = "l",
+     col = stn6yrs$color[1],
+     xlab = "DOY",
+     ylab = "Degrees (C)",
+     main = "Thawing Degree Days Accumulation Oswego, NY")
+# loop through the rest of the years starting at the second index and add the line onto the plot
+for (i in 2:nrow(stn6yrs)){
+  current_year = (stn6yrs$Year[i])
+  lines(alldata6$DOY[alldata6$Year == current_year], alldata6$TDD[alldata6$Year == current_year],
+        col = stn6yrs$color[i])
+}
+
 # station 7
 stn7yrs <- unique(data.frame(Year = alldata7$Year, Decade = alldata7$Decade)) 
 stn7yrs$color <- ifelse(stn7yrs$Decade >= 2010, alpha("#FF9900", 1), alpha("#00008b", 0.3))
