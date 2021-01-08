@@ -88,7 +88,7 @@ colnames(TmaxDataYear) <- c("station", "year", "ncount")
 
 # Getting rid of rows with less than 171 observations
 TmaxDataYear <- subset(TmaxDataYear, TmaxDataYear$ncount >= 171)
-# get rid of years with missing data in TmaxData
+# Remove years with too much missing data 
 TmaxData <- inner_join(TmaxData, TmaxDataYear, by = c("id" = "station", "year"="year"))
 
 # Counting observations per year for the tmin data
@@ -314,10 +314,17 @@ title(main= "Map of Stations with Tmax, Tmin, and Prcp")
 
 
 ### Creating one large data frame ----
+
+### added 1/8 ####
+# make all year data frame for reference
+StnList <- as.vector(rep(AllStn$station_id,  times = 6))
+AllYear <- data.frame(year=rep(seq(1890,2020), each = 12, times = 6))
+AllYear$id <- rep(StnList, times = 131)
+AllYear$Month <- rep(c("Jan", "Feb", "Mar", "Apr", "May", "Jun"), each = 12, times = 131)
+
 # join tmax, tmin, and prcp data
 AllData <- full_join(TmaxData, TminData, by = c("id"="id", "date" = "date", "year"="year", "DOY" = "DOY"), copy = FALSE)
-AllData <- left_join(AllData, PrcpData, by = c("id"="id", "date" = "date", "year"="year", "DOY" = "DOY"), copy = FALSE)
-# AllData <- full_join(AllData, PrcpData, by = c("id"="id", "date" = "date", "year"="year", "DOY" = "DOY"), copy = FALSE)
+AllData <- full_join(AllData, PrcpData, by = c("id"="id", "date" = "date", "year"="year", "DOY" = "DOY"), copy = FALSE)
 
 # add station names of the 12 good stations
 AllData <- inner_join(AllData, AllStn, by = c("id"="station_id"))
@@ -327,6 +334,10 @@ AllData$Month <- month(AllData$date, label = TRUE)
 
 # add decade column
 AllData$Decade <- AllData$year - (AllData$year %% 10)
+
+### added 1/8 ####
+# add back in years/months with missing data (fill with NA)
+AllData <- full_join(AllData, AllYear, by = c("year","id","Month"))
 
 # Subset to just keep id, tmin, tmax, year, doy
 AllData <- data.frame(StationID = AllData$id, 
