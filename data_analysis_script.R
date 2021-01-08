@@ -88,6 +88,8 @@ colnames(TmaxDataYear) <- c("station", "year", "ncount")
 
 # Getting rid of rows with less than 171 observations
 TmaxDataYear <- subset(TmaxDataYear, TmaxDataYear$ncount >= 171)
+# get rid of years with missing data in TmaxData
+TmaxData <- inner_join(TmaxData, TmaxDataYear, by = c("id" = "station", "year"="year"))
 
 # Counting observations per year for the tmin data
 # Make new data frame with just the id, tmin value, and year
@@ -98,6 +100,8 @@ colnames(TminDataYear) <- c("station", "year", "ncount")
 
 # Getting rid of rows with less than 171 observations
 TminDataYear <- subset(TminDataYear, TminDataYear$ncount >= 171)
+# get rid of years with missing data from TminData
+TminData <- inner_join(TminData, TminDataYear, by = c("id" = "station", "year"="year"))
 
 # Counting observations per year for the prcp data
 # Make new data frame with just the id, prcp value, and year
@@ -106,7 +110,10 @@ PrcpDataYear <- aggregate(PrcpData$prcp, by=list(PrcpData$id,PrcpData$year), FUN
 # Changing column names
 colnames(PrcpDataYear) <- c("station", "year", "ncount")
 
+# Getting rid of rows with less than 171 observations
 PrcpDataYear <- subset(PrcpDataYear, PrcpDataYear$ncount >= 171)
+# get rid of years with missing data from PrcpData
+PrcpData <- inner_join(PrcpData, PrcpDataYear, by = c("id" = "station", "year"="year"))
 
 # Counting number of years per station for tmax
 TmaxStn <- aggregate(TmaxDataYear$year, by=list(TmaxDataYear$station), FUN="length")
@@ -309,7 +316,8 @@ title(main= "Map of Stations with Tmax, Tmin, and Prcp")
 ### Creating one large data frame ----
 # join tmax, tmin, and prcp data
 AllData <- full_join(TmaxData, TminData, by = c("id"="id", "date" = "date", "year"="year", "DOY" = "DOY"), copy = FALSE)
-AllData <- full_join(AllData, PrcpData, by = c("id"="id", "date" = "date", "year"="year", "DOY" = "DOY"), copy = FALSE)
+AllData <- left_join(AllData, PrcpData, by = c("id"="id", "date" = "date", "year"="year", "DOY" = "DOY"), copy = FALSE)
+# AllData <- full_join(AllData, PrcpData, by = c("id"="id", "date" = "date", "year"="year", "DOY" = "DOY"), copy = FALSE)
 
 # add station names of the 12 good stations
 AllData <- inner_join(AllData, AllStn, by = c("id"="station_id"))
@@ -400,6 +408,13 @@ AllData <- AllData %>%
   group_by(Year, StationID) %>%
   arrange(DOY) %>%
   mutate(TDD = cumsum(ifelse(is.na(tav), 0, ifelse(tav >= 0, tav, 0))))
+
+# add growing degree day accumulation 
+AllData <- AllData %>%
+  group_by(Year, StationID) %>%
+  arrange(DOY) %>%
+  mutate(GDD41 = cumsum(ifelse(is.na(tav), 0, ifelse(tav >= 5, (tav-5), 0))))
+
 
 # subset to each station 
 alldata1 <- subset(AllData, AllData$StationID=="USC00300785")
@@ -4052,9 +4067,14 @@ plot(alldata2$DOY[alldata2$Year == stn2yrs$Year[1]], alldata2$TDD[alldata2$Year 
 # loop through the rest of the years starting at the second index and add the line onto the plot
 for (i in 2:nrow(stn2yrs)){
   current_year = (stn2yrs$Year[i])
+  if (sum(alldata2$TDD[alldata2$Year == current_year]) == 0){
+    next
+  }
   lines(alldata2$DOY[alldata2$Year == current_year], alldata2$TDD[alldata2$Year == current_year],
         col = stn2yrs$color[i])
 }
+
+
 
 # station 3
 stn3yrs <- unique(data.frame(Year = alldata3$Year, Decade = alldata3$Decade)) 
@@ -4067,8 +4087,12 @@ plot(alldata3$DOY[alldata3$Year == stn3yrs$Year[1]], alldata3$TDD[alldata3$Year 
      ylab = "Degrees (C)",
      main = "Thawing Degree Days Accumulation Indian Lake, NY")
 # loop through the rest of the years starting at the second index and add the line onto the plot
+# loop through the rest of the years starting at the second index and add the line onto the plot
 for (i in 2:nrow(stn3yrs)){
   current_year = (stn3yrs$Year[i])
+  if (sum(alldata3$TDD[alldata3$Year == current_year]) == 0){
+    next
+  }
   lines(alldata3$DOY[alldata3$Year == current_year], alldata3$TDD[alldata3$Year == current_year],
         col = stn3yrs$color[i])
 }
@@ -4084,8 +4108,12 @@ plot(alldata4$DOY[alldata4$Year == stn4yrs$Year[1]], alldata4$TDD[alldata4$Year 
      ylab = "Degrees (C)",
      main = "Thawing Degree Days Accumulation Lowville, NY")
 # loop through the rest of the years starting at the second index and add the line onto the plot
+# loop through the rest of the years starting at the second index and add the line onto the plot
 for (i in 2:nrow(stn4yrs)){
   current_year = (stn4yrs$Year[i])
+  if (sum(alldata4$TDD[alldata4$Year == current_year]) == 0){
+    next
+  }
   lines(alldata4$DOY[alldata4$Year == current_year], alldata4$TDD[alldata4$Year == current_year],
         col = stn4yrs$color[i])
 }
@@ -4122,6 +4150,9 @@ plot(alldata6$DOY[alldata6$Year == stn6yrs$Year[1]], alldata6$TDD[alldata6$Year 
 # loop through the rest of the years starting at the second index and add the line onto the plot
 for (i in 2:nrow(stn6yrs)){
   current_year = (stn6yrs$Year[i])
+  if (sum(alldata6$TDD[alldata6$Year == current_year]) == 0){
+    next
+  }
   lines(alldata6$DOY[alldata6$Year == current_year], alldata6$TDD[alldata6$Year == current_year],
         col = stn6yrs$color[i])
 }
@@ -4727,3 +4758,28 @@ points(FreezeDays$Year[FreezeDays$StationID == "USW00094790" & FreezeDays$Month 
        col = "green4",
        lwd = 2)
 legend("topleft", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
+
+
+# growing degree days ----
+# apples base = 41 degrees F
+# Norwich 
+plot(alldata5$DOY[alldata5$Year == 2012], alldata5$GDD41[alldata5$Year == 2012],
+     type = "l",
+     col = "deepskyblue3",
+     xlab = "DOY",
+     ylab = "Growing Degree Days",
+     main = "Apple Growing Degree Days Accumulation Norwich, NY")
+abline(h = 100, col = "red3")
+abline(h = 400, col = "red4")
+abline(v = LastFreeze$DOY[LastFreeze$StationID == "USC00306085" & LastFreeze$Year == 2012])
+
+# boonville 
+plot(alldata1$DOY[alldata1$Year == 2012], alldata1$GDD41[alldata1$Year == 2012],
+     type = "l",
+     col = "deepskyblue3",
+     xlab = "DOY",
+     ylab = "Growing Degree Days",
+     main = "Apple Growing Degree Days Accumulation Boonville, NY")
+abline(h = 100, col = "red3")
+abline(h = 400, col = "red4")
+abline(v = LastFreeze$DOY[LastFreeze$StationID == "USC00300785" & LastFreeze$Year == 2012])
