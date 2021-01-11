@@ -81,6 +81,7 @@ PrcpData$prcp <- PrcpData$prcp/10
 ### Narrow down to good stations ----
 # Counting observations per year for the tmax data
 # Make new data frame with just the id, tmax value, and year
+# do we need an na.rm here?
 TmaxDataYear <- aggregate(TmaxData$tmax, by=list(TmaxData$id,TmaxData$year), FUN="length")
 
 # Changing column names
@@ -139,6 +140,7 @@ TmaxStn <- subset(TmaxStn, TmaxStn$ycount >= 50)
 TmaxStn$pctcont <- TmaxStn$ycount/TmaxStn$range
 
 # Getting rid of rows with less than 75% of years in their range
+# should we make this more strict? (ex: cooperstown at 85%)
 TmaxStn <- subset(TmaxStn, TmaxStn$pctcont >= .75)
 
 # Narrow down to rows with max year = 2019
@@ -199,6 +201,7 @@ PrcpStn <- subset(PrcpStn, PrcpStn$pctcont >= .75)
 PrcpStn <- subset(PrcpStn, PrcpStn$max == 2019)
 
 ### Map stations ----
+# map colors dont show up for tmin or all stn (get an error with rep function)
 #start by mapping all stations
 #assume coordinates are in WGS 84
 #epsg 4326
@@ -316,16 +319,22 @@ title(main= "Map of Stations with Tmax, Tmin, and Prcp")
 
 ### WEEK 1 ----
 ### Creating one large data frame ----
-# creating data frame with stations and range of years
-# trying to join a data frame with all years, stations, and months back in with AllData to fill in missing years
-StnList <- as.vector(rep(AllStn$station_id,  times = 6))
-AllYear <- data.frame(year=rep(seq(1890,2020), each = 12, times = 6))
-AllYear$id <- rep(StnList, times = 131)
-AllYear$Month <- rep(c("Jan", "Feb", "Mar", "Apr", "May", "Jun"), each = 12, times = 131)
+
+# create a data frame with all years and stations to join in with AllData to fill in missing years
+StnList <- as.vector(AllStn$station_id)
+AllYear <- data.frame(year=rep(seq(1890,2020), each = 12))
+AllYear$id = rep(StnList1, times = 131)
+
+# create a data frame with all years, stations, and months back to join in with AllData to fill in missing years
+AllMonth <- data.frame(year=rep(seq(1890,2020), each = 12, times = 6))
+AllMonth$id <- rep(StnList, times = 131*6)
+AllMonth$Month <- rep(month(c(1, 2, 3, 4, 5, 6), label = TRUE), each = 12, times = 131)
 
 # join tmax, tmin, and prcp data
+# what does the copy = FALSE do?
 AllData <- full_join(TmaxData, TminData, by = c("id"="id", "date" = "date", "year"="year", "DOY" = "DOY"), copy = FALSE)
 AllData <- full_join(AllData, PrcpData, by = c("id"="id",  "date" = "date", "year"="year", "DOY" = "DOY"), copy = FALSE)
+
 # added this left join before to only have data where we have tmax, tmin but changed back to full join bc missing years should be blank
 # AllData <- left_join(AllData, PrcpData, by = c("id"="id",  "date" = "date", "year"="year", "DOY" = "DOY"), copy = FALSE)
 
@@ -339,7 +348,7 @@ AllData$Month <- month(AllData$date, label = TRUE)
 AllData$Decade <- AllData$year - (AllData$year %% 10)
 
 # adding back in missing years
-AllData <- full_join(AllData, AllYear, by = c("year" = "year", "id" ="id", "Month" = "Month"))
+AllData <- full_join(AllData, AllMonth, by = c("year" = "year", "id" ="id", "Month" = "Month"))
 
 # Subset to just keep id, tmin, tmax, year, doy
 AllData <- data.frame(StationID = AllData$id, 
@@ -356,7 +365,6 @@ AllData <- data.frame(StationID = AllData$id,
 AllData$tav <- ((AllData$tmax - AllData$tmin)/2) + AllData$tmin 
 
 # Adding freeze-thaw flag (less than -2.2 degrees and higher than 0 degrees in the same day)
-# Maybe change these numbers?
 AllData$FreezeThaw <- ifelse(AllData$tmin<(-2.2) & AllData$tmax>0, 1 , NA)
 
 # Adding Freeze Thaw Flags for types of days
@@ -368,11 +376,11 @@ AllData$DayType <- ifelse(AllData$tmin<0 & AllData$tmax<0, 1,
 # Making Day Type a Factor
 AllData$DayType <- as.factor(AllData$DayType)
 
-# Adding range of freeze thaw column
-AllData$FTrange <- ifelse(AllData$FreezeThaw == 1, AllData$tmax - AllData$tmin, NA)
-
 # Making station column a factor
 AllData$StationID <- as.factor(AllData$StationID)
+
+# Adding range of freeze thaw column
+AllData$FTrange <- ifelse(AllData$FreezeThaw == 1, AllData$tmax - AllData$tmin, NA)
 
 # Extreme values (occur <5% of the time) 
 ## make table of extreme values for each station, then can join into AllData, then can highlight tmax higher than extreme value
@@ -456,6 +464,10 @@ SpringData$AnRaw <- (SpringData$tav - SpringData$DayTav)
 SpringData$AnStd <- (SpringData$tav - SpringData$DayTav) / SpringData$sd
 
 # make a data frame of monthly averages
+# does not include missing years because of the aggregate function
+# how to we tell it to make years with no data into 0's or na's?
+# ref spring decade av obs 7 for example of what we want to see
+# any difference bw na and nan?
 SpringMonths <- aggregate(SpringData$tmax, by=list(SpringData$Year,SpringData$StationID, SpringData$StationName, SpringData$Month), FUN="mean", na.rm = TRUE)
 colnames(SpringMonths) <- c("year","StationID","StationName", "month","tmax")
 SpringMonths$tmin <- aggregate(SpringData$tmin, by=list(SpringData$Year,SpringData$StationID,SpringData$StationName,SpringData$Month), FUN="mean", na.rm = TRUE)$x
@@ -469,6 +481,8 @@ SpringMonths$ExLoCount <- aggregate(SpringData$ExtrLo, by=list(SpringData$Year, 
 # add columns with freeze thaw flags and range
 SpringMonths$FTdays <- aggregate(SpringData$FreezeThaw, by=list(SpringData$Year, SpringData$StationID, SpringData$StationName,SpringData$Month), FUN="sum", na.rm = TRUE)$x
 SpringMonths$FTrange <- aggregate(SpringData$FTrange, by=list(SpringData$Year, SpringData$StationID, SpringData$StationName,SpringData$Month), FUN="mean", na.rm = TRUE)$x
+# join with alldata to fill in missing months
+SpringMonths <- full_join(SpringMonths, AllMonth[AllMonth$Month %in% c("Mar","Apr","May"),], by = (c("year" = "year", "StationID" = "id", "month" = "Month")))
 
 # data frame with yearly averages - spring months averaged together
 SpringYear <- aggregate(SpringData$tmax, by=list(SpringData$Year,SpringData$StationID, SpringData$StationName), FUN="mean", na.rm = TRUE)
@@ -484,6 +498,8 @@ SpringYear$ExLoCount <- aggregate(SpringData$ExtrLo, by=list(SpringData$Year, Sp
 # add columns with freeze thaw flags and range
 SpringYear$FTdays <- aggregate(SpringData$FreezeThaw, by=list(SpringData$Year, SpringData$StationID, SpringData$StationName), FUN="sum", na.rm = TRUE)$x
 SpringYear$FTrange <- aggregate(SpringData$FTrange, by=list(SpringData$Year, SpringData$StationID, SpringData$StationName), FUN="mean", na.rm = TRUE)$x
+# joining spring year with all year to fill in missing years
+SpringYear <- full_join(SpringYear, AllYear, by = c("year" = "year", "StationID" = "id"))
 
 # decade averages by month
 SpringDecade<- aggregate(SpringData$tmax, by = list(SpringData$StationID, SpringData$StationName, SpringData$Decade, SpringData$Month), FUN = "mean", na.rm = TRUE)
@@ -532,7 +548,7 @@ MayYear <- subset(SpringMonths, SpringMonths$month == "May")
 MayDecade <- subset(SpringDecade, SpringDecade$Month == "May")
 
 # subset to specific stations
-# yearly averages
+# yearly averages over spring months
 stn1 <- subset(SpringYear, SpringYear$StationID == "USC00300785")
 stn2 <- subset(SpringYear, SpringYear$StationID == "USC00301752")
 stn3 <- subset(SpringYear, SpringYear$StationID == "USC00304102")
