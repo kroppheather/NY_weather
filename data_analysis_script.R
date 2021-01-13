@@ -452,7 +452,7 @@ TavData <- TavData %>%
 
 # 
 # # subset to each station 
-alldata1 <- subset(AllData, AllData$StationID=="USC00300785")
+# alldata1 <- subset(AllData, AllData$StationID=="USC00300785")
 # alldata2 <- subset(AllData, AllData$StationID=="USC00301752")
 # alldata3 <- subset(AllData, AllData$StationID=="USC00304102")
 # alldata4 <- subset(AllData, AllData$StationID=="USC00304912")
@@ -4123,106 +4123,111 @@ for (i in 1:nrow(AllStn)){
 # what were these graphs supposed to look like??
 # did we want the total accumulated per year?
 # use station 1 as test
+
+
 for (i in 1:nrow(AllStn)){
-  current_dataT1 <- subset(AllData, AllData$StationID == AllStn$station_id[i])
+  current_dataT1 <- subset(TavData, TavData$StationID == AllStn$station_id[i])
   current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
   current_data <- full_join(current_dataT1, current_range, by = c("Year" = "year"))
   
   # saving plot as a png
   png(paste0(plotDIR[usernumber], "/tdd_bar", AllStn$name[i], ".png"))
-  
+
   # get the base plot with just the first year on there
   plot(current_data$Year, current_data$TDD,
        type = "h",
        xlab = "Year",
        ylab = "Degrees (C)",
+       lwd = 3,
+       col = "deepskyblue3",
        main = paste0("Thawing Degree Day Accumulation (Jan - June) in ", AllStn$name[i], ", NY"))
   
   dev.off()
 }
-# station 1 
-plot(alldata1$Year, alldata1$TDD,
-     type = "h",
-     xlab = "Year",
-     ylab = "Degrees (C)",
-     main = "Thawing Degree Day Accumulation (Jan - June) Boonville, NY")
 
-# station 2
-plot(alldata2$Year, alldata2$TDD,
-     type = "h",
-     xlab = "Year",
-     ylab = "Degrees (C)",
-     main = "Thawing Degree Day Accumulation (Jan - June) Cooperstown, NY")
-
-# station 3
-plot(alldata3$Year, alldata3$TDD,
-     type = "h",
-     xlab = "Year",
-     ylab = "Degrees (C)",
-     main = "Thawing Degree Day Accumulation (Jan - June) Indian Lake, NY")
-
-# station 4
-plot(alldata4$Year, alldata4$TDD,
-     type = "h",
-     xlab = "Year",
-     ylab = "Degrees (C)",
-     main = "Thawing Degree Day Accumulation (Jan - June) Lowville, NY")
-
-# station 5
-plot(alldata5$Year, alldata5$TDD,
-     type = "h",
-     xlab = "Year",
-     ylab = "Degrees (C)",
-     main = "Annual Thawing Degree Day Accumulation (Jan - June) Norwich, NY")
-
-# station 6
-plot(alldata6$Year, alldata6$TDD,
-     type = "h",
-     xlab = "Year",
-     ylab = "Degrees (C)",
-     main = "Annual Thawing Degree Day Accumulation (Jan - June) Oswego, NY")
-
-# station 7
-plot(alldata7$Year, alldata7$TDD,
-     type = "h",
-     xlab = "Year",
-     ylab = "Degrees (C)",
-     main = "Annual Thawing Degree Day Accumulation (Jan - June) Watertown, NY")
-
-# station 8
-plot(alldata8$Year, alldata8$TDD,
-     type = "h",
-     xlab = "Year",
-     ylab = "Degrees (C)",
-     main = "Annual Thawing Degree Day Accumulation (Jan - June) Albany, NY")
-
-# station 9
-plot(alldata9$Year, alldata9$TDD,
-     type = "h",
-     xlab = "Year",
-     ylab = "Degrees (C)",
-     main = "Annual Thawing Degree Day Accumulation (Jan - June) Glens Falls, NY")
-
-# station 10
-plot(alldata10$Year, alldata10$TDD,
-     type = "h",
-     xlab = "Year",
-     ylab = "Degrees (C)",
-     main = "Annual Thawing Degree Day Accumulation (Jan - June) Syracuse, NY")
-
-# station 11
-plot(alldata11$Year, alldata11$TDD,
-     type = "h",
-     xlab = "Year",
-     ylab = "Degrees (C)",
-     main = "Annual Thawing Degree Day Accumulation (Jan - June) Massena, NY")
-
-# station 12
-plot(alldata12$Year, alldata12$TDD,
-     type = "h",
-     xlab = "Year",
-     ylab = "Degrees (C)",
-     main = "Annual Thawing Degree Day Accumulation (Jan - June) Watetown Airport, NY")
+# # station 1 
+# plot(alldata1$Year, alldata1$TDD,
+#      type = "h",
+#      xlab = "Year",
+#      ylab = "Degrees (C)",
+#      main = "Thawing Degree Day Accumulation (Jan - June) Boonville, NY")
+# 
+# # station 2
+# plot(alldata2$Year, alldata2$TDD,
+#      type = "h",
+#      xlab = "Year",
+#      ylab = "Degrees (C)",
+#      main = "Thawing Degree Day Accumulation (Jan - June) Cooperstown, NY")
+# 
+# # station 3
+# plot(alldata3$Year, alldata3$TDD,
+#      type = "h",
+#      xlab = "Year",
+#      ylab = "Degrees (C)",
+#      main = "Thawing Degree Day Accumulation (Jan - June) Indian Lake, NY")
+# 
+# # station 4
+# plot(alldata4$Year, alldata4$TDD,
+#      type = "h",
+#      xlab = "Year",
+#      ylab = "Degrees (C)",
+#      main = "Thawing Degree Day Accumulation (Jan - June) Lowville, NY")
+# 
+# # station 5
+# plot(alldata5$Year, alldata5$TDD,
+#      type = "h",
+#      xlab = "Year",
+#      ylab = "Degrees (C)",
+#      main = "Annual Thawing Degree Day Accumulation (Jan - June) Norwich, NY")
+# 
+# # station 6
+# plot(alldata6$Year, alldata6$TDD,
+#      type = "h",
+#      xlab = "Year",
+#      ylab = "Degrees (C)",
+#      main = "Annual Thawing Degree Day Accumulation (Jan - June) Oswego, NY")
+# 
+# # station 7
+# plot(alldata7$Year, alldata7$TDD,
+#      type = "h",
+#      xlab = "Year",
+#      ylab = "Degrees (C)",
+#      main = "Annual Thawing Degree Day Accumulation (Jan - June) Watertown, NY")
+# 
+# # station 8
+# plot(alldata8$Year, alldata8$TDD,
+#      type = "h",
+#      xlab = "Year",
+#      ylab = "Degrees (C)",
+#      main = "Annual Thawing Degree Day Accumulation (Jan - June) Albany, NY")
+# 
+# # station 9
+# plot(alldata9$Year, alldata9$TDD,
+#      type = "h",
+#      xlab = "Year",
+#      ylab = "Degrees (C)",
+#      main = "Annual Thawing Degree Day Accumulation (Jan - June) Glens Falls, NY")
+# 
+# # station 10
+# plot(alldata10$Year, alldata10$TDD,
+#      type = "h",
+#      xlab = "Year",
+#      ylab = "Degrees (C)",
+#      main = "Annual Thawing Degree Day Accumulation (Jan - June) Syracuse, NY")
+# 
+# # station 11
+# plot(alldata11$Year, alldata11$TDD,
+#      type = "h",
+#      xlab = "Year",
+#      ylab = "Degrees (C)",
+#      main = "Annual Thawing Degree Day Accumulation (Jan - June) Massena, NY")
+# 
+# # station 12
+# plot(alldata12$Year, alldata12$TDD,
+#      type = "h",
+#      xlab = "Year",
+#      ylab = "Degrees (C)",
+#      main = "Annual Thawing Degree Day Accumulation (Jan - June) Watetown Airport, NY")
 
 # TDD accumulation curves ----
 
@@ -4452,467 +4457,636 @@ for (i in 1:nrow(AllStn)){
 
 ### Day of Last Freeze ----
 # creating last freeze data frame 
-LastFreeze <- subset(AllData, AllData$DayType == 1) 
+LastFreeze <- subset(AllData, AllData$tmin <= 0) 
 # finding last day of freeze in each year
 LastFreeze <- aggregate(LastFreeze$DOY, by = list(LastFreeze$StationID, LastFreeze$StationName, LastFreeze$Year), FUN = "max")
 colnames(LastFreeze) <- c("StationID", "StationName", "Year", "DOY")
 # joining with all data to get the TDD on the day of last freeze
-LastFreeze <- inner_join(LastFreeze, AllData, by = c("StationID", "StationName", "Year","DOY"))
+LastFreeze <- inner_join(LastFreeze, TavData, by = c("StationID", "StationName", "Year","DOY"))
 LastFreeze <- LastFreeze[c("StationID", "StationName", "Year","DOY", "tmin", "TDD")]
 
+
 # Plots of day of last freeze with thawing degree days
-# station 1
-par(mar = c(5, 4, 4, 4) + 0.3)
-plot(LastFreeze$Year[LastFreeze$StationID == "USC00300785"], LastFreeze$DOY[LastFreeze$StationID == "USC00300785"],
-     type = "l",
-     xlab = "Year",
-     ylab = "DOY of Last Freeze",
-     main = "Day of Year of Last Freeze in Boonville, NY")
-par(new = TRUE)
-plot(LastFreeze$Year[LastFreeze$StationID == "USC00300785"], LastFreeze$TDD[LastFreeze$StationID == "USC00300785"],
-     type = "l",
-     col = "red",              
-     axes = FALSE, 
-     xlab = "", 
-     ylab = "")
-axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USC00300785"])))      # Add second axis
-mtext("Accumulated TDD (C)", side = 4, line = 3) 
+for (i in 1:nrow(AllStn)){
+  current_dataT1 <- subset(LastFreeze, LastFreeze$StationID == AllStn$station_id[i])
+  current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
+  current_data <- full_join(current_dataT1, current_range, by = c("Year" = "year"))
+  
+  # saving plot as a png
+  png(paste0(plotDIR[usernumber], "/lf_tdd_", AllStn$name[i], ".png"))
 
-# station 2
-par(mar = c(5, 4, 4, 4) + 0.3)
-plot(LastFreeze$Year[LastFreeze$StationID == "USC00301752"], LastFreeze$DOY[LastFreeze$StationID == "USC00301752"],
-     type = "l",
-     xlab = "Year",
-     ylab = "DOY of Last Freeze",
-     main = "Day of Year of Last Freeze in Cooperstown, NY")
-par(new = TRUE)
-plot(LastFreeze$Year[LastFreeze$StationID == "USC00301752"], LastFreeze$TDD[LastFreeze$StationID == "USC00301752"],
-     type = "l",
-     col = "red",              
-     axes = FALSE, 
-     xlab = "", 
-     ylab = "")
-axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USC00301752"])))      
-mtext("Accumulated TDD (C)", side = 4, line = 3)
+  # get the base plot with just the first year on there
+  par(mar = c(5, 4, 4, 4) + 0.3)
+  plot(current_data$Year, current_data$DOY,
+       type = "l",
+       col = alpha("black", 0.7),
+       xlab = "Year",
+       ylab = "DOY of Last Freeze",
+       main = paste0("Day of Year of Last Freeze in ", AllStn$name[i],", NY"))
+  par(new = TRUE)
+  plot(current_data$Year, current_data$TDD,
+       type = "l",
+       lwd = 1.5,
+       col = "red",              
+       axes = FALSE, 
+       xlab = "", 
+       ylab = "")
+  axis(side = 4, at = pretty(range(current_dataT1$TDD)))
+  mtext("Accumulated TDD (C)", side = 4, line = 3)  
+  
+  dev.off()
+}
+# 
+# par(mar = c(5, 4, 4, 4) + 0.3)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USC00300785"], LastFreeze$DOY[LastFreeze$StationID == "USC00300785"],
+#      type = "l",
+#      xlab = "Year",
+#      ylab = "DOY of Last Freeze",
+#      main = "Day of Year of Last Freeze in Boonville, NY")
+# par(new = TRUE)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USC00300785"], LastFreeze$TDD[LastFreeze$StationID == "USC00300785"],
+#      type = "l",
+#      col = "red",              
+#      axes = FALSE, 
+#      xlab = "", 
+#      ylab = "")
+# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USC00300785"])))      # Add second axis
+# mtext("Accumulated TDD (C)", side = 4, line = 3) 
+# 
+# # station 2
+# par(mar = c(5, 4, 4, 4) + 0.3)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USC00301752"], LastFreeze$DOY[LastFreeze$StationID == "USC00301752"],
+#      type = "l",
+#      xlab = "Year",
+#      ylab = "DOY of Last Freeze",
+#      main = "Day of Year of Last Freeze in Cooperstown, NY")
+# par(new = TRUE)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USC00301752"], LastFreeze$TDD[LastFreeze$StationID == "USC00301752"],
+#      type = "l",
+#      col = "red",              
+#      axes = FALSE, 
+#      xlab = "", 
+#      ylab = "")
+# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USC00301752"])))      
+# mtext("Accumulated TDD (C)", side = 4, line = 3)
+# 
+# # station 3
+# par(mar = c(5, 4, 4, 4) + 0.3)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USC00304102"], LastFreeze$DOY[LastFreeze$StationID == "USC00304102"],
+#      type = "l",
+#      xlab = "Year",
+#      ylab = "DOY of Last Freeze",
+#      main = "Day of Year of Last Freeze in Indian Lake, NY")
+# par(new = TRUE)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USC00304102"], LastFreeze$TDD[LastFreeze$StationID == "USC00304102"],
+#      type = "l",
+#      col = "red",              
+#      axes = FALSE, 
+#      xlab = "", 
+#      ylab = "")
+# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USC00304102"])))      
+# mtext("Accumulated TDD (C)", side = 4, line = 3)
+# 
+# # station 4
+# par(mar = c(5, 4, 4, 4) + 0.3)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USC00304912"], LastFreeze$DOY[LastFreeze$StationID == "USC00304912"],
+#      type = "l",
+#      xlab = "Year",
+#      ylab = "DOY of Last Freeze",
+#      main = "Day of Year of Last Freeze in Lowville, NY")
+# par(new = TRUE)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USC00304912"], LastFreeze$TDD[LastFreeze$StationID == "USC00304912"],
+#      type = "l",
+#      col = "red",              
+#      axes = FALSE, 
+#      xlab = "", 
+#      ylab = "")
+# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USC00304912"])))      
+# mtext("Accumulated TDD (C)", side = 4, line = 3)
+# 
+# # station 5
+# par(mar = c(5, 4, 4, 4) + 0.3)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USC00306085"], LastFreeze$DOY[LastFreeze$StationID == "USC00306085"],
+#      type = "l",
+#      xlab = "Year",
+#      ylab = "DOY of Last Freeze",
+#      main = "Day of Year of Last Freeze in Norwich, NY")
+# par(new = TRUE)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USC00306085"], LastFreeze$TDD[LastFreeze$StationID == "USC00306085"],
+#      type = "l",
+#      col = "red",              
+#      axes = FALSE, 
+#      xlab = "", 
+#      ylab = "")
+# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USC00306085"])))      
+# mtext("Accumulated TDD (C)", side = 4, line = 3)
+# 
+# # station 6
+# par(mar = c(5, 4, 4, 4) + 0.3)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USC00306314"], LastFreeze$DOY[LastFreeze$StationID == "USC00306314"],
+#      type = "l",
+#      xlab = "Year",
+#      ylab = "DOY of Last Freeze",
+#      main = "Day of Year of Last Freeze in Oswego, NY")
+# par(new = TRUE)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USC00306314"], LastFreeze$TDD[LastFreeze$StationID == "USC00306314"],
+#      type = "l",
+#      col = "red",              
+#      axes = FALSE, 
+#      xlab = "", 
+#      ylab = "")
+# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USC00306314"])))      
+# mtext("Accumulated TDD (C)", side = 4, line = 3)
+# 
+# # station 7
+# par(mar = c(5, 4, 4, 4) + 0.3)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USC00309000"], LastFreeze$DOY[LastFreeze$StationID == "USC00309000"],
+#      type = "l",
+#      xlab = "Year",
+#      ylab = "DOY of Last Freeze",
+#      main = "Day of Year of Last Freeze in Watertown, NY")
+# par(new = TRUE)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USC00309000"], LastFreeze$TDD[LastFreeze$StationID == "USC00309000"],
+#      type = "l",
+#      col = "red",              
+#      axes = FALSE, 
+#      xlab = "", 
+#      ylab = "")
+# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USC00309000"])))      
+# mtext("Accumulated TDD (C)", side = 4, line = 3)
+# 
+# # station 8
+# par(mar = c(5, 4, 4, 4) + 0.3)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USW00014735"], LastFreeze$DOY[LastFreeze$StationID == "USW00014735"],
+#      type = "l",
+#      xlab = "Year",
+#      ylab = "DOY of Last Freeze",
+#      main = "Day of Year of Last Freeze in Albany, NY")
+# par(new = TRUE)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USW00014735"], LastFreeze$TDD[LastFreeze$StationID == "USW00014735"],
+#      type = "l",
+#      col = "red",              
+#      axes = FALSE, 
+#      xlab = "", 
+#      ylab = "")
+# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USW00014735"])))      
+# mtext("Accumulated TDD (C)", side = 4, line = 3)
+# 
+# # station 9
+# par(mar = c(5, 4, 4, 4) + 0.3)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USW00014750"], LastFreeze$DOY[LastFreeze$StationID == "USW00014750"],
+#      type = "l",
+#      xlab = "Year",
+#      ylab = "DOY of Last Freeze",
+#      main = "Day of Year of Last Freeze in Glens Falls, NY")
+# par(new = TRUE)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USW00014750"], LastFreeze$TDD[LastFreeze$StationID == "USW00014750"],
+#      type = "l",
+#      col = "red",              
+#      axes = FALSE, 
+#      xlab = "", 
+#      ylab = "")
+# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USW00014750"])))      
+# mtext("Accumulated TDD (C)", side = 4, line = 3)
+# 
+# # station 10
+# par(mar = c(5, 4, 4, 4) + 0.3)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USW00014771"], LastFreeze$DOY[LastFreeze$StationID == "USW00014771"],
+#      type = "l",
+#      xlab = "Year",
+#      ylab = "DOY of Last Freeze",
+#      main = "Day of Year of Last Freeze in Syracuse, NY")
+# par(new = TRUE)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USW00014771"], LastFreeze$TDD[LastFreeze$StationID == "USW00014771"],
+#      type = "l",
+#      col = "red",              
+#      axes = FALSE, 
+#      xlab = "", 
+#      ylab = "")
+# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USW00014771"])))      
+# mtext("Accumulated TDD (C)", side = 4, line = 3)
+# 
+# # station 11
+# par(mar = c(5, 4, 4, 4) + 0.3)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USW00094725"], LastFreeze$DOY[LastFreeze$StationID == "USW00094725"],
+#      type = "l",
+#      xlab = "Year",
+#      ylab = "DOY of Last Freeze",
+#      main = "Day of Year of Last Freeze in Massena, NY")
+# par(new = TRUE)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USW00094725"], LastFreeze$TDD[LastFreeze$StationID == "USW00094725"],
+#      type = "l",
+#      col = "red",              
+#      axes = FALSE, 
+#      xlab = "", 
+#      ylab = "")
+# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USW00094725"])))      
+# mtext("Accumulated TDD (C)", side = 4, line = 3)
+# 
+# # station 12
+# par(mar = c(5, 4, 4, 4) + 0.3)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USW00094790"], LastFreeze$DOY[LastFreeze$StationID == "USW00094790"],
+#      type = "l",
+#      xlab = "Year",
+#      ylab = "DOY of Last Freeze",
+#      main = "Day of Year of Last Freeze in Watertown Airport, NY")
+# par(new = TRUE)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USW00094790"], LastFreeze$TDD[LastFreeze$StationID == "USW00094790"],
+#      type = "l",
+#      col = "red",              
+#      axes = FALSE, 
+#      xlab = "", 
+#      ylab = "")
+# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USW00094790"])))      
+# mtext("Accumulated TDD (C)", side = 4, line = 3)
 
-# station 3
-par(mar = c(5, 4, 4, 4) + 0.3)
-plot(LastFreeze$Year[LastFreeze$StationID == "USC00304102"], LastFreeze$DOY[LastFreeze$StationID == "USC00304102"],
-     type = "l",
-     xlab = "Year",
-     ylab = "DOY of Last Freeze",
-     main = "Day of Year of Last Freeze in Indian Lake, NY")
-par(new = TRUE)
-plot(LastFreeze$Year[LastFreeze$StationID == "USC00304102"], LastFreeze$TDD[LastFreeze$StationID == "USC00304102"],
-     type = "l",
-     col = "red",              
-     axes = FALSE, 
-     xlab = "", 
-     ylab = "")
-axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USC00304102"])))      
-mtext("Accumulated TDD (C)", side = 4, line = 3)
 
-# station 4
-par(mar = c(5, 4, 4, 4) + 0.3)
-plot(LastFreeze$Year[LastFreeze$StationID == "USC00304912"], LastFreeze$DOY[LastFreeze$StationID == "USC00304912"],
-     type = "l",
-     xlab = "Year",
-     ylab = "DOY of Last Freeze",
-     main = "Day of Year of Last Freeze in Lowville, NY")
-par(new = TRUE)
-plot(LastFreeze$Year[LastFreeze$StationID == "USC00304912"], LastFreeze$TDD[LastFreeze$StationID == "USC00304912"],
-     type = "l",
-     col = "red",              
-     axes = FALSE, 
-     xlab = "", 
-     ylab = "")
-axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USC00304912"])))      
-mtext("Accumulated TDD (C)", side = 4, line = 3)
+# testing how to fill in missing values
+# would apply to these graphs and graphs above
+# ggplot removes values but base r doesnt but ggplot wont let us have 
+# two y axis that aren't transofrmations of each other
+current_dataT1 <- subset(LastFreeze, LastFreeze$StationID == AllStn$station_id[2])
+current_range <- data.frame(year=seq(AllStn[2, 5], 2019))
+current_data <- full_join(current_dataT1, current_range, by = c("Year" = "year"))
+current_data$tmin <- ifelse(is.na(current_data$tmin), NaN, current_data$tmin) 
+current_data$DOY <- ifelse(is.na(current_data$tmin), NaN, current_data$DOY) 
 
-# station 5
-par(mar = c(5, 4, 4, 4) + 0.3)
-plot(LastFreeze$Year[LastFreeze$StationID == "USC00306085"], LastFreeze$DOY[LastFreeze$StationID == "USC00306085"],
-     type = "l",
-     xlab = "Year",
-     ylab = "DOY of Last Freeze",
-     main = "Day of Year of Last Freeze in Norwich, NY")
-par(new = TRUE)
-plot(LastFreeze$Year[LastFreeze$StationID == "USC00306085"], LastFreeze$TDD[LastFreeze$StationID == "USC00306085"],
-     type = "l",
-     col = "red",              
-     axes = FALSE, 
-     xlab = "", 
-     ylab = "")
-axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USC00306085"])))      
-mtext("Accumulated TDD (C)", side = 4, line = 3)
+# # saving plot as a png
+# png(paste0(plotDIR[usernumber], "/lf_temp_", AllStn$name[i], ".png"))
 
-# station 6
 par(mar = c(5, 4, 4, 4) + 0.3)
-plot(LastFreeze$Year[LastFreeze$StationID == "USC00306314"], LastFreeze$DOY[LastFreeze$StationID == "USC00306314"],
+plot(current_data$Year, current_data$DOY,
      type = "l",
+     pch = 20,
+     col = alpha("black", 0.7),
      xlab = "Year",
      ylab = "DOY of Last Freeze",
-     main = "Day of Year of Last Freeze in Oswego, NY")
+     main = paste0("TMIN on Day of Last Freeze in ", AllStn$name[2], ", NY"))
 par(new = TRUE)
-plot(LastFreeze$Year[LastFreeze$StationID == "USC00306314"], LastFreeze$TDD[LastFreeze$StationID == "USC00306314"],
+plot(current_data$Year, current_data$tmin,
      type = "l",
-     col = "red",              
-     axes = FALSE, 
-     xlab = "", 
-     ylab = "")
-axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USC00306314"])))      
-mtext("Accumulated TDD (C)", side = 4, line = 3)
+     col = "deepskyblue3",
+     lwd = 1.5,
+     xlab = "",
+     ylab = "",
+     axes = FALSE)
+axis(side = 4, at = pretty(range(current_dataT1$tmin)))
+mtext("Minimum Temperature (C)", side = 4, line = 3) 
 
-# station 7
-par(mar = c(5, 4, 4, 4) + 0.3)
-plot(LastFreeze$Year[LastFreeze$StationID == "USC00309000"], LastFreeze$DOY[LastFreeze$StationID == "USC00309000"],
-     type = "l",
-     xlab = "Year",
-     ylab = "DOY of Last Freeze",
-     main = "Day of Year of Last Freeze in Watertown, NY")
-par(new = TRUE)
-plot(LastFreeze$Year[LastFreeze$StationID == "USC00309000"], LastFreeze$TDD[LastFreeze$StationID == "USC00309000"],
-     type = "l",
-     col = "red",              
-     axes = FALSE, 
-     xlab = "", 
-     ylab = "")
-axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USC00309000"])))      
-mtext("Accumulated TDD (C)", side = 4, line = 3)
-
-# station 8
-par(mar = c(5, 4, 4, 4) + 0.3)
-plot(LastFreeze$Year[LastFreeze$StationID == "USW00014735"], LastFreeze$DOY[LastFreeze$StationID == "USW00014735"],
-     type = "l",
-     xlab = "Year",
-     ylab = "DOY of Last Freeze",
-     main = "Day of Year of Last Freeze in Albany, NY")
-par(new = TRUE)
-plot(LastFreeze$Year[LastFreeze$StationID == "USW00014735"], LastFreeze$TDD[LastFreeze$StationID == "USW00014735"],
-     type = "l",
-     col = "red",              
-     axes = FALSE, 
-     xlab = "", 
-     ylab = "")
-axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USW00014735"])))      
-mtext("Accumulated TDD (C)", side = 4, line = 3)
-
-# station 9
-par(mar = c(5, 4, 4, 4) + 0.3)
-plot(LastFreeze$Year[LastFreeze$StationID == "USW00014750"], LastFreeze$DOY[LastFreeze$StationID == "USW00014750"],
-     type = "l",
-     xlab = "Year",
-     ylab = "DOY of Last Freeze",
-     main = "Day of Year of Last Freeze in Glens Falls, NY")
-par(new = TRUE)
-plot(LastFreeze$Year[LastFreeze$StationID == "USW00014750"], LastFreeze$TDD[LastFreeze$StationID == "USW00014750"],
-     type = "l",
-     col = "red",              
-     axes = FALSE, 
-     xlab = "", 
-     ylab = "")
-axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USW00014750"])))      
-mtext("Accumulated TDD (C)", side = 4, line = 3)
-
-# station 10
-par(mar = c(5, 4, 4, 4) + 0.3)
-plot(LastFreeze$Year[LastFreeze$StationID == "USW00014771"], LastFreeze$DOY[LastFreeze$StationID == "USW00014771"],
-     type = "l",
-     xlab = "Year",
-     ylab = "DOY of Last Freeze",
-     main = "Day of Year of Last Freeze in Syracuse, NY")
-par(new = TRUE)
-plot(LastFreeze$Year[LastFreeze$StationID == "USW00014771"], LastFreeze$TDD[LastFreeze$StationID == "USW00014771"],
-     type = "l",
-     col = "red",              
-     axes = FALSE, 
-     xlab = "", 
-     ylab = "")
-axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USW00014771"])))      
-mtext("Accumulated TDD (C)", side = 4, line = 3)
-
-# station 11
-par(mar = c(5, 4, 4, 4) + 0.3)
-plot(LastFreeze$Year[LastFreeze$StationID == "USW00094725"], LastFreeze$DOY[LastFreeze$StationID == "USW00094725"],
-     type = "l",
-     xlab = "Year",
-     ylab = "DOY of Last Freeze",
-     main = "Day of Year of Last Freeze in Massena, NY")
-par(new = TRUE)
-plot(LastFreeze$Year[LastFreeze$StationID == "USW00094725"], LastFreeze$TDD[LastFreeze$StationID == "USW00094725"],
-     type = "l",
-     col = "red",              
-     axes = FALSE, 
-     xlab = "", 
-     ylab = "")
-axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USW00094725"])))      
-mtext("Accumulated TDD (C)", side = 4, line = 3)
-
-# station 12
-par(mar = c(5, 4, 4, 4) + 0.3)
-plot(LastFreeze$Year[LastFreeze$StationID == "USW00094790"], LastFreeze$DOY[LastFreeze$StationID == "USW00094790"],
-     type = "l",
-     xlab = "Year",
-     ylab = "DOY of Last Freeze",
-     main = "Day of Year of Last Freeze in Watertown Airport, NY")
-par(new = TRUE)
-plot(LastFreeze$Year[LastFreeze$StationID == "USW00094790"], LastFreeze$TDD[LastFreeze$StationID == "USW00094790"],
-     type = "l",
-     col = "red",              
-     axes = FALSE, 
-     xlab = "", 
-     ylab = "")
-axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USW00094790"])))      
-mtext("Accumulated TDD (C)", side = 4, line = 3)
 
 # plots of temperature on day of last freeze
-# station 6
-plot(LastFreeze$Year[LastFreeze$StationID == "USC00306314"], LastFreeze$tmin[LastFreeze$StationID == "USC00306314"],
-     type = "l",
-     col = "deepskyblue3",
-     xlab = "Year",
-     ylab = "Temperature (C)",
-     main = "TMIN on Day of Last Freeze in Oswego, NY")
-
-# station 7
-plot(LastFreeze$Year[LastFreeze$StationID == "USC00309000"], LastFreeze$tmin[LastFreeze$StationID == "USC00309000"],
-     type = "l",
-     col = "deepskyblue3",
-     xlab = "Year",
-     ylab = "Temperature (C)",
-     main = "TMIN on Day of Last Freeze in Watertown, NY")
-
-# station 8
-plot(LastFreeze$Year[LastFreeze$StationID == "USW00014735"], LastFreeze$tmin[LastFreeze$StationID == "USW00014735"],
-     type = "l",
-     col = "deepskyblue3",
-     xlab = "Year",
-     ylab = "Temperature (C)",
-     main = "TMIN on Day of Last Freeze in Albany, NY")
-
-# station 9
-plot(LastFreeze$Year[LastFreeze$StationID == "USW00014750"], LastFreeze$tmin[LastFreeze$StationID == "USW00014750"],
-     type = "l",
-     col = "deepskyblue3",
-     xlab = "Year",
-     ylab = "Temperature (C)",
-     main = "TMIN on Day of Last Freeze in Glens Falls, NY")
-
-# station 10
-plot(LastFreeze$Year[LastFreeze$StationID == "USW00014771"], LastFreeze$tmin[LastFreeze$StationID == "USW00014771"],
-     type = "l",
-     col = "deepskyblue3",
-     xlab = "Year",
-     ylab = "Temperature (C)",
-     main = "TMIN on Day of Last Freeze in Syracuse, NY")
-
-# station 11
-plot(LastFreeze$Year[LastFreeze$StationID == "USW00094725"], LastFreeze$tmin[LastFreeze$StationID == "USW00094725"],
-     type = "l",
-     col = "deepskyblue3",
-     xlab = "Year",
-     ylab = "Temperature (C)",
-     main = "TMIN on Day of Last Freeze in Massena, NY")
-
-# station 12
-plot(LastFreeze$Year[LastFreeze$StationID == "USW00094790"], LastFreeze$tmin[LastFreeze$StationID == "USW00094790"],
-     type = "l",
-     col = "deepskyblue3",
-     xlab = "Year",
-     ylab = "Temperature (C)",
-     main = "TMIN on Day of Last Freeze in Watertown Airport, NY")
-
+for (i in 1:nrow(AllStn)){
+  current_dataT1 <- subset(LastFreeze, LastFreeze$StationID == AllStn$station_id[i])
+  current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
+  current_data <- full_join(current_dataT1, current_range, by = c("Year" = "year"))
+  
+  # saving plot as a png
+  png(paste0(plotDIR[usernumber], "/lf_temp_", AllStn$name[i], ".png"))
+  
+  # create bar plot of DOY last freeze and temperature
+  par(mar = c(5, 4, 4, 4) + 0.3)
+  plot(current_data$Year, current_data$DOY,
+       type = "l",
+       col = alpha("black", 0.7),
+       xlab = "Year",
+       ylab = "DOY of Last Freeze",
+       main = paste0("TMIN on Day of Last Freeze in ", AllStn$name[i], ", NY"))
+  par(new = TRUE)
+  plot(current_data$Year, current_data$tmin,
+       type = "l",
+       col = "deepskyblue3",
+       lwd = 1.5,
+       xlab = "",
+       ylab = "",
+       axes = FALSE)
+  axis(side = 4, at = pretty(range(current_dataT1$tmin)))
+  mtext("Minimum Temperature (C)", side = 4, line = 3) 
+  
+  dev.off()
+}
+# 
+# # station 6
+# par(mar = c(5, 4, 4, 4) + 0.3)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USC00306314"], LastFreeze$DOY[LastFreeze$StationID == "USC00306314"],
+#      type = "l",
+#      col = alpha("black", 0.7),
+#      xlab = "Year",
+#      ylab = "DOY of Last Freeze",
+#      main = "TMIN on Day of Last Freeze in Oswego, NY")
+# par(new = TRUE)
+# plot(LastFreeze$Year[LastFreeze$StationID == "USC00306314"], LastFreeze$tmin[LastFreeze$StationID == "USC00306314"],
+#      type = "l",
+#      col = "deepskyblue3",
+#      lwd = 1.5,
+#      xlab = "",
+#      ylab = "",
+#      axes = FALSE)
+# axis(side = 4, at = pretty(range(LastFreeze$tmin[LastFreeze$StationID == "USC00306314"])))
+# mtext("Minimum Temperature (C)", side = 4, line = 3) 
+# 
+# plot(LastFreeze$Year[LastFreeze$StationID == "USC00306314"], LastFreeze$tmin[LastFreeze$StationID == "USC00306314"],
+#      type = "l",
+#      col = "deepskyblue3",
+#      xlab = "Year",
+#      ylab = "Temperature (C)",
+#      main = "TMIN on Day of Last Freeze in Oswego, NY")
+# 
+# # station 7
+# plot(LastFreeze$Year[LastFreeze$StationID == "USC00309000"], LastFreeze$tmin[LastFreeze$StationID == "USC00309000"],
+#      type = "l",
+#      col = "deepskyblue3",
+#      xlab = "Year",
+#      ylab = "Temperature (C)",
+#      main = "TMIN on Day of Last Freeze in Watertown, NY")
+# 
+# # station 8
+# plot(LastFreeze$Year[LastFreeze$StationID == "USW00014735"], LastFreeze$tmin[LastFreeze$StationID == "USW00014735"],
+#      type = "l",
+#      col = "deepskyblue3",
+#      xlab = "Year",
+#      ylab = "Temperature (C)",
+#      main = "TMIN on Day of Last Freeze in Albany, NY")
+# 
+# # station 9
+# plot(LastFreeze$Year[LastFreeze$StationID == "USW00014750"], LastFreeze$tmin[LastFreeze$StationID == "USW00014750"],
+#      type = "l",
+#      col = "deepskyblue3",
+#      xlab = "Year",
+#      ylab = "Temperature (C)",
+#      main = "TMIN on Day of Last Freeze in Glens Falls, NY")
+# 
+# # station 10
+# plot(LastFreeze$Year[LastFreeze$StationID == "USW00014771"], LastFreeze$tmin[LastFreeze$StationID == "USW00014771"],
+#      type = "l",
+#      col = "deepskyblue3",
+#      xlab = "Year",
+#      ylab = "Temperature (C)",
+#      main = "TMIN on Day of Last Freeze in Syracuse, NY")
+# 
+# # station 11
+# plot(LastFreeze$Year[LastFreeze$StationID == "USW00094725"], LastFreeze$tmin[LastFreeze$StationID == "USW00094725"],
+#      type = "l",
+#      col = "deepskyblue3",
+#      xlab = "Year",
+#      ylab = "Temperature (C)",
+#      main = "TMIN on Day of Last Freeze in Massena, NY")
+# 
+# # station 12
+# plot(LastFreeze$Year[LastFreeze$StationID == "USW00094790"], LastFreeze$tmin[LastFreeze$StationID == "USW00094790"],
+#      type = "l",
+#      col = "deepskyblue3",
+#      xlab = "Year",
+#      ylab = "Temperature (C)",
+#      main = "TMIN on Day of Last Freeze in Watertown Airport, NY")
+# 
 
 ### Cold Snaps in Late Spring ----
 # subsetting to just freezing days
-FreezeDays <- AllData[AllData$DayType == 1,1:6]
+# maybe add a new threshold for days below certain threshold
+# subset with tmin instead of day type
+FreezeDays <- AllData[AllData$tmin <= 0,1:6]
 FreezeDays <- aggregate(FreezeDays$DOY, by = list(FreezeDays$StationID, FreezeDays$StationName, FreezeDays$Year, FreezeDays$Month), FUN = "length")
 colnames(FreezeDays) <- c("StationID", "StationName", "Year", "Month", "FreezeDays")
 
-# station 1
-plot(FreezeDays$Year[FreezeDays$StationID == "USC00300785" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00300785" & FreezeDays$Month == "Mar"],
-     type = "h",
-     pch = 20,
-     lwd = 2,
-     col = "lightskyblue",
-     xlab = "Year",
-     ylab = "Number of Days",
-     main = "Days below Freezing in Boonville, NY")
-points(FreezeDays$Year[FreezeDays$StationID == "USC00300785" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00300785" & FreezeDays$Month == "Apr"],
-      type = "h",
-      col = "green4",
-      lwd = 2)
-legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
+HardFreezeDays <- AllData[AllData$tmin <= -5,1:6]
+HardFreezeDays <- aggregate(HardFreezeDays$DOY, by = list(HardFreezeDays$StationID, HardFreezeDays$StationName, HardFreezeDays$Year, HardFreezeDays$Month), FUN = "length")
+colnames(HardFreezeDays) <- c("StationID", "StationName", "Year", "Month", "FreezeDays")
 
-# station 2
-plot(FreezeDays$Year[FreezeDays$StationID == "USC00301752" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00301752" & FreezeDays$Month == "Mar"],
-     type = "h",
-     pch = 20,
-     lwd = 2,
-     ylim = c(0,20),
-     col = "lightskyblue",
-     xlab = "Year",
-     ylab = "Number of Days",
-     main = "Days below Freezing in Cooperstown, NY")
-points(FreezeDays$Year[FreezeDays$StationID == "USC00301752" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00301752" & FreezeDays$Month == "Apr"],
-       type = "h",
-       col = "green4",
-       lwd = 2)
-legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
 
-# station 3
-plot(FreezeDays$Year[FreezeDays$StationID == "USC00304102" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00304102" & FreezeDays$Month == "Mar"],
-     type = "h",
-     pch = 20,
-     lwd = 2,
-     col = "lightskyblue",
-     xlab = "Year",
-     ylab = "Number of Days",
-     main = "Days below Freezing in Indian Lake, NY")
-points(FreezeDays$Year[FreezeDays$StationID == "USC00304102" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00304102" & FreezeDays$Month == "Apr"],
-       type = "h",
-       col = "green4",
-       lwd = 2)
-legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
+# plotting number of days below freezing for march and april
+for (i in 1:nrow(AllStn)){
+  current_dataT1 <- subset(FreezeDays, StationID == AllStn$station_id[i])
+  current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
+  current_data <- full_join(current_dataT1, current_range, by = c("Year" = "year"))
+  
+  # saving plot as a png
+  png(paste0(plotDIR[usernumber], "/freeze_days_", AllStn$name[i], ".png"))
 
-# station 4
-plot(FreezeDays$Year[FreezeDays$StationID == "USC00304912" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00304912" & FreezeDays$Month == "Mar"],
-     type = "h",
-     pch = 20,
-     lwd = 2,
-     col = "lightskyblue",
-     xlab = "Year",
-     ylab = "Number of Days",
-     main = "Days below Freezing in Lowville, NY")
-points(FreezeDays$Year[FreezeDays$StationID == "USC00304912" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00304912" & FreezeDays$Month == "Apr"],
+  # create bar plot of DOY last freeze and temperature
+  plot(current_data$Year[current_data$Month == "Mar"], current_data$FreezeDays[current_data$Month == "Mar"],
        type = "h",
-       col = "green4",
-       lwd = 2)
-legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-
-# station 5
-plot(FreezeDays$Year[FreezeDays$StationID == "USC00306085" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00306085" & FreezeDays$Month == "Mar"],
-     type = "h",
-     pch = 20,
-     lwd = 2,
-     col = "lightskyblue",
-     xlab = "Year",
-     ylab = "Number of Days",
-     main = "Days below Freezing in Norwich, NY")
-points(FreezeDays$Year[FreezeDays$StationID == "USC00306085" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00306085" & FreezeDays$Month == "Apr"],
-       type = "h",
-       col = "green4",
-       lwd = 2)
-legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-
-# station 6
-plot(FreezeDays$Year[FreezeDays$StationID == "USC00306314" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00306314" & FreezeDays$Month == "Mar"],
-     type = "h",
-     pch = 20,
-     lwd = 2,
-     col = "lightskyblue",
-     xlab = "Year",
-     ylab = "Number of Days",
-     main = "Days below Freezing in Oswego, NY")
-points(FreezeDays$Year[FreezeDays$StationID == "USC00306314" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00306314" & FreezeDays$Month == "Apr"],
-       type = "h",
-       col = "green4",
-       lwd = 2)
-legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-
-# station 7
-plot(FreezeDays$Year[FreezeDays$StationID == "USC00309000" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00309000" & FreezeDays$Month == "Mar"],
-     type = "h",
-     pch = 20,
-     lwd = 2,
-     col = "lightskyblue",
-     xlab = "Year",
-     ylab = "Number of Days",
-     main = "Days below Freezing in Watertown, NY")
-points(FreezeDays$Year[FreezeDays$StationID == "USC00309000" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00309000" & FreezeDays$Month == "Apr"],
-       type = "h",
-       col = "green4",
-       lwd = 2)
-legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-
-# station 8
-plot(FreezeDays$Year[FreezeDays$StationID == "USW00014735" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00014735" & FreezeDays$Month == "Mar"],
-     type = "h",
-     pch = 20,
-     lwd = 2,
-     col = "lightskyblue",
-     xlab = "Year",
-     ylab = "Number of Days",
-     main = "Days below Freezing in Albany, NY")
-points(FreezeDays$Year[FreezeDays$StationID == "USW00014735" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00014735" & FreezeDays$Month == "Apr"],
-       type = "h",
-       col = "green4",
-       lwd = 2)
-legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-
-# station 9
-plot(FreezeDays$Year[FreezeDays$StationID == "USW00014750" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00014750" & FreezeDays$Month == "Mar"],
-     type = "h",
-     pch = 20,
-     lwd = 2,
-     col = "lightskyblue",
-     xlab = "Year",
-     ylab = "Number of Days",
-     main = "Days below Freezing in Glens Falls, NY")
-points(FreezeDays$Year[FreezeDays$StationID == "USW00014750" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00014750" & FreezeDays$Month == "Apr"],
-       type = "h",
-       col = "green4",
-       lwd = 2)
-legend("topleft", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-
-# station 10
-plot(FreezeDays$Year[FreezeDays$StationID == "USW00014771" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00014771" & FreezeDays$Month == "Mar"],
-     type = "h",
-     pch = 20,
-     lwd = 2,
-     col = "lightskyblue",
-     xlab = "Year",
-     ylab = "Number of Days",
-     main = "Days below Freezing in Syracuse, NY")
-points(FreezeDays$Year[FreezeDays$StationID == "USW00014771" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00014771" & FreezeDays$Month == "Apr"],
-       type = "h",
-       col = "green4",
-       lwd = 2)
-legend("topleft", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-
-# station 11
-plot(FreezeDays$Year[FreezeDays$StationID == "USW00094725" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00094725" & FreezeDays$Month == "Mar"],
-     type = "h",
-     pch = 20,
-     lwd = 2,
-     col = "lightskyblue",
-     xlab = "Year",
-     ylab = "Number of Days",
-     main = "Days below Freezing in Massena, NY")
-points(FreezeDays$Year[FreezeDays$StationID == "USW00094725" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00094725" & FreezeDays$Month == "Apr"],
-       type = "h",
-       col = "green4",
-       lwd = 2)
-legend("topleft", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-
-# station 12
-plot(FreezeDays$Year[FreezeDays$StationID == "USW00094790" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00094790" & FreezeDays$Month == "Mar"],
-     type = "h",
-     pch = 20,
-     lwd = 2,
-     col = "lightskyblue",
-     xlab = "Year",
-     ylab = "Number of Days",
-     main = "Days below Freezing in Massena, NY")
-points(FreezeDays$Year[FreezeDays$StationID == "USW00094790" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00094790" & FreezeDays$Month == "Apr"],
-       type = "h",
-       col = "green4",
-       lwd = 2)
-legend("topleft", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
+       pch = 20,
+       lwd = 2,
+       col = "lightskyblue",
+       xlab = "Year",
+       ylab = "Number of Days",
+       main = paste0("Days below Freezing in", AllStn$name[i] ,", NY"))
+  points(current_data$Year[current_data$Month == "Apr"], current_data$FreezeDays[current_data$Month == "Apr"],
+         type = "h",
+         col = "green4",
+         lwd = 2)
+  legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
+  
+  dev.off()
+}
+# 
+# # station 1
+# plot(FreezeDays$Year[FreezeDays$StationID == "USC00300785" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00300785" & FreezeDays$Month == "Mar"],
+#      type = "h",
+#      pch = 20,
+#      lwd = 2,
+#      col = "lightskyblue",
+#      xlab = "Year",
+#      ylab = "Number of Days",
+#      main = "Days below Freezing in Boonville, NY")
+# points(FreezeDays$Year[FreezeDays$StationID == "USC00300785" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00300785" & FreezeDays$Month == "Apr"],
+#       type = "h",
+#       col = "green4",
+#       lwd = 2)
+# legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
+# 
+# # station 2
+# plot(FreezeDays$Year[FreezeDays$StationID == "USC00301752" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00301752" & FreezeDays$Month == "Mar"],
+#      type = "h",
+#      pch = 20,
+#      lwd = 2,
+#      ylim = c(0,20),
+#      col = "lightskyblue",
+#      xlab = "Year",
+#      ylab = "Number of Days",
+#      main = "Days below Freezing in Cooperstown, NY")
+# points(FreezeDays$Year[FreezeDays$StationID == "USC00301752" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00301752" & FreezeDays$Month == "Apr"],
+#        type = "h",
+#        col = "green4",
+#        lwd = 2)
+# legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
+# 
+# # station 3
+# plot(FreezeDays$Year[FreezeDays$StationID == "USC00304102" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00304102" & FreezeDays$Month == "Mar"],
+#      type = "h",
+#      pch = 20,
+#      lwd = 2,
+#      col = "lightskyblue",
+#      xlab = "Year",
+#      ylab = "Number of Days",
+#      main = "Days below Freezing in Indian Lake, NY")
+# points(FreezeDays$Year[FreezeDays$StationID == "USC00304102" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00304102" & FreezeDays$Month == "Apr"],
+#        type = "h",
+#        col = "green4",
+#        lwd = 2)
+# legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
+# 
+# # station 4
+# plot(FreezeDays$Year[FreezeDays$StationID == "USC00304912" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00304912" & FreezeDays$Month == "Mar"],
+#      type = "h",
+#      pch = 20,
+#      lwd = 2,
+#      col = "lightskyblue",
+#      xlab = "Year",
+#      ylab = "Number of Days",
+#      main = "Days below Freezing in Lowville, NY")
+# points(FreezeDays$Year[FreezeDays$StationID == "USC00304912" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00304912" & FreezeDays$Month == "Apr"],
+#        type = "h",
+#        col = "green4",
+#        lwd = 2)
+# legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
+# 
+# # station 5
+# plot(FreezeDays$Year[FreezeDays$StationID == "USC00306085" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00306085" & FreezeDays$Month == "Mar"],
+#      type = "h",
+#      pch = 20,
+#      lwd = 2,
+#      col = "lightskyblue",
+#      xlab = "Year",
+#      ylab = "Number of Days",
+#      main = "Days below Freezing in Norwich, NY")
+# points(FreezeDays$Year[FreezeDays$StationID == "USC00306085" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00306085" & FreezeDays$Month == "Apr"],
+#        type = "h",
+#        col = "green4",
+#        lwd = 2)
+# legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
+# 
+# # station 6
+# plot(FreezeDays$Year[FreezeDays$StationID == "USC00306314" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00306314" & FreezeDays$Month == "Mar"],
+#      type = "h",
+#      pch = 20,
+#      lwd = 2,
+#      col = "lightskyblue",
+#      xlab = "Year",
+#      ylab = "Number of Days",
+#      main = "Days below Freezing in Oswego, NY")
+# points(FreezeDays$Year[FreezeDays$StationID == "USC00306314" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00306314" & FreezeDays$Month == "Apr"],
+#        type = "h",
+#        col = "green4",
+#        lwd = 2)
+# legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
+# 
+# # station 7
+# plot(FreezeDays$Year[FreezeDays$StationID == "USC00309000" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00309000" & FreezeDays$Month == "Mar"],
+#      type = "h",
+#      pch = 20,
+#      lwd = 2,
+#      col = "lightskyblue",
+#      xlab = "Year",
+#      ylab = "Number of Days",
+#      main = "Days below Freezing in Watertown, NY")
+# points(FreezeDays$Year[FreezeDays$StationID == "USC00309000" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00309000" & FreezeDays$Month == "Apr"],
+#        type = "h",
+#        col = "green4",
+#        lwd = 2)
+# legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
+# 
+# # station 8
+# plot(FreezeDays$Year[FreezeDays$StationID == "USW00014735" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00014735" & FreezeDays$Month == "Mar"],
+#      type = "h",
+#      pch = 20,
+#      lwd = 2,
+#      col = "lightskyblue",
+#      xlab = "Year",
+#      ylab = "Number of Days",
+#      main = "Days below Freezing in Albany, NY")
+# points(FreezeDays$Year[FreezeDays$StationID == "USW00014735" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00014735" & FreezeDays$Month == "Apr"],
+#        type = "h",
+#        col = "green4",
+#        lwd = 2)
+# legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
+# 
+# # station 9
+# plot(FreezeDays$Year[FreezeDays$StationID == "USW00014750" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00014750" & FreezeDays$Month == "Mar"],
+#      type = "h",
+#      pch = 20,
+#      lwd = 2,
+#      col = "lightskyblue",
+#      xlab = "Year",
+#      ylab = "Number of Days",
+#      main = "Days below Freezing in Glens Falls, NY")
+# points(FreezeDays$Year[FreezeDays$StationID == "USW00014750" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00014750" & FreezeDays$Month == "Apr"],
+#        type = "h",
+#        col = "green4",
+#        lwd = 2)
+# legend("topleft", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
+# 
+# # station 10
+# plot(FreezeDays$Year[FreezeDays$StationID == "USW00014771" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00014771" & FreezeDays$Month == "Mar"],
+#      type = "h",
+#      pch = 20,
+#      lwd = 2,
+#      col = "lightskyblue",
+#      xlab = "Year",
+#      ylab = "Number of Days",
+#      main = "Days below Freezing in Syracuse, NY")
+# points(FreezeDays$Year[FreezeDays$StationID == "USW00014771" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00014771" & FreezeDays$Month == "Apr"],
+#        type = "h",
+#        col = "green4",
+#        lwd = 2)
+# legend("topleft", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
+# 
+# # station 11
+# plot(FreezeDays$Year[FreezeDays$StationID == "USW00094725" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00094725" & FreezeDays$Month == "Mar"],
+#      type = "h",
+#      pch = 20,
+#      lwd = 2,
+#      col = "lightskyblue",
+#      xlab = "Year",
+#      ylab = "Number of Days",
+#      main = "Days below Freezing in Massena, NY")
+# points(FreezeDays$Year[FreezeDays$StationID == "USW00094725" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00094725" & FreezeDays$Month == "Apr"],
+#        type = "h",
+#        col = "green4",
+#        lwd = 2)
+# legend("topleft", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
+# 
+# # station 12
+# plot(FreezeDays$Year[FreezeDays$StationID == "USW00094790" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00094790" & FreezeDays$Month == "Mar"],
+#      type = "h",
+#      pch = 20,
+#      lwd = 2,
+#      col = "lightskyblue",
+#      xlab = "Year",
+#      ylab = "Number of Days",
+#      main = "Days below Freezing in Massena, NY")
+# points(FreezeDays$Year[FreezeDays$StationID == "USW00094790" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00094790" & FreezeDays$Month == "Apr"],
+#        type = "h",
+#        col = "green4",
+#        lwd = 2)
+# legend("topleft", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
 
 ### Apple Growing Degree Days ----
-# Apples in Boonville 2012
-plot(alldata1$DOY[alldata1$Year == 2012], alldata1$GDD41[alldata1$Year == 2012],
+# Apples plots for 2012
+for (i in 1:nrow(AllStn)){
+  current_data <- subset(TavData, StationID == AllStn$station_id[i])
+  # do some kind of check to see if 2012 exists at the station
+  ifelse(current_data)
+  # saving plot as a png
+  png(paste0(plotDIR[usernumber], "/apple_gdd_", AllStn$name[i], ".png"))
+  
+  # create bar plot of DOY last freeze and temperature
+  plot(current_data$DOY[current_data$Year == 2012], current_data$GDD41[current_data$Year == 2012],
+       type = "l",
+       col = "deepskyblue3",
+       xlab = "DOY",
+       ylab = "Degrees (C)",
+       main = paste0("2012 Apple Growing Degree Days in", AllStn$name[i], ", NY"))
+  abline(h = 100, col = "red3")
+  abline(h = 400, col = "red3")
+  abline(v = LastFreeze$DOY[LastFreeze$StationID == AllStn$station_id[i] & LastFreeze$Year == 2012])
+  
+  dev.off()
+}
+
+# some example plots
+# Boonville
+plot(TavData$DOY[TavData$Year == 2012 & TavData$StationID == "USC00300785"], TavData$GDD41[TavData$Year == 2012 & TavData$StationID == "USC00300785"],
      type = "l",
      col = "deepskyblue3",
      xlab = "DOY",
@@ -4922,13 +5096,69 @@ abline(h = 100, col = "red3")
 abline(h = 400, col = "red3")
 abline(v = LastFreeze$DOY[LastFreeze$StationID == "USC00300785" & LastFreeze$Year == 2012])
 
-# Apples in Norwich 2012
-plot(alldata5$DOY[alldata5$Year == 2012], alldata5$GDD41[alldata5$Year == 2012],
+# Lowville
+plot(TavData$DOY[TavData$Year == 2012 & TavData$StationID == "USC00304912"], TavData$GDD41[TavData$Year == 2012 & TavData$StationID == "USC00304912"],
      type = "l",
      col = "deepskyblue3",
      xlab = "DOY",
      ylab = "Degrees (C)",
-     main = "Apple Growing Degree Days Accumulation Norwich, NY")
+     main = "Apple Growing Degree Days Accumulation Lowville, NY")
 abline(h = 100, col = "red3")
 abline(h = 400, col = "red3")
-abline(v = LastFreeze$DOY[LastFreeze$StationID == "USC00306085" & LastFreeze$Year == 2012])
+abline(v = LastFreeze$DOY[LastFreeze$StationID == "USC00304912" & LastFreeze$Year == 2012])
+
+# Albany
+plot(TavData$DOY[TavData$Year == 2012 & TavData$StationID == "USW00014735"], TavData$GDD41[TavData$Year == 2012 & TavData$StationID == "USW00014735"],
+     type = "l",
+     col = "deepskyblue3",
+     xlab = "DOY",
+     ylab = "Degrees (C)",
+     main = "Apple Growing Degree Days Accumulation Albany, NY")
+abline(h = 100, col = "red3")
+abline(h = 400, col = "red3")
+abline(v = LastFreeze$DOY[LastFreeze$StationID == "USW00014735" & LastFreeze$Year == 2012])
+
+# Looking at hard freezes (<-5)
+# creating last freeze data frame 
+LastHardFreeze <- subset(AllData, AllData$tmin <= -5) 
+# finding last day of freeze in each year
+LastHardFreeze <- aggregate(LastHardFreeze$DOY, by = list(LastHardFreeze$StationID, LastHardFreeze$StationName, LastHardFreeze$Year), FUN = "max")
+colnames(LastHardFreeze) <- c("StationID", "StationName", "Year", "DOY")
+# joining with all data to get the TDD on the day of last freeze
+LastHardFreeze <- inner_join(LastHardFreeze, TavData, by = c("StationID", "StationName", "Year","DOY"))
+LastHardFreeze <- LastHardFreeze[c("StationID", "StationName", "Year","DOY", "tmin", "TDD")]
+
+# Boonville
+plot(TavData$DOY[TavData$Year == 2012 & TavData$StationID == "USC00300785"], TavData$GDD41[TavData$Year == 2012 & TavData$StationID == "USC00300785"],
+     type = "l",
+     col = "deepskyblue3",
+     xlab = "DOY",
+     ylab = "Degrees (C)",
+     main = "Apple Growing Degree Days Accumulation Boonville, NY")
+abline(h = 100, col = "red3")
+abline(h = 400, col = "red3")
+abline(v = LastHardFreeze$DOY[LastHardFreeze$StationID == "USC00300785" & LastHardFreeze$Year == 2012])
+
+# Lowville
+plot(TavData$DOY[TavData$Year == 2012 & TavData$StationID == "USC00304912"], TavData$GDD41[TavData$Year == 2012 & TavData$StationID == "USC00304912"],
+     type = "l",
+     col = "deepskyblue3",
+     xlab = "DOY",
+     ylab = "Degrees (C)",
+     main = "Apple Growing Degree Days Accumulation Lowville, NY")
+abline(h = 100, col = "red3")
+abline(h = 400, col = "red3")
+abline(v = LastHardFreeze$DOY[LastHardFreeze$StationID == "USC00304912" & LastHardFreeze$Year == 2012])
+
+# Albany
+plot(TavData$DOY[TavData$Year == 2012 & TavData$StationID == "USW00014735"], TavData$GDD41[TavData$Year == 2012 & TavData$StationID == "USW00014735"],
+     type = "l",
+     col = "deepskyblue3",
+     xlab = "DOY",
+     ylab = "Degrees (C)",
+     main = "Apple Growing Degree Days Accumulation Albany, NY")
+abline(h = 100, col = "red3")
+abline(h = 400, col = "red3")
+abline(v = LastHardFreeze$DOY[LastHardFreeze$StationID == "USW00014735" & LastHardFreeze$Year == 2012])
+
+
