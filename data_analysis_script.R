@@ -516,8 +516,6 @@ SpringYear$ExLoCount <- aggregate(SpringData$ExtrLo, by=list(SpringData$Year, Sp
 SpringYear$FTdays <- aggregate(SpringData$FreezeThaw, by=list(SpringData$Year, SpringData$StationID, SpringData$StationName,SpringData$Name), FUN="sum", na.rm = TRUE)$x
 SpringYear$FTrange <- aggregate(SpringData$FTrange, by=list(SpringData$Year, SpringData$StationID, SpringData$StationName,SpringData$Name), FUN="mean", na.rm = TRUE)$x
 
-# # joining spring year with all year to fill in missing years
-# SpringYear <- full_join(SpringYear, AllYear, by = c("year" = "year", "StationID" = "id"))
 
 # decade averages by month
 SpringDecade<- aggregate(SpringData$tmax, by = list(SpringData$StationID, SpringData$StationName,SpringData$Name, SpringData$Decade, SpringData$Month), FUN = "mean", na.rm = TRUE)
@@ -566,34 +564,87 @@ MayYear <- subset(SpringMonths, SpringMonths$month == "May")
 # may decade averages
 MayDecade <- subset(SpringDecade, SpringDecade$Month == "May")
 
-# # subset to specific stations
-# # yearly averages over spring months
-# stn1 <- subset(SpringYear, SpringYear$StationID == "USC00300785")
-# stn2 <- subset(SpringYear, SpringYear$StationID == "USC00301752")
-# stn3 <- subset(SpringYear, SpringYear$StationID == "USC00304102")
-# stn4 <- subset(SpringYear, SpringYear$StationID == "USC00304912")
-# stn5 <- subset(SpringYear, SpringYear$StationID == "USC00306085")
-# stn6 <- subset(SpringYear, SpringYear$StationID == "USC00306314")
-# stn7 <- subset(SpringYear, SpringYear$StationID == "USC00309000")
-# stn8 <- subset(SpringYear, SpringYear$StationID == "USW00014735")
-# stn9 <- subset(SpringYear, SpringYear$StationID == "USW00014750")
-# stn10 <- subset(SpringYear, SpringYear$StationID == "USW00014771")
-# stn11 <- subset(SpringYear, SpringYear$StationID == "USW00094725")
-# stn12 <- subset(SpringYear, SpringYear$StationID == "USW00094790")
-# 
-# #decadal averages
-# stn1dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00300785")
-# stn2dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00301752")
-# stn3dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00304102")
-# stn4dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00304912")
-# stn5dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00306085")
-# stn6dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00306314")
-# stn7dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00309000")
-# stn8dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USW00014735")
-# stn9dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USW00014750")
-# stn10dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USW00014771")
-# stn11dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USW00094725")
-# stn12dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USW00094790")
+## Linear regressions for tav ----
+RegressionTav <- data.frame(StationID=character(0), 
+                            StationName=character(0), 
+                            Slope = numeric(0), 
+                            SlopeP = numeric(0), 
+                            Int = numeric(0), 
+                            IntP = numeric(0),
+                            Rsq = numeric(0))
+
+for (i in 1:nrow(AllStn)){
+  RegressionTav[i,1] <- AllStn$station_id[i]
+  RegressionTav[i,2] <- AllStn$StationName[i]
+  current.mod <- lm(SpringYear$tav[SpringYear$StationID == AllStn$station_id[i]] ~ SpringYear$year[SpringYear$StationID == AllStn$station_id[i]])
+  current.res <- rstandard(current.mod)
+  RegressionTav[i,3] <- summary(current.mod)$coefficients[2,1]
+  RegressionTav[i,4] <- summary(current.mod)$coefficients[2,4]
+  RegressionTav[i,5] <- summary(current.mod)$coefficients[1,1]
+  RegressionTav[i,6] <- summary(current.mod)$coefficients[1,4]
+  RegressionTav[i,7] <- summary(current.mod)$r.squared
+  
+}
+
+## Linear regressions for tmin ----
+RegressionTmin <- data.frame(StationID=character(0), 
+                             StationName=character(0), 
+                             Slope = numeric(0), 
+                             SlopeP = numeric(0), 
+                             Int = numeric(0), 
+                             IntP = numeric(0),
+                             Rsq = numeric(0))
+
+for (i in 1:nrow(AllStn)){
+  RegressionTmin[i,1] <- AllStn$station_id[i]
+  RegressionTmin[i,2] <- AllStn$StationName[i]
+  current.mod <- lm(SpringYear$tmin[SpringYear$StationID == AllStn$station_id[i]] ~ SpringYear$year[SpringYear$StationID == AllStn$station_id[i]])
+  current.res <- rstandard(current.mod)
+  RegressionTmin[i,3] <- summary(current.mod)$coefficients[2,1]
+  RegressionTmin[i,4] <- summary(current.mod)$coefficients[2,4]
+  RegressionTmin[i,5] <- summary(current.mod)$coefficients[1,1]
+  RegressionTmin[i,6] <- summary(current.mod)$coefficients[1,4]
+  RegressionTmin[i,7] <- summary(current.mod)$r.squared
+  
+}
+
+## Linear regressions for tmax ----
+RegressionTmax <- data.frame(StationID=character(0), 
+                             StationName=character(0), 
+                             Slope = numeric(0), 
+                             SlopeP = numeric(0), 
+                             Int = numeric(0), 
+                             IntP = numeric(0),
+                             Rsq = numeric(0))
+
+for (i in 1:nrow(AllStn)){
+  RegressionTmax[i,1] <- AllStn$station_id[i]
+  RegressionTmax[i,2] <- AllStn$StationName[i]
+  current.mod <- lm(SpringYear$tmax[SpringYear$StationID == AllStn$station_id[i]] ~ SpringYear$year[SpringYear$StationID == AllStn$station_id[i]])
+  current.res <- rstandard(current.mod)
+  RegressionTmax[i,3] <- summary(current.mod)$coefficients[2,1]
+  RegressionTmax[i,4] <- summary(current.mod)$coefficients[2,4]
+  RegressionTmax[i,5] <- summary(current.mod)$coefficients[1,1]
+  RegressionTmax[i,6] <- summary(current.mod)$coefficients[1,4]
+  RegressionTmax[i,7] <- summary(current.mod)$r.squared
+  
+  plot(SpringYear$year[SpringYear$StationID == AllStn$station_id[6]], 
+       SpringYear$tmax[SpringYear$StationID == AllStn$station_id[6]],
+       ylab = "max temp",
+       xlab = "year",
+       pch = 20)
+  abline(current.mod)
+}
+
+current.mod <- lm(SpringYear$tmax[SpringYear$StationID == AllStn$station_id[6]] ~ SpringYear$year[SpringYear$StationID == AllStn$station_id[6]])
+
+plot(SpringYear$year[SpringYear$StationID == AllStn$station_id[6]], 
+     SpringYear$tmax[SpringYear$StationID == AllStn$station_id[6]],
+     ylab = "max temp",
+     xlab = "year",
+     pch = 20)
+abline(current.mod)
+
 
 ### General temperature trends ----
 # plot general temperature trends
@@ -603,127 +654,19 @@ for (i in 1:nrow(AllStn)){
   current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
   current_data <- full_join(current_dataT1, current_range, by = c("year" = "year"))
   
-  
   # plot general temperature trends
   ggplot(data = current_data, aes(x = year))+
-    geom_line(aes(y = tav, color = "Average"))+ 
+    geom_line(aes(y = tav, color = "Average"))+
+    geom_abline(data = RegressionTav, aes(slope = Slope[i], intercept = Int[i]), color = alpha("slateblue3", 0.6))+
     geom_line(aes(y = tmax, color = "Maximum"))+
+    geom_abline(data = RegressionTmax, aes(slope = Slope[i], intercept = Int[i]), color = alpha("tomato4", 0.6))+
     geom_line(aes(y = tmin, color = "Minimum"))+
+    geom_abline(data = RegressionTmin, aes(slope = Slope[i], intercept = Int[i]), color = alpha("deepskyblue3", 0.6))+
     scale_color_manual(values = c("slateblue1","tomato3","skyblue"), name = "Temperature Measurement")+
     theme_classic()+
     labs(x = "Year", y = "Temperature (celsius)", title = paste0("Spring Temperatures in ", AllStn$name[i], ", NY"))
   ggsave(paste0("temp_trends_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
-
-# # line graphs of tmax, tmin, tav over time
-# # station 1 - Boonville 
-# ggplot(data = stn1, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Boonville, NY")
-# 
-# # station 2 - Cooperstown
-# ggplot(data = stn2, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Cooperstown, NY")
-# 
-# # station 3 - Indian Lake
-# ggplot(data = stn3, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Indian Lake, NY")
-# 
-# # station 4 - Lowville
-# ggplot(data = stn4, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Lowville, NY")
-# 
-# # station 5 - Norwich
-# ggplot(data = stn5, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Norwich, NY")
-# 
-# # station 6  - Oswego
-# ggplot(data = stn6, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Oswego, NY")
-# 
-# # station 7 - Watertown
-# ggplot(data = stn7, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Watertown, NY")
-# 
-# # station 8 - Albany
-# ggplot(data = stn8, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Albany, NY")
-# 
-# # station 9 - Glens Falls
-# ggplot(data = stn9, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Glens Falls, NY")
-# 
-# # station 10 - Syracuse
-# ggplot(data = stn10, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Syracuse, NY")
-# 
-# # station 11 - Massena
-# ggplot(data = stn11, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Massena, NY")
-# 
-# # station 12 - Watertown Airport
-# ggplot(data = stn12, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Watertown Airport, NY")
-
 
 # average temperatures by decade for all stations
 ggplot(data = SpringDecadeAv, aes(x = Decade, y = tav, color = Name))+
@@ -734,475 +677,6 @@ ggplot(data = SpringDecadeAv, aes(x = Decade, y = tav, color = Name))+
   labs(x = "Decade", y = "Temperature (celsius)", title = "Average Spring Temperatures")
 ggsave("average_all.png", plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 
-
-## Linear regressions for tav ----
-# do we want to include?
-# DON'T RUN RIGHT NOW
-# by year 
-# station 1 model
-stn1.mod <- lm(stn1$tav ~ stn1$year)
-# assumptions
-stn1.res <- rstandard(stn1.mod)
-qqnorm(stn1.res)
-qqline(stn1.res)
-plot(stn1$year, stn1.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn1.mod)
-plot(stn1$year, stn1$tav,
-     ylab = "average temp",
-     xlab = "year")
-abline(stn1.mod)
-
-# station 1 model
-stn1.mod <- lm(stn1$tav ~ stn1$year)
-# assumptions
-stn1.res <- rstandard(stn1.mod)
-qqnorm(stn1.res)
-qqline(stn1.res)
-plot(stn1$year, stn1.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn1.mod)
-plot(stn1$year, stn1$tav,
-     ylab = "average temp",
-     xlab = "year")
-abline(stn1.mod)
-
-# station 2 model
-stn2.mod <- lm(stn2$tav ~ stn2$year)
-# assumptions
-stn2.res <- rstandard(stn2.mod)
-qqnorm(stn2.res)
-qqline(stn2.res)
-plot(stn2$year, stn2.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn2.mod)
-plot(stn2$year, stn2$tav,
-     ylab = "average temp",
-     xlab = "year")
-abline(stn2.mod)
-
-# station 3 model
-stn3.mod <- lm(stn3$tav ~ stn3$year)
-# assumptions
-stn3.res <- rstandard(stn3.mod)
-qqnorm(stn3.res)
-qqline(stn3.res)
-plot(stn3$year, stn3.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn3.mod)
-plot(stn3$year, stn3$tav,
-     ylab = "average temp",
-     xlab = "year")
-abline(stn3.mod)
-
-# station 4 model
-stn4.mod <- lm(stn4$tav ~ stn4$year)
-# assumptions
-stn4.res <- rstandard(stn4.mod)
-qqnorm(stn4.res)
-qqline(stn4.res)
-plot(stn4$year, stn4.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn4.mod)
-plot(stn4$year, stn4$tav,
-     ylab = "average temp",
-     xlab = "year")
-abline(stn4.mod)
-
-# station 5 model
-stn5.mod <- lm(stn5$tav ~ stn5$year)
-# assumptions
-stn5.res <- rstandard(stn5.mod)
-qqnorm(stn5.res)
-qqline(stn5.res)
-plot(stn5$year, stn5.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn5.mod)
-plot(stn5$year, stn5$tav,
-     ylab = "average temp",
-     xlab = "year")
-abline(stn5.mod)
-
-# station 6 model -- SIGNIFICANT!
-stn6.mod <- lm(stn6$tav ~ stn6$year)
-# assumptions
-stn6.res <- rstandard(stn6.mod)
-qqnorm(stn6.res)
-qqline(stn6.res)
-plot(stn6$year, stn6.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn6.mod)
-plot(stn6$year, stn6$tav,
-     pch = 19,
-     ylab = "average temp",
-     xlab = "year",
-     main = "Average Spring Temperatures: Oswego, NY")
-abline(stn6.mod)
-
-# station 7 model
-stn7.mod <- lm(stn7$tav ~ stn7$year)
-# assumptions
-stn7.res <- rstandard(stn7.mod)
-qqnorm(stn7.res)
-qqline(stn7.res)
-plot(stn7$year, stn7.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn7.mod)
-plot(stn7$year, stn7$tav,
-     pch = 19,
-     ylab = "average temp",
-     xlab = "year",
-     main = "Average Spring Temperatures: Watertown, NY")
-abline(stn7.mod)
-
-# station 8 model -- SIGNIFICANT!
-stn8.mod <- lm(stn8$tav ~ stn8$year)
-# assumptions
-stn8.res <- rstandard(stn8.mod)
-qqnorm(stn8.res)
-qqline(stn8.res)
-plot(stn8$year, stn8.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn8.mod)
-plot(stn8$year, stn8$tav,
-     pch = 19,
-     ylab = "average temp",
-     xlab = "year",
-     main = "Average Spring Temperatures: Albany, NY")
-abline(stn8.mod)
-
-# station 9 model
-stn9.mod <- lm(stn9$tav ~ stn9$year)
-# assumptions
-stn9.res <- rstandard(stn9.mod)
-qqnorm(stn9.res)
-qqline(stn9.res)
-plot(stn9$year, stn9.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn9.mod)
-plot(stn9$year, stn9$tav,
-     pch = 19,
-     ylab = "average temp",
-     xlab = "year",
-     main = "Average Spring Temperatures: Glens Falls, NY")
-abline(stn9.mod)
-
-# station 10 model
-stn10.mod <- lm(stn10$tav ~ stn10$year)
-# assumptions
-stn10.res <- rstandard(stn10.mod)
-qqnorm(stn10.res)
-qqline(stn10.res)
-plot(stn10$year, stn10.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn10.mod)
-plot(stn10$year, stn10$tav,
-     pch = 19,
-     ylab = "average temp",
-     xlab = "year",
-     main = "Average Spring Temperatures: Syracuse, NY")
-abline(stn10.mod)
-
-# station 11 model -- SIGNIFICANT (just slope ?)
-stn11.mod <- lm(stn11$tav ~ stn11$year)
-# assumptions
-stn11.res <- rstandard(stn11.mod)
-qqnorm(stn11.res)
-qqline(stn11.res)
-plot(stn11$year, stn11.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn11.mod)
-plot(stn11$year, stn11$tav,
-     pch = 19,
-     ylab = "average temp",
-     xlab = "year",
-     main = "Average Spring Temperatures: Massena, NY")
-abline(stn11.mod)
-
-# station 12 model
-stn12.mod <- lm(stn12$tav ~ stn12$year)
-# assumptions
-stn12.res <- rstandard(stn12.mod)
-qqnorm(stn12.res)
-qqline(stn12.res)
-plot(stn12$year, stn12.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn12.mod)
-plot(stn12$year, stn12$tav,
-     pch = 19,
-     ylab = "average temp",
-     xlab = "year",
-     main = "Average Spring Temperatures: Albany, NY")
-abline(stn12.mod)
-
-# by decade
-# station 1 model
-stn1dc.mod <- lm(stn1dc$tav ~ stn1dc$Decade)
-# assumptions
-stn1dc.res <- rstandard(stn1dc.mod)
-qqnorm(stn1dc.res)
-qqline(stn1dc.res)
-plot(stn1dc$Decade, stn1dc.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn1dc.mod)
-plot(stn1dc$Decade, stn1dc$tav,
-     ylab = "average temp",
-     xlab = "decade")
-abline(stn1dc.mod)
-
-# station 2 model
-stn2dc.mod <- lm(stn2dc$tav ~ stn2dc$Decade)
-# assumptions
-stn2dc.res <- rstandard(stn2dc.mod)
-qqnorm(stn2dc.res)
-qqline(stn2dc.res)
-plot(stn2dc$Decade, stn2dc.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn2dc.mod)
-plot(stn2dc$Decade, stn2dc$tav,
-     ylab = "average temp",
-     xlab = "decade")
-abline(stn2dc.mod)
-
-# station 3 model
-stn3dc.mod <- lm(stn3dc$tav ~ stn3dc$Decade)
-# assumptions
-stn3dc.res <- rstandard(stn3dc.mod)
-qqnorm(stn3dc.res)
-qqline(stn3dc.res)
-plot(stn3dc$Decade, stn3dc.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn3dc.mod)
-plot(stn3dc$Decade, stn3dc$tav,
-     ylab = "average temp",
-     xlab = "decade")
-abline(stn3dc.mod)
-
-# station 4 model
-stn4dc.mod <- lm(stn4dc$tav ~ stn4dc$Decade)
-# assumptions
-stn4dc.res <- rstandard(stn4dc.mod)
-qqnorm(stn4dc.res)
-qqline(stn4dc.res)
-plot(stn4dc$Decade, stn4dc.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn4dc.mod)
-plot(stn4dc$Decade, stn4dc$tav,
-     ylab = "average temp",
-     xlab = "decade")
-abline(stn4dc.mod)
-
-# station 5 model
-stn5dc.mod <- lm(stn5dc$tav ~ stn5dc$Decade)
-# assumptions
-stn5dc.res <- rstandard(stn5dc.mod)
-qqnorm(stn5dc.res)
-qqline(stn5dc.res)
-plot(stn5dc$Decade, stn5dc.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn5dc.mod)
-plot(stn5dc$Decade, stn5dc$tav,
-     ylab = "average temp",
-     xlab = "decade")
-abline(stn5dc.mod)
-
-# station 6 model
-stn6dc.mod <- lm(stn6dc$tav ~ stn6dc$Decade)
-# assumptions
-stn6dc.res <- rstandard(stn6dc.mod)
-qqnorm(stn6dc.res)
-qqline(stn6dc.res)
-plot(stn6dc$Decade, stn6dc.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn6dc.mod)
-plot(stn6dc$Decade, stn6dc$tav,
-     ylab = "average temp",
-     xlab = "decade")
-abline(stn6dc.mod)
-
-# station 7 model
-stn7dc.mod <- lm(stn7dc$tav ~ stn7dc$Decade)
-# assumptions
-stn7dc.res <- rstandard(stn7dc.mod)
-qqnorm(stn7dc.res)
-qqline(stn7dc.res)
-plot(stn7dc$Decade, stn7dc.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn7dc.mod)
-plot(stn7dc$Decade, stn7dc$tav,
-     ylab = "average temp",
-     xlab = "decade")
-abline(stn7dc.mod)
-
-# station 8 model -- SIGNIFICANT!
-stn8dc.mod <- lm(stn8dc$tav ~ stn8dc$Decade)
-# assumptions
-stn8dc.res <- rstandard(stn8dc.mod)
-qqnorm(stn8dc.res)
-qqline(stn8dc.res)
-plot(stn8dc$Decade, stn8dc.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn8dc.mod)
-plot(stn8dc$Decade, stn8dc$tav,
-     ylab = "average temp",
-     xlab = "decade")
-abline(stn8dc.mod)
-
-# station 9 model
-stn9dc.mod <- lm(stn9dc$tav ~ stn9dc$Decade)
-# assumptions
-stn9dc.res <- rstandard(stn9dc.mod)
-qqnorm(stn9dc.res)
-qqline(stn9dc.res)
-plot(stn9dc$Decade, stn9dc.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn9dc.mod)
-plot(stn9dc$Decade, stn9dc$tav,
-     ylab = "average temp",
-     xlab = "decade")
-abline(stn9dc.mod)
-
-# station 10 model
-stn10dc.mod <- lm(stn10dc$tav ~ stn10dc$Decade)
-# assumptions
-stn10dc.res <- rstandard(stn10dc.mod)
-qqnorm(stn10dc.res)
-qqline(stn10dc.res)
-plot(stn10dc$Decade, stn10dc.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn10dc.mod)
-plot(stn10dc$Decade, stn10dc$tav,
-     ylab = "average temp",
-     xlab = "decade")
-abline(stn10dc.mod)
-
-# station 11 model
-stn11dc.mod <- lm(stn11dc$tav ~ stn11dc$Decade)
-# assumptions
-stn11dc.res <- rstandard(stn11dc.mod)
-qqnorm(stn11dc.res)
-qqline(stn11dc.res)
-plot(stn11dc$Decade, stn11dc.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn11dc.mod)
-plot(stn11dc$Decade, stn11dc$tav,
-     ylab = "average temp",
-     xlab = "decade")
-abline(stn11dc.mod)
-
-# station 12 model
-stn12dc.mod <- lm(stn12dc$tav ~ stn12dc$Decade)
-# assumptions
-stn12dc.res <- rstandard(stn12dc.mod)
-qqnorm(stn12dc.res)
-qqline(stn12dc.res)
-plot(stn12dc$Decade, stn12dc.res,
-     xlab = "average temp",
-     ylab = "standardized residual")
-# add a horizontal line at zero
-abline(h=0)
-# regression
-summary(stn12dc.mod)
-plot(stn12dc$Decade, stn12dc$tav,
-     ylab = "average temp",
-     xlab = "decade")
-abline(stn12dc.mod)
 
 ### EXTREME TEMPERATURES ----
 
@@ -4711,26 +4185,31 @@ current_data <- full_join(current_dataT1, current_range, by = c("Year" = "year")
 current_data$tmin <- ifelse(is.na(current_data$tmin), NaN, current_data$tmin) 
 current_data$DOY <- ifelse(is.na(current_data$tmin), NaN, current_data$DOY) 
 
+current_data2 <- current_data[order(current_data$Year),]
+
 # # saving plot as a png
 # png(paste0(plotDIR[usernumber], "/lf_temp_", AllStn$name[i], ".png"))
 
 par(mar = c(5, 4, 4, 4) + 0.3)
-plot(current_data$Year, current_data$DOY,
+plot(current_data2$Year, current_data2$DOY,
      type = "l",
+     lwd = 1.5,
      pch = 20,
      col = alpha("black", 0.7),
      xlab = "Year",
      ylab = "DOY of Last Freeze",
-     main = paste0("TMIN on Day of Last Freeze in ", AllStn$name[2], ", NY"))
+     main = paste0("TMIN on Day of Last Freeze in ", AllStn$name[2], ", NY"),
+     ylim = c(100,190))
 par(new = TRUE)
-plot(current_data$Year, current_data$tmin,
+plot(current_data2$Year, current_data2$tmin,
      type = "l",
-     col = "deepskyblue3",
+     col = alpha("deepskyblue3",0.7),
      lwd = 1.5,
      xlab = "",
      ylab = "",
-     axes = FALSE)
-axis(side = 4, at = pretty(range(current_dataT1$tmin)))
+     axes = FALSE,
+     ylim = c(-10, 0))
+axis(side = 4, at = seq(-10, 0, by = 2))
 mtext("Minimum Temperature (C)", side = 4, line = 3) 
 
 
@@ -4842,8 +4321,7 @@ for (i in 1:nrow(AllStn)){
 
 ### Cold Snaps in Late Spring ----
 # subsetting to just freezing days
-# maybe add a new threshold for days below certain threshold
-# subset with tmin instead of day type
+# make a graph of -5 threshold for 
 FreezeDays <- AllData[AllData$tmin <= 0,1:6]
 FreezeDays <- aggregate(FreezeDays$DOY, by = list(FreezeDays$StationID, FreezeDays$StationName, FreezeDays$Year, FreezeDays$Month), FUN = "length")
 colnames(FreezeDays) <- c("StationID", "StationName", "Year", "Month", "FreezeDays")
@@ -5063,6 +4541,7 @@ for (i in 1:nrow(AllStn)){
 
 ### Apple Growing Degree Days ----
 # Apples plots for 2012
+# make list of stations that have 2012 for tavdata
 for (i in 1:nrow(AllStn)){
   current_data <- subset(TavData, StationID == AllStn$station_id[i])
   # do some kind of check to see if 2012 exists at the station
@@ -5095,6 +4574,8 @@ plot(TavData$DOY[TavData$Year == 2012 & TavData$StationID == "USC00300785"], Tav
 abline(h = 100, col = "red3")
 abline(h = 400, col = "red3")
 abline(v = LastFreeze$DOY[LastFreeze$StationID == "USC00300785" & LastFreeze$Year == 2012])
+abline(v = LastHardFreeze$DOY[LastHardFreeze$StationID == "USC00300785" & LastHardFreeze$Year == 2012])
+
 
 # Lowville
 plot(TavData$DOY[TavData$Year == 2012 & TavData$StationID == "USC00304912"], TavData$GDD41[TavData$Year == 2012 & TavData$StationID == "USC00304912"],
