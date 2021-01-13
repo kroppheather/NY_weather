@@ -83,7 +83,6 @@ PrcpData$prcp <- PrcpData$prcp/10
 ### Narrow down to good stations ----
 # Counting observations per year for the tmax data
 # Make new data frame with just the id, tmax value, and year
-# do we need an na.rm here?
 TmaxDataYear <- aggregate(TmaxData$tmax, by=list(TmaxData$id,TmaxData$year), FUN="length")
 
 # Changing column names
@@ -241,14 +240,6 @@ title(main= "Map of TMax Stations")
 ##now look at Tmin
 #look at weather stations
 plot(siteP, pch=19)
-# #set up colors based on major zone
-# MajorZones <- data.frame(MAJOR = unique(ez@data$MAJOR))
-# #colors
-# MajorZones$col <- c("#e28946",	"#ebb355","#db5236","#36638f","#74a1c3",
-#                     "#df9880",	"#8687c1","#4069bf","#0d4247",	"#ff5b3e",
-#                     "#576356","#31474f" )
-# #add colors to plot back in
-# # ez@data <- left_join(ez@data,MajorZones, by="MAJOR")
 #make a map of all weather sites
 plot(ez, col=ez@data$col, border=NA)
 legend("topleft", paste(MajorZones$MAJOR),fill=MajorZones$col, bty="n", cex=0.35)
@@ -267,14 +258,6 @@ title(main= "Map of TMin Stations")
 #Now look at PRCP
 #look at weather stations
 plot(siteP, pch=19)
-# #set up colors based on major zone
-# MajorZones <- data.frame(MAJOR = unique(ez@data$MAJOR))
-# #colors
-# MajorZones$col <- c("#e28946",	"#ebb355","#db5236","#36638f","#74a1c3",
-#                     "#df9880",	"#8687c1","#4069bf","#0d4247",	"#ff5b3e",
-#                     "#576356","#31474f" )
-# #add colors to plot back in
-# ez@data <- left_join(ez@data,MajorZones, by="MAJOR")
 #make a map of all weather sites
 plot(ez, col=ez@data$col, border=NA)
 legend("topleft", paste(MajorZones$MAJOR),fill=MajorZones$col, bty="n", cex=0.35)
@@ -308,14 +291,6 @@ AllStn$name <- c("Boonville", "Cooperstown", "Indian Lake", "Lowville", "Norwich
 # map the stations that have all data
 #look at weather stations
 plot(siteP, pch=19)
-# #set up colors based on major zone
-# MajorZones <- data.frame(MAJOR = unique(ez@data$MAJOR))
-# #colors
-# MajorZones$col <- c("#e28946",	"#ebb355","#db5236","#36638f","#74a1c3",
-#                     "#df9880",	"#8687c1","#4069bf","#0d4247",	"#ff5b3e",
-#                     "#576356","#31474f" )
-# #add colors to plot back in
-# ez@data <- left_join(ez@data,MajorZones, by="MAJOR")
 #make a map of all weather sites
 plot(ez, col=ez@data$col, border=NA)
 legend("topleft", paste(MajorZones$MAJOR),fill=MajorZones$col, bty="n", cex=0.35)
@@ -332,17 +307,6 @@ title(main= "Map of Stations with Tmax, Tmin, and Prcp")
 ### WEEK 1 ----
 ### Creating one large data frame ----
 
-# create a data frame with all years and stations to join in with AllData to fill in missing years
-# StnList <- as.vector(AllStn$station_id)
-# AllYear <- data.frame(year=seq(1890,2020))
-# 
-# AllYear$id = rep(StnList1, times = 131)
-# 
-# # create a data frame with all years, stations, and months back to join in with AllData to fill in missing years
-# AllMonth <- data.frame(year=rep(seq(1890,2020), each = 12, times = 6))
-# AllMonth$id <- rep(StnList, times = 131*6)
-# AllMonth$Month <- rep(month(c(1, 2, 3, 4, 5, 6), label = TRUE), each = 12, times = 131)
-
 # join tmax, tmin, and prcp data
 AllDataT1 <- full_join(TmaxData, TminData, by = c("id"="id", "date" = "date", "year"="year", "DOY" = "DOY"))
 AllDataT2 <- full_join(AllDataT1, PrcpData, by = c("id"="id",  "date" = "date", "year"="year", "DOY" = "DOY"))
@@ -355,9 +319,6 @@ AllData$Month <- month(AllData$date, label = TRUE)
 
 # add decade column
 AllData$Decade <- AllData$year - (AllData$year %% 10)
-
-# adding back in missing years
-# AllData <- full_join(AllData, AllMonth, by = c("year" = "year", "id" ="id", "Month" = "Month"))
 
 # Subset to just keep id, tmin, tmax, year, doy
 AllData <- data.frame(StationID = AllData$id, 
@@ -382,12 +343,6 @@ AllData$FreezeThaw <- ifelse(AllData$tmin<(-2.2) & AllData$tmax>0, 1 , NA)
 AllData$DayType <- ifelse(AllData$tmin<0 & AllData$tmax<0, 1,
                         ifelse(AllData$tmin<=0 & AllData$tmax>=0, 2,
                                ifelse(AllData$tmin>0 & AllData$tmax>0, 3, 0)))
-
-# Making Day Type a Factor
-#AllData$DayType <- as.factor(AllData$DayType)
-
-# Making station column a factor
-#AllData$StationID <- as.factor(AllData$StationID)
 
 # Adding range of freeze thaw column
 AllData$FTrange <- ifelse(AllData$FreezeThaw == 1, AllData$tmax - AllData$tmin, NA)
@@ -450,26 +405,9 @@ TavData <- TavData %>%
   arrange(DOY) %>%
   mutate(GDD41 = cumsum(ifelse(is.na(tav), 0, ifelse(tav >= 5, tav - 5, 0))))
 
-# 
-# # subset to each station 
-# alldata1 <- subset(AllData, AllData$StationID=="USC00300785")
-# alldata2 <- subset(AllData, AllData$StationID=="USC00301752")
-# alldata3 <- subset(AllData, AllData$StationID=="USC00304102")
-# alldata4 <- subset(AllData, AllData$StationID=="USC00304912")
-# alldata5 <- subset(AllData, AllData$StationID=="USC00306085")
-# alldata6 <- subset(AllData, AllData$StationID=="USC00306314")
-# alldata7 <- subset(AllData, AllData$StationID=="USC00309000")
-# alldata8 <- subset(AllData, AllData$StationID=="USW00014735")
-# alldata9 <- subset(AllData, AllData$StationID=="USW00014750")
-# alldata10 <- subset(AllData, AllData$StationID=="USW00014771")
-# alldata11 <- subset(AllData, AllData$StationID=="USW00094725")
-# alldata12 <- subset(AllData, AllData$StationID=="USW00094790")
-
-
 ## subset to spring data frame
 SpringData <- subset(AllData, AllData$Month %in% c("Mar","Apr","May"))
 SpringData$DayID <- ifelse(leap_year(SpringData$Year), SpringData$DOY - 60, SpringData$DOY - 59)
-
 
 # spring anomalies
 SpringAnomaly <- aggregate(SpringData$tav, by = list(SpringData$StationID, SpringData$StationName, SpringData$DOY), FUN = "mean", na.rm = TRUE)
@@ -497,9 +435,6 @@ SpringMonths$ExLoCount <- aggregate(SpringData$ExtrLo, by=list(SpringData$Year, 
 # add columns with freeze thaw flags and range
 SpringMonths$FTdays <- aggregate(SpringData$FreezeThaw, by=list(SpringData$Year, SpringData$StationID, SpringData$StationName,SpringData$Name,SpringData$Month), FUN="sum", na.rm = TRUE)$x
 SpringMonths$FTrange <- aggregate(SpringData$FTrange, by=list(SpringData$Year, SpringData$StationID, SpringData$StationName,SpringData$Name,SpringData$Month), FUN="mean", na.rm = TRUE)$x
-
-# # join with alldata to fill in missing months
-# SpringMonths <- full_join(SpringMonths, AllMonth[AllMonth$Month %in% c("Mar","Apr","May"),], by = (c("year" = "year", "StationID" = "id", "month" = "Month")))
 
 # data frame with yearly averages - spring months averaged together
 SpringYear <- aggregate(SpringData$tmax, by=list(SpringData$Year,SpringData$StationID, SpringData$StationName,SpringData$Name), FUN="mean", na.rm = TRUE)
@@ -628,22 +563,7 @@ for (i in 1:nrow(AllStn)){
   RegressionTmax[i,6] <- summary(current.mod)$coefficients[1,4]
   RegressionTmax[i,7] <- summary(current.mod)$r.squared
   
-  plot(SpringYear$year[SpringYear$StationID == AllStn$station_id[6]], 
-       SpringYear$tmax[SpringYear$StationID == AllStn$station_id[6]],
-       ylab = "max temp",
-       xlab = "year",
-       pch = 20)
-  abline(current.mod)
 }
-
-current.mod <- lm(SpringYear$tmax[SpringYear$StationID == AllStn$station_id[6]] ~ SpringYear$year[SpringYear$StationID == AllStn$station_id[6]])
-
-plot(SpringYear$year[SpringYear$StationID == AllStn$station_id[6]], 
-     SpringYear$tmax[SpringYear$StationID == AllStn$station_id[6]],
-     ylab = "max temp",
-     xlab = "year",
-     pch = 20)
-abline(current.mod)
 
 
 ### General temperature trends ----
@@ -2774,79 +2694,6 @@ for (i in 1:nrow(AllStn)){
   ggsave(paste0("num_FTdays_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
 
-# # station 1
-# ggplot(data = stn1, aes(x = year, y = FTdays)) +
-#   geom_bar(position = "dodge", stat="identity", fill = ifelse(stn1$FTdays > 20, "tomato3", "deepskyblue3"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Boonville, NY")
-# 
-# # station 2
-# ggplot(data = stn2, aes(x = year, y = FTdays)) +
-#   geom_bar(position = "dodge", stat="identity", fill = ifelse(stn2$FTdays > 20, "tomato3", "deepskyblue3"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Cooperstown, NY")
-# 
-# # station 3
-# ggplot(data = stn3, aes(x = year, y = FTdays)) +
-#   geom_bar(position = "dodge", stat="identity", fill = ifelse(stn3$FTdays > 20, "tomato3", "deepskyblue3"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Indian Lake, NY")
-# 
-# # station 4
-# ggplot(data = stn4, aes(x = year, y = FTdays)) +
-#   geom_bar(position = "dodge", stat="identity", fill = ifelse(stn4$FTdays > 20, "tomato3", "deepskyblue3"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Lowville, NY")
-# 
-# # station 5
-# ggplot(data = stn5, aes(x = year, y = FTdays)) +
-#   geom_bar(position = "dodge", stat="identity", fill = ifelse(stn5$FTdays > 20, "tomato3", "deepskyblue3"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Norwich, NY")
-# 
-# # station 6
-# ggplot(data = stn6, aes(x = year, y = FTdays)) +
-#   geom_bar(position = "dodge", stat="identity", fill = ifelse(stn6$FTdays > 20, "tomato3", "deepskyblue3"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Oswego, NY")
-# 
-# # station 7
-# ggplot(data = stn7, aes(x = year, y = FTdays)) +
-#   geom_bar(position = "dodge", stat="identity", fill = ifelse(stn7$FTdays > 20, "tomato3", "deepskyblue3"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Watertown, NY")
-# 
-# # station 8
-# ggplot(data = stn8, aes(x = year, y = FTdays)) +
-#   geom_bar(position = "dodge", stat="identity", fill = ifelse(stn8$FTdays > 20, "tomato3", "deepskyblue3"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Albany, NY")
-# 
-# # station 9
-# ggplot(data = stn9, aes(x = year, y = FTdays)) +
-#   geom_bar(position = "dodge", stat="identity", fill = ifelse(stn9$FTdays > 20, "tomato3", "deepskyblue3"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Glens Falls, NY")
-# 
-# # station 10
-# ggplot(data = stn10, aes(x = year, y = FTdays)) +
-#   geom_bar(position = "dodge", stat="identity", fill = ifelse(stn10$FTdays > 20, "tomato3", "deepskyblue3"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Syracuse, NY")
-# 
-# # station 11
-# ggplot(data = stn11, aes(x = year, y = FTdays)) +
-#   geom_bar(position = "dodge", stat="identity", fill = ifelse(stn11$FTdays > 20, "tomato3", "deepskyblue3"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Massena, NY")
-# 
-# # station 12
-# ggplot(data = stn12, aes(x = year, y = FTdays)) +
-#   geom_bar(position = "dodge", stat="identity", fill = ifelse(stn12$FTdays > 20, "tomato3", "deepskyblue3"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Watertown Airport, NY")
-# 
-
 # Freeze Thaw Amplitude Graphs ----
 ### some graphs missing may data 
 # lots of missing data in these graphs -- should we change or remove them?
@@ -2864,90 +2711,6 @@ for (i in 1:nrow(AllStn)){
   
   ggsave(paste0("FT_amp_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
-# 
-# # station 1
-# ggplot(data = SpringDecade[SpringDecade$StationID == "USC00300785",], aes(x = Decade, y = FTrange, color = Month))+
-#   geom_point() +
-#   geom_line() +
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Boonville, NY")
-# 
-# # station 2
-# ggplot(data = SpringDecade[SpringDecade$StationID == "USC00301752",], aes(x = Decade, y = FTrange, color = Month))+
-#   geom_point() +
-#   geom_line() +
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Cooperstown Airport, NY")
-# 
-# # station 3
-# ggplot(data = SpringDecade[SpringDecade$StationID == "USC00304102",], aes(x = Decade, y = FTrange, color = Month))+
-#   geom_point() +
-#   geom_line() +
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Indian Lake, NY")
-# 
-# # station 4
-# ggplot(data = SpringDecade[SpringDecade$StationID == "USC00304912",], aes(x = Decade, y = FTrange, color = Month))+
-#   geom_point() +
-#   geom_line() +
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Lowville, NY")
-# 
-# # station 5
-# ggplot(data = SpringDecade[SpringDecade$StationID == "USC00306085",], aes(x = Decade, y = FTrange, color = Month))+
-#   geom_point() +
-#   geom_line() +
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Norwich, NY")
-# 
-# # station 6
-# ggplot(data = SpringDecade[SpringDecade$StationID == "USC00306314",], aes(x = Decade, y = FTrange, color = Month))+
-#   geom_point() +
-#   geom_line() +
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Oswego, NY")
-# 
-# # station 7 
-# ggplot(data = SpringDecade[SpringDecade$StationID == "USC00309000",], aes(x = Decade, y = FTrange, color = Month))+
-#   geom_point() +
-#   geom_line() +
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Watertown, NY")
-# 
-# # station 8
-# ggplot(data = SpringDecade[SpringDecade$StationID == "USW00014735",], aes(x = Decade, y = FTrange, color = Month))+
-#   geom_point() +
-#   geom_line() +
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Albany, NY")
-# 
-# # station 9
-# ggplot(data = SpringDecade[SpringDecade$StationID == "USW00014750",], aes(x = Decade, y = FTrange, color = Month))+
-#   geom_point() +
-#   geom_line() +
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Glens Falls, NY")
-# 
-# # station 10
-# ggplot(data = SpringDecade[SpringDecade$StationID == "USW00014771",], aes(x = Decade, y = FTrange, color = Month))+
-#   geom_point() +
-#   geom_line() +
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Syracuse, NY")
-# 
-# # station 11
-# ggplot(data = SpringDecade[SpringDecade$StationID == "USW00094725",], aes(x = Decade, y = FTrange, color = Month))+
-#   geom_point() +
-#   geom_line() +
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Massena, NY")
-# 
-# # station 12
-# ggplot(data = SpringDecade[SpringDecade$StationID == "USW00094790",], aes(x = Decade, y = FTrange, color = Month))+
-#   geom_point() +
-#   geom_line() +
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature Range (celcius)", title = "Temperature Amplitude of Spring Freeze Thaw Days in Watertown Airport, NY")
 
 
 ### Heat Maps ----
@@ -2997,485 +2760,6 @@ for (i in 1:nrow(AllStn)){
                          na.value = "white") 
   ggsave(paste0("raw_anom_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
-# # Station 1
-# # raw temps
-# stn1all <- subset(SpringData, SpringData$StationID == "USC00300785")
-# ggplot(data = stn1all, mapping = aes(x = Year, y = DayID, fill = tav)) +
-#   geom_tile() +
-#   theme_classic() +
-#   labs(title = "Daily Spring Temperatures: Boonville, NY")+
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature (c)",
-#                        low = "#2166ac",
-#                        mid = "#d8daeb",
-#                        high = "#b2182b",
-#                        na.value = "white")
-# 
-# # standardized anomalies
-# ggplot(data = stn1all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
-#   geom_tile() +
-#   theme_classic() +
-#   labs(title = "Standardized Daily Temperature Anomalies: Boonville, NY")+
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") 
-# 
-# # raw anomalies
-# ggplot(data = stn1all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
-#   geom_tile() +
-#   theme_classic() +
-#   labs(title = "Daily Temperature Anomalies: Boonville, NY")+
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") 
-# # Station 2
-# # raw temps
-# stn2all <- subset(SpringData, SpringData$StationID == "USC00301752")
-# ggplot(data = stn2all, mapping = aes(x = Year, y = DayID, fill = tav)) +
-#   geom_tile() +
-#   theme_classic() +
-#   labs(title = "Daily Spring Temperatures: Cooperstown, NY")+
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature (c)",
-#                        low = "#2166ac",
-#                        mid = "#d8daeb",
-#                        high = "#b2182b",
-#                        na.value = "white")
-# # standardized anomalies
-# ggplot(data = stn2all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
-#   geom_tile() +
-#   theme_classic() +
-#   labs(title = "Standardized Daily Temperature Anomalies: Cooperstown, NY")+
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") 
-# # raw anomalies
-# ggplot(data = stn1all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
-#   geom_tile() +
-#   theme_classic() +
-#   labs(title = "Daily Temperature Anomalies: Cooperstown, NY")+
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") 
-# # Station 3
-# # raw temps
-# stn3all <- subset(SpringData, SpringData$StationID == "USC00304102")
-# ggplot(data = stn3all, mapping = aes(x = Year, y = DayID, fill = tav)) +
-#   geom_tile() +
-#   theme_classic() +
-#   labs(title = "Daily Spring Temperatures: Indian Lake, NY")+
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature (c)",
-#                        low = "#2166ac",
-#                        mid = "#d8daeb",
-#                        high = "#b2182b",
-#                        na.value = "white")
-# # standardized anomalies
-# ggplot(data = stn3all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
-#   geom_tile() +
-#   theme_classic() +
-#   labs(title = "Standardized Daily Temperature Anomalies: Indian Lake, NY")+
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") 
-# # raw anomalies
-# ggplot(data = stn3all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
-#   geom_tile() +
-#   theme_classic() +
-#   labs(title = "Daily Temperature Anomalies: Indian Lake, NY")+
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") 
-# # Station 4
-# # raw temps
-# stn4all <- subset(SpringData, SpringData$StationID == "USC00304912")
-# ggplot(data = stn3all, mapping = aes(x = Year, y = DayID, fill = tav)) +
-#   geom_tile() +
-#   theme_classic() +
-#   labs(title = "Daily Spring Temperatures: Lowville, NY")+
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature (c)",
-#                        low = "#2166ac",
-#                        mid = "#d8daeb",
-#                        high = "#b2182b",)
-# # standardized anomalies
-# ggplot(data = stn4all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
-#   geom_tile() +
-#   theme_classic() +
-#   labs(title = "Standardized Daily Temperature Anomalies: Lowville, NY")+
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") 
-# # raw anomalies
-# ggplot(data = stn4all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
-#   geom_tile() +
-#   theme_classic() +
-#   labs(title = "Daily Temperature Anomalies: Lowville, NY")+
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") 
-# 
-# # Station 5
-# # raw temps
-# stn5all <- subset(SpringData, SpringData$StationID == "USC00306085")
-# ggplot(data = stn5all, mapping = aes(x = Year, y = DayID, fill = tav)) +
-#   geom_tile() +
-#   theme_classic() +
-#   labs(title = "Daily Spring Temperatures: Norwich, NY")+
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature (c)",
-#                        low = "#2166ac",
-#                        mid = "#d8daeb",
-#                        high = "#b2182b",
-#                        na.value = "white")
-# # standardized anomalies
-# ggplot(data = stn5all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
-#   geom_tile() +
-#   theme_classic() +
-#   labs(title = "Standardized Daily Temperature Anomalies: Norwich, NY")+
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") 
-# # raw anomalies
-# ggplot(data = stn5all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
-#   geom_tile() +
-#   theme_classic() +
-#   labs(title = "Daily Temperature Anomalies: Norwich, NY")+
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") 
-# 
-# # Station 6
-# # raw temps
-# stn6all <- subset(SpringData, SpringData$StationID == "USC00306314")
-# ggplot(data = stn6all, mapping = aes(x = Year, y = DayID, fill = tav)) +
-#   geom_tile() +
-#   theme_classic() +
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature (c)",
-#                        low = "#2166ac",
-#                        mid = "#d8daeb",
-#                        high = "#b2182b",
-#                        na.value = "white") +
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   labs(title = "Spring Temperatures in Oswego, NY")
-# 
-# # standardized anomalies
-# ggplot(data = stn6all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
-#   geom_tile() +
-#   theme_classic() +
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") +
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   labs(title = "Standardized Spring Temperature Anomalies in Oswego, NY")
-# 
-# # raw anomalies
-# ggplot(data = stn6all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
-#   geom_tile() +
-#   theme_classic() +
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") +
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   labs(title = "Spring Temperature Anomalies in Oswego, NY")
-# 
-# # Station 7
-# # raw temps
-# stn7all <- subset(SpringData, SpringData$StationID == "USC00309000")
-# ggplot(data = stn7all, mapping = aes(x = Year, y = DayID, fill = tav)) +
-#   geom_tile() +
-#   theme_classic() +
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature (c)",
-#                        low = "#2166ac",
-#                        mid = "#d8daeb",
-#                        high = "#b2182b",
-#                        na.value = "white") +
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   labs(title = "Spring Temperatures in Watertown, NY")
-# 
-# # standardized anomalies
-# ggplot(data = stn7all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
-#   geom_tile() +
-#   theme_classic() +
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") +
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   labs(title = "Standardized Spring Temperature Anomalies in Watertown, NY")
-# 
-# # raw anomalies
-# ggplot(data = stn7all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
-#   geom_tile() +
-#   theme_classic() +
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") +
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   labs(title = "Spring Temperature Anomalies in Watertown, NY")
-# 
-# # Station 8
-# # raw temps
-# stn8all <- subset(SpringData, SpringData$StationID == "USW00014735")
-# ggplot(data = stn8all, mapping = aes(x = Year, y = DayID, fill = tav)) +
-#   geom_tile() +
-#   theme_classic() +
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature (c)",
-#                        low = "#2166ac",
-#                        mid = "#d8daeb",
-#                        high = "#b2182b",
-#                        na.value = "white") +
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   labs(title = "Spring Temperatures in Albany, NY")
-# 
-# # standardized anomalies
-# ggplot(data = stn8all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
-#   geom_tile() +
-#   theme_classic() +
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") +
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   labs(title = "Standardized Spring Temperature Anomalies in Albany, NY")
-# 
-# # raw anomalies
-# ggplot(data = stn8all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
-#   geom_tile() +
-#   theme_classic() +
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") +
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   labs(title = "Spring Temperature Anomalies in Albany, NY")
-# 
-# # Station 9
-# # raw temps
-# stn9all <- subset(SpringData, SpringData$StationID == "USW00014750")
-# ggplot(data = stn9all, mapping = aes(x = Year, y = DayID, fill = tav)) +
-#   geom_tile() +
-#   theme_classic() +
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature (c)",
-#                        low = "#2166ac",
-#                        mid = "#d8daeb",
-#                        high = "#b2182b",
-#                        na.value = "white") +
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   labs(title = "Spring Temperatures in Glens Falls, NY")
-# 
-# # standardized anomalies
-# ggplot(data = stn9all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
-#   geom_tile() +
-#   theme_classic() +
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") +
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   labs(title = "Standardized Spring Temperature Anomalies in Glens Falls, NY")
-# 
-# # raw anomalies
-# ggplot(data = stn9all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
-#   geom_tile() +
-#   theme_classic() +
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") +
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   labs(title = "Spring Temperature Anomalies in Glens Falls, NY")
-# 
-# # Station 10
-# # raw temps
-# stn10all <- subset(SpringData, SpringData$StationID == "USW00014771")
-# ggplot(data = stn10all, mapping = aes(x = Year, y = DayID, fill = tav)) +
-#   geom_tile() +
-#   theme_classic() +
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature (c)",
-#                        low = "#2166ac",
-#                        mid = "#d8daeb",
-#                        high = "#b2182b",
-#                        na.value = "white") +
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   labs(title = "Spring Temperatures in Syracuse, NY")
-# 
-# # standardized anomalies
-# ggplot(data = stn10all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
-#   geom_tile() +
-#   theme_classic() +
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") +
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   labs(title = "Standardized Spring Temperature Anomalies in Syracuse, NY")
-# 
-# # raw anomalies
-# ggplot(data = stn10all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
-#   geom_tile() +
-#   theme_classic() +
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") +
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   labs(title = "Spring Temperature Anomalies in Syracuse, NY")
-# 
-# # Station 11
-# # raw temps
-# stn11all <- subset(SpringData, SpringData$StationID == "USW00094725")
-# ggplot(data = stn11all, mapping = aes(x = Year, y = DayID, fill = tav)) +
-#   geom_tile() +
-#   theme_classic() +
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature (c)",
-#                        low = "#2166ac",
-#                        mid = "#d8daeb",
-#                        high = "#b2182b",
-#                        na.value = "white") +
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   labs(title = "Spring Temperatures in Massena, NY")
-# 
-# # standardized anomalies
-# ggplot(data = stn11all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
-#   geom_tile() +
-#   theme_classic() +
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") +
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   labs(title = "Standardized Spring Temperature Anomalies in Massena, NY")
-# 
-# # raw anomalies
-# ggplot(data = stn11all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
-#   geom_tile() +
-#   theme_classic() +
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") +
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   labs(title = "Spring Temperature Anomalies in Massena, NY")
-# 
-# # Station 12
-# # raw temps
-# stn12all <- subset(SpringData, SpringData$StationID == "USW00094790")
-# ggplot(data = stn12all, mapping = aes(x = Year, y = DayID, fill = tav)) +
-#   geom_tile() +
-#   theme_classic() +
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature (c)",
-#                        low = "#2166ac",
-#                        mid = "#d8daeb",
-#                        high = "#b2182b",
-#                        na.value = "white") +
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   labs(title = "Spring Temperatures in Watertown Airport, NY")
-# 
-# # standardized anomalies
-# ggplot(data = stn12all, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
-#   geom_tile() +
-#   theme_classic() +
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") +
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   labs(title = "Standardized Spring Temperature Anomalies in Watertown Airport, NY")
-# 
-# # raw anomalies
-# ggplot(data = stn12all, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
-#   geom_tile() +
-#   theme_classic() +
-#   scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
-#   scale_fill_gradient2(name = "Temperature Anomaly",
-#                        low = "#4575b4",
-#                        mid = "#ffffbf",
-#                        high = "#d73027",
-#                        na.value = "white") +
-#   geom_hline(yintercept = c(1, 32, 62))+
-#   labs(title = "Spring Temperature Anomalies in Watertown Airport, NY")
 
 ### WEEK 2 ----
 ### Freeze Thaw Day Type Heat Maps----
@@ -3494,103 +2778,6 @@ for (i in 1:nrow(AllStn)){
     labs(title = paste0("Types of Days in ", AllStn$name[i], ", NY"))
   ggsave(paste0("day_type_hm_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
-# 
-# # station 1
-# alldata1$DayType <- as.factor(alldata1$DayType)
-# ggplot(data= alldata1, mapping = aes(x= Year, y = DOY, fill = DayType))+
-#   geom_tile() +
-#   theme_classic()+
-#   scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
-#   scale_fill_manual(name = "Day Types", values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white", labels = c("Freezing", "Freeze-Thaw", "Warm", "Missing Data"))+
-#   labs(title = "Types of Days in Boonville, NY")
-# 
-# # station 2 
-# ggplot(data= alldata2, mapping = aes(x= Year, y = DOY, fill = DayType))+
-#   geom_tile() +
-#   theme_classic()+
-#   scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
-#   scale_fill_manual(name = "Day Types", values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white", labels = c("Freezing", "Freeze-Thaw", "Warm", "Missing Data"))+
-#   labs(title = "Types of Days in Cooperstown, NY")
-# 
-# # station 3 
-# ggplot(data= alldata3, mapping = aes(x= Year, y = DOY, fill = DayType))+
-#   geom_tile() +
-#   theme_classic()+
-#   scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
-#   scale_fill_manual(name = "Day Types", values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white", labels = c("Freezing", "Freeze-Thaw", "Warm", "Missing Data"))+
-#   labs(title = "Types of Days in Indian Lake, NY")
-# 
-# # station 4
-# ggplot(data= alldata4, mapping = aes(x= Year, y = DOY, fill = DayType))+
-#   geom_tile() +
-#   theme_classic()+
-#   scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
-#   scale_fill_manual(name = "Day Types", values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white", labels = c("Freezing", "Freeze-Thaw", "Warm", "Missing Data"))+
-#   labs(title = "Types of Days in Lowville, NY")
-# 
-# # station 5
-# ggplot(data= alldata5, mapping = aes(x= Year, y = DOY, fill = DayType))+
-#   geom_tile() +
-#   theme_classic()+
-#   scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
-#   scale_fill_manual(name = "Day Types", values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white", labels = c("Freezing", "Freeze-Thaw", "Warm", "Missing Data"))+
-#   labs(title = "Types of Days in Norwich, NY")
-# 
-# # station 6
-# ggplot(data= alldata6, mapping = aes(x= Year, y = DOY, fill = DayType))+
-#   geom_tile() +
-#   theme_classic()+
-#   scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
-#   scale_fill_manual(name = "Day Types", values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white", labels = c("Freezing", "Freeze-Thaw", "Warm", "Missing Data"))+
-#   labs(title = "Types of Days in Oswego, NY")
-# 
-# # station 7
-# ggplot(data= alldata7, mapping = aes(x= Year, y = DOY, fill = DayType))+
-#   geom_tile() +
-#   theme_classic()+
-#   scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
-#   scale_fill_manual(name = "Day Types", values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white", labels = c("Freezing", "Freeze-Thaw", "Warm", "Missing Data"))+
-#   labs(title = "Types of Days in Watertown, NY")
-# 
-# # station 8
-# ggplot(data= alldata8, mapping = aes(x= Year, y = DOY, fill = DayType))+
-#   geom_tile() +
-#   theme_classic()+
-#   scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
-#   scale_fill_manual(name = "Day Types", values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white", labels = c("Freezing", "Freeze-Thaw", "Warm", "Missing Data"))+
-#   labs(title = "Types of Days in Albany, NY")
-# 
-# # station 9
-# ggplot(data= alldata9, mapping = aes(x= Year, y = DOY, fill = DayType))+
-#   geom_tile() +
-#   theme_classic()+
-#   scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
-#   scale_fill_manual(name = "Day Types", values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white", labels = c("Freezing", "Freeze-Thaw", "Warm", "Missing Data"))+
-#   labs(title = "Types of Days in Glens Falls, NY")
-# 
-# # station 10
-# ggplot(data= alldata10, mapping = aes(x= Year, y = DOY, fill = DayType))+
-#   geom_tile() +
-#   theme_classic()+
-#   scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
-#   scale_fill_manual(name = "Day Types", values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white", labels = c("Freezing", "Freeze-Thaw", "Warm", "Missing Data"))+
-#   labs(title = "Types of Days in Syracuse, NY")
-# 
-# # station 11
-# ggplot(data= alldata11, mapping = aes(x= Year, y = DOY, fill = DayType))+
-#   geom_tile() +
-#   theme_classic()+
-#   scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
-#   scale_fill_manual(name = "Day Types", values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white", labels = c("Freezing", "Freeze-Thaw", "Warm", "Missing Data"))+
-#   labs(title = "Types of Days in Massena, NY")
-# 
-# # station 12
-# ggplot(data= alldata12, mapping = aes(x= Year, y = DOY, fill = DayType))+
-#   geom_tile() +
-#   theme_classic()+
-#   scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
-#   scale_fill_manual(name = "Day Types", values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white", labels = c("Freezing", "Freeze-Thaw", "Warm", "Missing Data"))+
-#   labs(title = "Types of Days in Watertown Airport, NY")
 
 ### Thawing Degree Days ----
 # Accumulation Jan 1 - June 30 ----
@@ -3619,90 +2806,6 @@ for (i in 1:nrow(AllStn)){
   dev.off()
 }
 
-# # station 1 
-# plot(alldata1$Year, alldata1$TDD,
-#      type = "h",
-#      xlab = "Year",
-#      ylab = "Degrees (C)",
-#      main = "Thawing Degree Day Accumulation (Jan - June) Boonville, NY")
-# 
-# # station 2
-# plot(alldata2$Year, alldata2$TDD,
-#      type = "h",
-#      xlab = "Year",
-#      ylab = "Degrees (C)",
-#      main = "Thawing Degree Day Accumulation (Jan - June) Cooperstown, NY")
-# 
-# # station 3
-# plot(alldata3$Year, alldata3$TDD,
-#      type = "h",
-#      xlab = "Year",
-#      ylab = "Degrees (C)",
-#      main = "Thawing Degree Day Accumulation (Jan - June) Indian Lake, NY")
-# 
-# # station 4
-# plot(alldata4$Year, alldata4$TDD,
-#      type = "h",
-#      xlab = "Year",
-#      ylab = "Degrees (C)",
-#      main = "Thawing Degree Day Accumulation (Jan - June) Lowville, NY")
-# 
-# # station 5
-# plot(alldata5$Year, alldata5$TDD,
-#      type = "h",
-#      xlab = "Year",
-#      ylab = "Degrees (C)",
-#      main = "Annual Thawing Degree Day Accumulation (Jan - June) Norwich, NY")
-# 
-# # station 6
-# plot(alldata6$Year, alldata6$TDD,
-#      type = "h",
-#      xlab = "Year",
-#      ylab = "Degrees (C)",
-#      main = "Annual Thawing Degree Day Accumulation (Jan - June) Oswego, NY")
-# 
-# # station 7
-# plot(alldata7$Year, alldata7$TDD,
-#      type = "h",
-#      xlab = "Year",
-#      ylab = "Degrees (C)",
-#      main = "Annual Thawing Degree Day Accumulation (Jan - June) Watertown, NY")
-# 
-# # station 8
-# plot(alldata8$Year, alldata8$TDD,
-#      type = "h",
-#      xlab = "Year",
-#      ylab = "Degrees (C)",
-#      main = "Annual Thawing Degree Day Accumulation (Jan - June) Albany, NY")
-# 
-# # station 9
-# plot(alldata9$Year, alldata9$TDD,
-#      type = "h",
-#      xlab = "Year",
-#      ylab = "Degrees (C)",
-#      main = "Annual Thawing Degree Day Accumulation (Jan - June) Glens Falls, NY")
-# 
-# # station 10
-# plot(alldata10$Year, alldata10$TDD,
-#      type = "h",
-#      xlab = "Year",
-#      ylab = "Degrees (C)",
-#      main = "Annual Thawing Degree Day Accumulation (Jan - June) Syracuse, NY")
-# 
-# # station 11
-# plot(alldata11$Year, alldata11$TDD,
-#      type = "h",
-#      xlab = "Year",
-#      ylab = "Degrees (C)",
-#      main = "Annual Thawing Degree Day Accumulation (Jan - June) Massena, NY")
-# 
-# # station 12
-# plot(alldata12$Year, alldata12$TDD,
-#      type = "h",
-#      xlab = "Year",
-#      ylab = "Degrees (C)",
-#      main = "Annual Thawing Degree Day Accumulation (Jan - June) Watetown Airport, NY")
-
 # TDD accumulation curves ----
 
 # creating for loop for plots
@@ -3730,204 +2833,6 @@ for (i in 1:nrow(AllStn)){
   }
   dev.off()
 }
-# 
-# # station 2
-# stn2yrs <- unique(data.frame(Year = alldata2$Year, Decade = alldata2$Decade)) 
-# stn2yrs$color <- ifelse(stn2yrs$Decade >= 2010, "#FF9900", alpha("#00008b", 0.3))
-# # get the base plot with just the first year on there
-# plot(alldata2$DOY[alldata2$Year == stn2yrs$Year[1]], alldata2$TDD[alldata2$Year == stn2yrs$Year[1]],
-#      type = "l",
-#      col = stn2yrs$color[1],
-#      xlab = "DOY",
-#      ylab = "Degrees (C)",
-#      main = "Thawing Degree Days Accumulation Cooperstown, NY")
-# # loop through the rest of the years starting at the second index and add the line onto the plot
-# for (i in 2:nrow(stn2yrs)){
-#   current_year = (stn2yrs$Year[i])
-#   if (sum(alldata2$TDD[alldata2$Year == current_year]) == 0){
-#     next
-#   }
-#   lines(alldata2$DOY[alldata2$Year == current_year], alldata2$TDD[alldata2$Year == current_year],
-#         col = stn2yrs$color[i])
-# }
-# 
-# # station 3
-# stn3yrs <- unique(data.frame(Year = alldata3$Year, Decade = alldata3$Decade)) 
-# stn3yrs$color <- ifelse(stn3yrs$Decade >= 2010, "#FF9900", alpha("#00008b", 0.3))
-# # get the base plot with just the first year on there
-# plot(alldata3$DOY[alldata3$Year == stn3yrs$Year[1]], alldata3$TDD[alldata3$Year == stn3yrs$Year[1]],
-#      type = "l",
-#      col = stn3yrs$color[1],
-#      xlab = "DOY",
-#      ylab = "Degrees (C)",
-#      main = "Thawing Degree Days Accumulation Indian Lake, NY")
-# # loop through the rest of the years starting at the second index and add the line onto the plot
-# for (i in 2:nrow(stn3yrs)){
-#   current_year = (stn3yrs$Year[i])
-#   lines(alldata3$DOY[alldata3$Year == current_year], alldata3$TDD[alldata3$Year == current_year],
-#         col = stn3yrs$color[i])
-# }
-# 
-# # station 4
-# stn4yrs <- unique(data.frame(Year = alldata4$Year, Decade = alldata4$Decade)) 
-# stn4yrs$color <- ifelse(stn4yrs$Decade >= 2010, "#FF9900", alpha("#00008b", 0.3))
-# # get the base plot with just the first year on there
-# plot(alldata4$DOY[alldata4$Year == stn4yrs$Year[1]], alldata4$TDD[alldata4$Year == stn4yrs$Year[1]],
-#      type = "l",
-#      col = stn4yrs$color[1],
-#      xlab = "DOY",
-#      ylab = "Degrees (C)",
-#      main = "Thawing Degree Days Accumulation Lowville, NY")
-# # loop through the rest of the years starting at the second index and add the line onto the plot
-# for (i in 2:nrow(stn4yrs)){
-#   current_year = (stn4yrs$Year[i])
-#   lines(alldata4$DOY[alldata4$Year == current_year], alldata4$TDD[alldata4$Year == current_year],
-#         col = stn4yrs$color[i])
-# }
-# 
-# # station 5
-# stn5yrs <- unique(data.frame(Year = alldata5$Year, Decade = alldata5$Decade)) 
-# stn5yrs$color <- ifelse(stn5yrs$Decade >= 2010, "#FF9900", alpha("#00008b", 0.3))
-# # get the base plot with just the first year on there
-# plot(alldata5$DOY[alldata5$Year == stn5yrs$Year[1]], alldata5$TDD[alldata5$Year == stn5yrs$Year[1]],
-#      type = "l",
-#      col = stn5yrs$color[1],
-#      xlab = "DOY",
-#      ylab = "Degrees (C)",
-#      main = "Thawing Degree Days Accumulation Norwich, NY")
-# # loop through the rest of the years starting at the second index and add the line onto the plot
-# for (i in 2:nrow(stn5yrs)){
-#   current_year = (stn5yrs$Year[i])
-#   lines(alldata5$DOY[alldata5$Year == current_year], alldata5$TDD[alldata5$Year == current_year],
-#         col = stn5yrs$color[i])
-# }
-# 
-# # station 6
-# stn6yrs <- unique(data.frame(Year = alldata6$Year, Decade = alldata6$Decade)) 
-# stn6yrs$color <- ifelse(stn6yrs$Decade >= 2010, "#FF9900", alpha("#00008b", 0.3))
-# # highlight just 2012 
-# # stn6yrs$color <- ifelse(stn6yrs$Year == 2012, "#FF9900", alpha("#00008b", 0.3))
-# # get the base plot with just the first year on there
-# plot(alldata6$DOY[alldata6$Year == stn6yrs$Year[1]], alldata6$TDD[alldata6$Year == stn6yrs$Year[1]],
-#      type = "l",
-#      col = stn6yrs$color[1],
-#      xlab = "DOY",
-#      ylab = "Degrees (C)",
-#      main = "Thawing Degree Days Accumulation Oswego, NY")
-# # loop through the rest of the years starting at the second index and add the line onto the plot
-# for (i in 2:nrow(stn6yrs)){
-#   current_year = (stn6yrs$Year[i])
-#   lines(alldata6$DOY[alldata6$Year == current_year], alldata6$TDD[alldata6$Year == current_year],
-#         col = stn6yrs$color[i])
-# }
-# 
-# # station 7
-# stn7yrs <- unique(data.frame(Year = alldata7$Year, Decade = alldata7$Decade)) 
-# stn7yrs$color <- ifelse(stn7yrs$Decade >= 2010, alpha("#FF9900", 1), alpha("#00008b", 0.3))
-# # get the base plot with just the first year on there
-# plot(alldata2$DOY[alldata7$Year == stn7yrs$Year[1]], alldata7$TDD[alldata7$Year == stn7yrs$Year[1]],
-#      type = "l",
-#      col = stn7yrs$color[1],
-#      xlab = "DOY",
-#      ylab = "Degrees (C)",
-#      main = "Thawing Degree Days Accumulation Watertown, NY")
-# # loop through the rest of the years starting at the second index and add the line onto the plot
-# # current year just keeps track of what year we're on to make it easier but we don't have to use it
-# for (i in 2:nrow(stn7yrs)){
-#   current_year = (stn7yrs$Year[i])
-#   lines(alldata7$DOY[alldata7$Year == current_year], alldata7$TDD[alldata7$Year == current_year],
-#         col = stn7yrs$color[i])
-# }
-# 
-# # station 8
-# stn8yrs <- unique(data.frame(Year = alldata8$Year, Decade = alldata8$Decade)) 
-# stn8yrs$color <- ifelse(stn8yrs$Decade >= 2010, alpha("#FF9900", 1), alpha("#00008b", 0.3))
-# # get the base plot with just the first year on there
-# plot(alldata8$DOY[alldata8$Year == stn8yrs$Year[1]], alldata8$TDD[alldata8$Year == stn8yrs$Year[1]],
-#      type = "l",
-#      col = stn8yrs$color[1],
-#      xlab = "DOY",
-#      ylab = "Degrees (C)",
-#      main = "Thawing Degree Days Accumulation Albany, NY")
-# # loop through the rest of the years starting at the second index and add the line onto the plot
-# # current year just keeps track of what year we're on to make it easier but we don't have to use it
-# for (i in 2:nrow(stn8yrs)){
-#   current_year = (stn8yrs$Year[i])
-#   lines(alldata8$DOY[alldata8$Year == current_year], alldata8$TDD[alldata8$Year == current_year],
-#         col = stn8yrs$color[i])
-# }
-# 
-# # station 9
-# stn9yrs <- unique(data.frame(Year = alldata9$Year, Decade = alldata9$Decade)) 
-# stn9yrs$color <- ifelse(stn9yrs$Decade >= 2010, alpha("#FF9900", 1), alpha("#00008b", 0.3))
-# # get the base plot with just the first year on there
-# plot(alldata9$DOY[alldata9$Year == stn9yrs$Year[1]], alldata9$TDD[alldata9$Year == stn9yrs$Year[1]],
-#      type = "l",
-#      col = stn9yrs$color[1],
-#      xlab = "DOY",
-#      ylab = "Degrees (C)",
-#      main = "Thawing Degree Days Accumulation Glens Falls, NY")
-# # loop through the rest of the years starting at the second index and add the line onto the plot
-# # current year just keeps track of what year we're on to make it easier but we don't have to use it
-# for (i in 2:nrow(stn9yrs)){
-#   current_year = (stn9yrs$Year[i])
-#   lines(alldata9$DOY[alldata9$Year == current_year], alldata9$TDD[alldata9$Year == current_year],
-#         col = stn9yrs$color[i])
-# }
-# 
-# # station 10
-# stn10yrs <- unique(data.frame(Year = alldata10$Year, Decade = alldata10$Decade)) 
-# stn10yrs$color <- ifelse(stn10yrs$Decade >= 2010, alpha("#FF9900", 1), alpha("#00008b", 0.3))
-# # get the base plot with just the first year on there
-# plot(alldata10$DOY[alldata10$Year == stn10yrs$Year[1]], alldata10$TDD[alldata10$Year == stn10yrs$Year[1]],
-#      type = "l",
-#      col = stn10yrs$color[1],
-#      xlab = "DOY",
-#      ylab = "Degrees (C)",
-#      main = "Thawing Degree Days Accumulation Syracuse, NY")
-# # loop through the rest of the years starting at the second index and add the line onto the plot
-# # current year just keeps track of what year we're on to make it easier but we don't have to use it
-# for (i in 2:nrow(stn10yrs)){
-#   current_year = (stn10yrs$Year[i])
-#   lines(alldata10$DOY[alldata10$Year == current_year], alldata10$TDD[alldata10$Year == current_year],
-#         col = stn10yrs$color[i])
-# }
-# 
-# # station 11
-# stn11yrs <- unique(data.frame(Year = alldata11$Year, Decade = alldata11$Decade)) 
-# stn11yrs$color <- ifelse(stn11yrs$Decade >= 2010, alpha("#FF9900", 1), alpha("#00008b", 0.3))
-# # get the base plot with just the first year on there
-# plot(alldata11$DOY[alldata11$Year == stn11yrs$Year[1]], alldata11$TDD[alldata11$Year == stn11yrs$Year[1]],
-#      type = "l",
-#      col = stn11yrs$color[1],
-#      xlab = "DOY",
-#      ylab = "Degrees (C)",
-#      main = "Thawing Degree Days Accumulation Massena, NY")
-# # loop through the rest of the years starting at the second index and add the line onto the plot
-# # current year just keeps track of what year we're on to make it easier but we don't have to use it
-# for (i in 2:nrow(stn11yrs)){
-#   current_year = (stn11yrs$Year[i])
-#   lines(alldata11$DOY[alldata11$Year == current_year], alldata11$TDD[alldata11$Year == current_year],
-#         col = stn11yrs$color[i])
-# }
-# 
-# # station 12
-# stn12yrs <- unique(data.frame(Year = alldata12$Year, Decade = alldata12$Decade)) 
-# stn12yrs$color <- ifelse(stn12yrs$Decade >= 2010, alpha("#FF9900", 1), alpha("#00008b", 0.3))
-# # get the base plot with just the first year on there
-# plot(alldata12$DOY[alldata12$Year == stn12yrs$Year[1]], alldata12$TDD[alldata12$Year == stn12yrs$Year[1]],
-#      type = "l",
-#      col = stn12yrs$color[1],
-#      xlab = "DOY",
-#      ylab = "Degrees (C)",
-#      main = "Thawing Degree Days Accumulation Watertown Airport, NY")
-# # loop through the rest of the years starting at the second index and add the line onto the plot
-# # current year just keeps track of what year we're on to make it easier but we don't have to use it
-# for (i in 2:nrow(stn12yrs)){
-#   current_year = (stn12yrs$Year[i])
-#   lines(alldata12$DOY[alldata12$Year == current_year], alldata12$TDD[alldata12$Year == current_year],
-#         col = stn12yrs$color[i])
-# }
 
 ### Day of Last Freeze ----
 # creating last freeze data frame 
@@ -3939,21 +2844,33 @@ colnames(LastFreeze) <- c("StationID", "StationName", "Year", "DOY")
 LastFreeze <- inner_join(LastFreeze, TavData, by = c("StationID", "StationName", "Year","DOY"))
 LastFreeze <- LastFreeze[c("StationID", "StationName", "Year","DOY", "tmin", "TDD")]
 
+# Looking at hard freezes (<-5)
+# creating last freeze data frame 
+LastHardFreeze <- subset(AllData, AllData$tmin <= -5) 
+# finding last day of freeze in each year
+LastHardFreeze <- aggregate(LastHardFreeze$DOY, by = list(LastHardFreeze$StationID, LastHardFreeze$StationName, LastHardFreeze$Year), FUN = "max")
+colnames(LastHardFreeze) <- c("StationID", "StationName", "Year", "DOY")
+# joining with all data to get the TDD on the day of last freeze
+LastHardFreeze <- inner_join(LastHardFreeze, TavData, by = c("StationID", "StationName", "Year","DOY"))
+LastHardFreeze <- LastHardFreeze[c("StationID", "StationName", "Year","DOY", "tmin", "TDD")]
+
 
 # Plots of day of last freeze with thawing degree days
 for (i in 1:nrow(AllStn)){
   current_dataT1 <- subset(LastFreeze, LastFreeze$StationID == AllStn$station_id[i])
   current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
   current_data <- full_join(current_dataT1, current_range, by = c("Year" = "year"))
+  current_data <- current_data[order(current_data$Year),]
   
   # saving plot as a png
-  png(paste0(plotDIR[usernumber], "/lf_tdd_", AllStn$name[i], ".png"))
+  png(paste0(plotDIR[usernumber], "/lf_tdd_", AllStn$name[i], ".png"), 500, 500)
 
   # get the base plot with just the first year on there
   par(mar = c(5, 4, 4, 4) + 0.3)
   plot(current_data$Year, current_data$DOY,
        type = "l",
        col = alpha("black", 0.7),
+       ylim = c(105, 250),
        xlab = "Year",
        ylab = "DOY of Last Freeze",
        main = paste0("Day of Year of Last Freeze in ", AllStn$name[i],", NY"))
@@ -3961,256 +2878,17 @@ for (i in 1:nrow(AllStn)){
   plot(current_data$Year, current_data$TDD,
        type = "l",
        lwd = 1.5,
-       col = "red",              
+       col = alpha("red3",0.7),
+       ylim = c(-200,900),
        axes = FALSE, 
        xlab = "", 
        ylab = "")
-  axis(side = 4, at = pretty(range(current_dataT1$TDD)))
-  mtext("Accumulated TDD (C)", side = 4, line = 3)  
+  axis(side = 4, at = seq(0,900, by = 200))
+  mtext("Accumulated TDD (C)", side = 4, line = 3) 
+  legend("bottom", c("DOY","TDD"), col = c("black","red3"), lwd = 2, bty = "n", cex = .5)
   
   dev.off()
 }
-# 
-# par(mar = c(5, 4, 4, 4) + 0.3)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USC00300785"], LastFreeze$DOY[LastFreeze$StationID == "USC00300785"],
-#      type = "l",
-#      xlab = "Year",
-#      ylab = "DOY of Last Freeze",
-#      main = "Day of Year of Last Freeze in Boonville, NY")
-# par(new = TRUE)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USC00300785"], LastFreeze$TDD[LastFreeze$StationID == "USC00300785"],
-#      type = "l",
-#      col = "red",              
-#      axes = FALSE, 
-#      xlab = "", 
-#      ylab = "")
-# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USC00300785"])))      # Add second axis
-# mtext("Accumulated TDD (C)", side = 4, line = 3) 
-# 
-# # station 2
-# par(mar = c(5, 4, 4, 4) + 0.3)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USC00301752"], LastFreeze$DOY[LastFreeze$StationID == "USC00301752"],
-#      type = "l",
-#      xlab = "Year",
-#      ylab = "DOY of Last Freeze",
-#      main = "Day of Year of Last Freeze in Cooperstown, NY")
-# par(new = TRUE)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USC00301752"], LastFreeze$TDD[LastFreeze$StationID == "USC00301752"],
-#      type = "l",
-#      col = "red",              
-#      axes = FALSE, 
-#      xlab = "", 
-#      ylab = "")
-# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USC00301752"])))      
-# mtext("Accumulated TDD (C)", side = 4, line = 3)
-# 
-# # station 3
-# par(mar = c(5, 4, 4, 4) + 0.3)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USC00304102"], LastFreeze$DOY[LastFreeze$StationID == "USC00304102"],
-#      type = "l",
-#      xlab = "Year",
-#      ylab = "DOY of Last Freeze",
-#      main = "Day of Year of Last Freeze in Indian Lake, NY")
-# par(new = TRUE)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USC00304102"], LastFreeze$TDD[LastFreeze$StationID == "USC00304102"],
-#      type = "l",
-#      col = "red",              
-#      axes = FALSE, 
-#      xlab = "", 
-#      ylab = "")
-# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USC00304102"])))      
-# mtext("Accumulated TDD (C)", side = 4, line = 3)
-# 
-# # station 4
-# par(mar = c(5, 4, 4, 4) + 0.3)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USC00304912"], LastFreeze$DOY[LastFreeze$StationID == "USC00304912"],
-#      type = "l",
-#      xlab = "Year",
-#      ylab = "DOY of Last Freeze",
-#      main = "Day of Year of Last Freeze in Lowville, NY")
-# par(new = TRUE)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USC00304912"], LastFreeze$TDD[LastFreeze$StationID == "USC00304912"],
-#      type = "l",
-#      col = "red",              
-#      axes = FALSE, 
-#      xlab = "", 
-#      ylab = "")
-# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USC00304912"])))      
-# mtext("Accumulated TDD (C)", side = 4, line = 3)
-# 
-# # station 5
-# par(mar = c(5, 4, 4, 4) + 0.3)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USC00306085"], LastFreeze$DOY[LastFreeze$StationID == "USC00306085"],
-#      type = "l",
-#      xlab = "Year",
-#      ylab = "DOY of Last Freeze",
-#      main = "Day of Year of Last Freeze in Norwich, NY")
-# par(new = TRUE)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USC00306085"], LastFreeze$TDD[LastFreeze$StationID == "USC00306085"],
-#      type = "l",
-#      col = "red",              
-#      axes = FALSE, 
-#      xlab = "", 
-#      ylab = "")
-# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USC00306085"])))      
-# mtext("Accumulated TDD (C)", side = 4, line = 3)
-# 
-# # station 6
-# par(mar = c(5, 4, 4, 4) + 0.3)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USC00306314"], LastFreeze$DOY[LastFreeze$StationID == "USC00306314"],
-#      type = "l",
-#      xlab = "Year",
-#      ylab = "DOY of Last Freeze",
-#      main = "Day of Year of Last Freeze in Oswego, NY")
-# par(new = TRUE)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USC00306314"], LastFreeze$TDD[LastFreeze$StationID == "USC00306314"],
-#      type = "l",
-#      col = "red",              
-#      axes = FALSE, 
-#      xlab = "", 
-#      ylab = "")
-# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USC00306314"])))      
-# mtext("Accumulated TDD (C)", side = 4, line = 3)
-# 
-# # station 7
-# par(mar = c(5, 4, 4, 4) + 0.3)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USC00309000"], LastFreeze$DOY[LastFreeze$StationID == "USC00309000"],
-#      type = "l",
-#      xlab = "Year",
-#      ylab = "DOY of Last Freeze",
-#      main = "Day of Year of Last Freeze in Watertown, NY")
-# par(new = TRUE)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USC00309000"], LastFreeze$TDD[LastFreeze$StationID == "USC00309000"],
-#      type = "l",
-#      col = "red",              
-#      axes = FALSE, 
-#      xlab = "", 
-#      ylab = "")
-# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USC00309000"])))      
-# mtext("Accumulated TDD (C)", side = 4, line = 3)
-# 
-# # station 8
-# par(mar = c(5, 4, 4, 4) + 0.3)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USW00014735"], LastFreeze$DOY[LastFreeze$StationID == "USW00014735"],
-#      type = "l",
-#      xlab = "Year",
-#      ylab = "DOY of Last Freeze",
-#      main = "Day of Year of Last Freeze in Albany, NY")
-# par(new = TRUE)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USW00014735"], LastFreeze$TDD[LastFreeze$StationID == "USW00014735"],
-#      type = "l",
-#      col = "red",              
-#      axes = FALSE, 
-#      xlab = "", 
-#      ylab = "")
-# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USW00014735"])))      
-# mtext("Accumulated TDD (C)", side = 4, line = 3)
-# 
-# # station 9
-# par(mar = c(5, 4, 4, 4) + 0.3)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USW00014750"], LastFreeze$DOY[LastFreeze$StationID == "USW00014750"],
-#      type = "l",
-#      xlab = "Year",
-#      ylab = "DOY of Last Freeze",
-#      main = "Day of Year of Last Freeze in Glens Falls, NY")
-# par(new = TRUE)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USW00014750"], LastFreeze$TDD[LastFreeze$StationID == "USW00014750"],
-#      type = "l",
-#      col = "red",              
-#      axes = FALSE, 
-#      xlab = "", 
-#      ylab = "")
-# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USW00014750"])))      
-# mtext("Accumulated TDD (C)", side = 4, line = 3)
-# 
-# # station 10
-# par(mar = c(5, 4, 4, 4) + 0.3)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USW00014771"], LastFreeze$DOY[LastFreeze$StationID == "USW00014771"],
-#      type = "l",
-#      xlab = "Year",
-#      ylab = "DOY of Last Freeze",
-#      main = "Day of Year of Last Freeze in Syracuse, NY")
-# par(new = TRUE)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USW00014771"], LastFreeze$TDD[LastFreeze$StationID == "USW00014771"],
-#      type = "l",
-#      col = "red",              
-#      axes = FALSE, 
-#      xlab = "", 
-#      ylab = "")
-# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USW00014771"])))      
-# mtext("Accumulated TDD (C)", side = 4, line = 3)
-# 
-# # station 11
-# par(mar = c(5, 4, 4, 4) + 0.3)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USW00094725"], LastFreeze$DOY[LastFreeze$StationID == "USW00094725"],
-#      type = "l",
-#      xlab = "Year",
-#      ylab = "DOY of Last Freeze",
-#      main = "Day of Year of Last Freeze in Massena, NY")
-# par(new = TRUE)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USW00094725"], LastFreeze$TDD[LastFreeze$StationID == "USW00094725"],
-#      type = "l",
-#      col = "red",              
-#      axes = FALSE, 
-#      xlab = "", 
-#      ylab = "")
-# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USW00094725"])))      
-# mtext("Accumulated TDD (C)", side = 4, line = 3)
-# 
-# # station 12
-# par(mar = c(5, 4, 4, 4) + 0.3)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USW00094790"], LastFreeze$DOY[LastFreeze$StationID == "USW00094790"],
-#      type = "l",
-#      xlab = "Year",
-#      ylab = "DOY of Last Freeze",
-#      main = "Day of Year of Last Freeze in Watertown Airport, NY")
-# par(new = TRUE)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USW00094790"], LastFreeze$TDD[LastFreeze$StationID == "USW00094790"],
-#      type = "l",
-#      col = "red",              
-#      axes = FALSE, 
-#      xlab = "", 
-#      ylab = "")
-# axis(side = 4, at = pretty(range(LastFreeze$TDD[LastFreeze$StationID == "USW00094790"])))      
-# mtext("Accumulated TDD (C)", side = 4, line = 3)
-
-
-# testing how to fill in missing values
-# would apply to these graphs and graphs above
-# ggplot removes values but base r doesnt but ggplot wont let us have 
-# two y axis that aren't transofrmations of each other
-current_dataT1 <- subset(LastFreeze, LastFreeze$StationID == AllStn$station_id[2])
-current_range <- data.frame(year=seq(AllStn[2, 5], 2019))
-current_data <- full_join(current_dataT1, current_range, by = c("Year" = "year"))
-current_data$tmin <- ifelse(is.na(current_data$tmin), NaN, current_data$tmin) 
-current_data$DOY <- ifelse(is.na(current_data$tmin), NaN, current_data$DOY) 
-
-current_data2 <- current_data[order(current_data$Year),]
-
-# # saving plot as a png
-# png(paste0(plotDIR[usernumber], "/lf_temp_", AllStn$name[i], ".png"))
-
-par(mar = c(5, 4, 4, 4) + 0.3)
-plot(current_data2$Year, current_data2$DOY,
-     type = "l",
-     lwd = 1.5,
-     pch = 20,
-     col = alpha("black", 0.7),
-     xlab = "Year",
-     ylab = "DOY of Last Freeze",
-     main = paste0("TMIN on Day of Last Freeze in ", AllStn$name[2], ", NY"),
-     ylim = c(100,190))
-par(new = TRUE)
-plot(current_data2$Year, current_data2$tmin,
-     type = "l",
-     col = alpha("deepskyblue3",0.7),
-     lwd = 1.5,
-     xlab = "",
-     ylab = "",
-     axes = FALSE,
-     ylim = c(-10, 0))
-axis(side = 4, at = seq(-10, 0, by = 2))
-mtext("Minimum Temperature (C)", side = 4, line = 3) 
 
 
 # plots of temperature on day of last freeze
@@ -4218,114 +2896,45 @@ for (i in 1:nrow(AllStn)){
   current_dataT1 <- subset(LastFreeze, LastFreeze$StationID == AllStn$station_id[i])
   current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
   current_data <- full_join(current_dataT1, current_range, by = c("Year" = "year"))
+  current_data <- current_data[order(current_data$Year),]
   
   # saving plot as a png
-  png(paste0(plotDIR[usernumber], "/lf_temp_", AllStn$name[i], ".png"))
-  
-  # create bar plot of DOY last freeze and temperature
+  png(paste0(plotDIR[usernumber], "/lf_temp_", AllStn$name[i], ".png"),500, 500)
+
   par(mar = c(5, 4, 4, 4) + 0.3)
   plot(current_data$Year, current_data$DOY,
        type = "l",
+       lwd = 1.5,
+       pch = 20,
        col = alpha("black", 0.7),
        xlab = "Year",
        ylab = "DOY of Last Freeze",
-       main = paste0("TMIN on Day of Last Freeze in ", AllStn$name[i], ", NY"))
+       main = paste0("TMIN on Day of Last Freeze in ", AllStn$name[i], ", NY"),
+       ylim = c(105,190))
   par(new = TRUE)
   plot(current_data$Year, current_data$tmin,
        type = "l",
-       col = "deepskyblue3",
+       col = alpha("deepskyblue3",0.7),
        lwd = 1.5,
        xlab = "",
        ylab = "",
-       axes = FALSE)
-  axis(side = 4, at = pretty(range(current_dataT1$tmin)))
-  mtext("Minimum Temperature (C)", side = 4, line = 3) 
+       axes = FALSE,
+       ylim = c(-10, 0))
+  axis(side = 4, at = seq(-10, 0, by = 2))
+  mtext("Minimum Temperature (C)", side = 4, line = 3)
+  legend("bottom", c("DOY","Tmin"), col = c("black","deepskyblue3"), lwd = 2, bty = "n", cex = .5)
   
   dev.off()
 }
-# 
-# # station 6
-# par(mar = c(5, 4, 4, 4) + 0.3)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USC00306314"], LastFreeze$DOY[LastFreeze$StationID == "USC00306314"],
-#      type = "l",
-#      col = alpha("black", 0.7),
-#      xlab = "Year",
-#      ylab = "DOY of Last Freeze",
-#      main = "TMIN on Day of Last Freeze in Oswego, NY")
-# par(new = TRUE)
-# plot(LastFreeze$Year[LastFreeze$StationID == "USC00306314"], LastFreeze$tmin[LastFreeze$StationID == "USC00306314"],
-#      type = "l",
-#      col = "deepskyblue3",
-#      lwd = 1.5,
-#      xlab = "",
-#      ylab = "",
-#      axes = FALSE)
-# axis(side = 4, at = pretty(range(LastFreeze$tmin[LastFreeze$StationID == "USC00306314"])))
-# mtext("Minimum Temperature (C)", side = 4, line = 3) 
-# 
-# plot(LastFreeze$Year[LastFreeze$StationID == "USC00306314"], LastFreeze$tmin[LastFreeze$StationID == "USC00306314"],
-#      type = "l",
-#      col = "deepskyblue3",
-#      xlab = "Year",
-#      ylab = "Temperature (C)",
-#      main = "TMIN on Day of Last Freeze in Oswego, NY")
-# 
-# # station 7
-# plot(LastFreeze$Year[LastFreeze$StationID == "USC00309000"], LastFreeze$tmin[LastFreeze$StationID == "USC00309000"],
-#      type = "l",
-#      col = "deepskyblue3",
-#      xlab = "Year",
-#      ylab = "Temperature (C)",
-#      main = "TMIN on Day of Last Freeze in Watertown, NY")
-# 
-# # station 8
-# plot(LastFreeze$Year[LastFreeze$StationID == "USW00014735"], LastFreeze$tmin[LastFreeze$StationID == "USW00014735"],
-#      type = "l",
-#      col = "deepskyblue3",
-#      xlab = "Year",
-#      ylab = "Temperature (C)",
-#      main = "TMIN on Day of Last Freeze in Albany, NY")
-# 
-# # station 9
-# plot(LastFreeze$Year[LastFreeze$StationID == "USW00014750"], LastFreeze$tmin[LastFreeze$StationID == "USW00014750"],
-#      type = "l",
-#      col = "deepskyblue3",
-#      xlab = "Year",
-#      ylab = "Temperature (C)",
-#      main = "TMIN on Day of Last Freeze in Glens Falls, NY")
-# 
-# # station 10
-# plot(LastFreeze$Year[LastFreeze$StationID == "USW00014771"], LastFreeze$tmin[LastFreeze$StationID == "USW00014771"],
-#      type = "l",
-#      col = "deepskyblue3",
-#      xlab = "Year",
-#      ylab = "Temperature (C)",
-#      main = "TMIN on Day of Last Freeze in Syracuse, NY")
-# 
-# # station 11
-# plot(LastFreeze$Year[LastFreeze$StationID == "USW00094725"], LastFreeze$tmin[LastFreeze$StationID == "USW00094725"],
-#      type = "l",
-#      col = "deepskyblue3",
-#      xlab = "Year",
-#      ylab = "Temperature (C)",
-#      main = "TMIN on Day of Last Freeze in Massena, NY")
-# 
-# # station 12
-# plot(LastFreeze$Year[LastFreeze$StationID == "USW00094790"], LastFreeze$tmin[LastFreeze$StationID == "USW00094790"],
-#      type = "l",
-#      col = "deepskyblue3",
-#      xlab = "Year",
-#      ylab = "Temperature (C)",
-#      main = "TMIN on Day of Last Freeze in Watertown Airport, NY")
-# 
+
 
 ### Cold Snaps in Late Spring ----
 # subsetting to just freezing days
-# make a graph of -5 threshold for 
 FreezeDays <- AllData[AllData$tmin <= 0,1:6]
 FreezeDays <- aggregate(FreezeDays$DOY, by = list(FreezeDays$StationID, FreezeDays$StationName, FreezeDays$Year, FreezeDays$Month), FUN = "length")
 colnames(FreezeDays) <- c("StationID", "StationName", "Year", "Month", "FreezeDays")
 
+# subsetting to hard freeze days
 HardFreezeDays <- AllData[AllData$tmin <= -5,1:6]
 HardFreezeDays <- aggregate(HardFreezeDays$DOY, by = list(HardFreezeDays$StationID, HardFreezeDays$StationName, HardFreezeDays$Year, HardFreezeDays$Month), FUN = "length")
 colnames(HardFreezeDays) <- c("StationID", "StationName", "Year", "Month", "FreezeDays")
@@ -4357,208 +2966,33 @@ for (i in 1:nrow(AllStn)){
   
   dev.off()
 }
-# 
-# # station 1
-# plot(FreezeDays$Year[FreezeDays$StationID == "USC00300785" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00300785" & FreezeDays$Month == "Mar"],
-#      type = "h",
-#      pch = 20,
-#      lwd = 2,
-#      col = "lightskyblue",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      main = "Days below Freezing in Boonville, NY")
-# points(FreezeDays$Year[FreezeDays$StationID == "USC00300785" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00300785" & FreezeDays$Month == "Apr"],
-#       type = "h",
-#       col = "green4",
-#       lwd = 2)
-# legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-# 
-# # station 2
-# plot(FreezeDays$Year[FreezeDays$StationID == "USC00301752" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00301752" & FreezeDays$Month == "Mar"],
-#      type = "h",
-#      pch = 20,
-#      lwd = 2,
-#      ylim = c(0,20),
-#      col = "lightskyblue",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      main = "Days below Freezing in Cooperstown, NY")
-# points(FreezeDays$Year[FreezeDays$StationID == "USC00301752" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00301752" & FreezeDays$Month == "Apr"],
-#        type = "h",
-#        col = "green4",
-#        lwd = 2)
-# legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-# 
-# # station 3
-# plot(FreezeDays$Year[FreezeDays$StationID == "USC00304102" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00304102" & FreezeDays$Month == "Mar"],
-#      type = "h",
-#      pch = 20,
-#      lwd = 2,
-#      col = "lightskyblue",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      main = "Days below Freezing in Indian Lake, NY")
-# points(FreezeDays$Year[FreezeDays$StationID == "USC00304102" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00304102" & FreezeDays$Month == "Apr"],
-#        type = "h",
-#        col = "green4",
-#        lwd = 2)
-# legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-# 
-# # station 4
-# plot(FreezeDays$Year[FreezeDays$StationID == "USC00304912" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00304912" & FreezeDays$Month == "Mar"],
-#      type = "h",
-#      pch = 20,
-#      lwd = 2,
-#      col = "lightskyblue",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      main = "Days below Freezing in Lowville, NY")
-# points(FreezeDays$Year[FreezeDays$StationID == "USC00304912" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00304912" & FreezeDays$Month == "Apr"],
-#        type = "h",
-#        col = "green4",
-#        lwd = 2)
-# legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-# 
-# # station 5
-# plot(FreezeDays$Year[FreezeDays$StationID == "USC00306085" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00306085" & FreezeDays$Month == "Mar"],
-#      type = "h",
-#      pch = 20,
-#      lwd = 2,
-#      col = "lightskyblue",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      main = "Days below Freezing in Norwich, NY")
-# points(FreezeDays$Year[FreezeDays$StationID == "USC00306085" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00306085" & FreezeDays$Month == "Apr"],
-#        type = "h",
-#        col = "green4",
-#        lwd = 2)
-# legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-# 
-# # station 6
-# plot(FreezeDays$Year[FreezeDays$StationID == "USC00306314" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00306314" & FreezeDays$Month == "Mar"],
-#      type = "h",
-#      pch = 20,
-#      lwd = 2,
-#      col = "lightskyblue",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      main = "Days below Freezing in Oswego, NY")
-# points(FreezeDays$Year[FreezeDays$StationID == "USC00306314" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00306314" & FreezeDays$Month == "Apr"],
-#        type = "h",
-#        col = "green4",
-#        lwd = 2)
-# legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-# 
-# # station 7
-# plot(FreezeDays$Year[FreezeDays$StationID == "USC00309000" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00309000" & FreezeDays$Month == "Mar"],
-#      type = "h",
-#      pch = 20,
-#      lwd = 2,
-#      col = "lightskyblue",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      main = "Days below Freezing in Watertown, NY")
-# points(FreezeDays$Year[FreezeDays$StationID == "USC00309000" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USC00309000" & FreezeDays$Month == "Apr"],
-#        type = "h",
-#        col = "green4",
-#        lwd = 2)
-# legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-# 
-# # station 8
-# plot(FreezeDays$Year[FreezeDays$StationID == "USW00014735" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00014735" & FreezeDays$Month == "Mar"],
-#      type = "h",
-#      pch = 20,
-#      lwd = 2,
-#      col = "lightskyblue",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      main = "Days below Freezing in Albany, NY")
-# points(FreezeDays$Year[FreezeDays$StationID == "USW00014735" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00014735" & FreezeDays$Month == "Apr"],
-#        type = "h",
-#        col = "green4",
-#        lwd = 2)
-# legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-# 
-# # station 9
-# plot(FreezeDays$Year[FreezeDays$StationID == "USW00014750" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00014750" & FreezeDays$Month == "Mar"],
-#      type = "h",
-#      pch = 20,
-#      lwd = 2,
-#      col = "lightskyblue",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      main = "Days below Freezing in Glens Falls, NY")
-# points(FreezeDays$Year[FreezeDays$StationID == "USW00014750" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00014750" & FreezeDays$Month == "Apr"],
-#        type = "h",
-#        col = "green4",
-#        lwd = 2)
-# legend("topleft", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-# 
-# # station 10
-# plot(FreezeDays$Year[FreezeDays$StationID == "USW00014771" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00014771" & FreezeDays$Month == "Mar"],
-#      type = "h",
-#      pch = 20,
-#      lwd = 2,
-#      col = "lightskyblue",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      main = "Days below Freezing in Syracuse, NY")
-# points(FreezeDays$Year[FreezeDays$StationID == "USW00014771" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00014771" & FreezeDays$Month == "Apr"],
-#        type = "h",
-#        col = "green4",
-#        lwd = 2)
-# legend("topleft", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-# 
-# # station 11
-# plot(FreezeDays$Year[FreezeDays$StationID == "USW00094725" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00094725" & FreezeDays$Month == "Mar"],
-#      type = "h",
-#      pch = 20,
-#      lwd = 2,
-#      col = "lightskyblue",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      main = "Days below Freezing in Massena, NY")
-# points(FreezeDays$Year[FreezeDays$StationID == "USW00094725" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00094725" & FreezeDays$Month == "Apr"],
-#        type = "h",
-#        col = "green4",
-#        lwd = 2)
-# legend("topleft", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-# 
-# # station 12
-# plot(FreezeDays$Year[FreezeDays$StationID == "USW00094790" & FreezeDays$Month == "Mar"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00094790" & FreezeDays$Month == "Mar"],
-#      type = "h",
-#      pch = 20,
-#      lwd = 2,
-#      col = "lightskyblue",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      main = "Days below Freezing in Massena, NY")
-# points(FreezeDays$Year[FreezeDays$StationID == "USW00094790" & FreezeDays$Month == "Apr"], FreezeDays$FreezeDays[FreezeDays$StationID == "USW00094790" & FreezeDays$Month == "Apr"],
-#        type = "h",
-#        col = "green4",
-#        lwd = 2)
-# legend("topleft", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
 
 ### Apple Growing Degree Days ----
 # Apples plots for 2012
 # make list of stations that have 2012 for tavdata
-for (i in 1:nrow(AllStn)){
-  current_data <- subset(TavData, StationID == AllStn$station_id[i])
-  # do some kind of check to see if 2012 exists at the station
-  ifelse(current_data)
+tav2012 <- subset(TavData, Year == 2012)
+stn2012 <- data.frame(StationID = unique(tav2012$StationID), name = unique(tav2012$Name))
+
+for (i in 1:nrow(stn2012)){
+  current_data <- subset(tav2012, StationID == stn2012$StationID[i])
+  
   # saving plot as a png
-  png(paste0(plotDIR[usernumber], "/apple_gdd_", AllStn$name[i], ".png"))
+  png(paste0(plotDIR[usernumber], "/apple_gdd_", AllStn$name[i], ".png"), 500, 500)
   
   # create bar plot of DOY last freeze and temperature
-  plot(current_data$DOY[current_data$Year == 2012], current_data$GDD41[current_data$Year == 2012],
+  plot(current_data$DOY, current_data$GDD41,
        type = "l",
+       lwd = 1.5,
        col = "deepskyblue3",
        xlab = "DOY",
        ylab = "Degrees (C)",
-       main = paste0("2012 Apple Growing Degree Days in", AllStn$name[i], ", NY"))
-  abline(h = 100, col = "red3")
-  abline(h = 400, col = "red3")
-  abline(v = LastFreeze$DOY[LastFreeze$StationID == AllStn$station_id[i] & LastFreeze$Year == 2012])
+       main = paste0("2012 Apple Growing Degree Days in ", stn2012$name[i], ", NY"))
+  abline(h = 100, col = "red3", lwd = 1.5)
+  abline(h = 400, col = "blueviolet", lwd = 1.5)
+  abline(v = LastFreeze$DOY[LastFreeze$StationID == stn2012$StationID[i] & LastFreeze$Year == 2012], col = "goldenrod3", lwd = 1.5)
+  abline(v = LastHardFreeze$DOY[LastHardFreeze$StationID == stn2012$StationID[i] & LastHardFreeze$Year == 2012], col = "darkgreen", lwd = 1.5)
+  legend("topleft", c("GDD Needed for Budding", "GDD Needed for Leaf Out","Last Day Below -0˚C","Last Day Below -5˚C", "Accumulated GDD"), 
+         col = c("red3", "blueviolet", "goldenrod3","darkgreen","deepskyblue3"), lwd = 2, bty = "n", cex = .5)
   
   dev.off()
 }
@@ -4573,8 +3007,8 @@ plot(TavData$DOY[TavData$Year == 2012 & TavData$StationID == "USC00300785"], Tav
      main = "Apple Growing Degree Days Accumulation Boonville, NY")
 abline(h = 100, col = "red3")
 abline(h = 400, col = "red3")
-abline(v = LastFreeze$DOY[LastFreeze$StationID == "USC00300785" & LastFreeze$Year == 2012])
-abline(v = LastHardFreeze$DOY[LastHardFreeze$StationID == "USC00300785" & LastHardFreeze$Year == 2012])
+abline(v = LastFreeze$DOY[LastFreeze$StationID == "USC00300785" & LastFreeze$Year == 2012], col = "goldenrod3", lwd = 1.5)
+abline(v = LastHardFreeze$DOY[LastHardFreeze$StationID == "USC00300785" & LastHardFreeze$Year == 2012], col = "darkgreen", lwd = 1.5)
 
 
 # Lowville
@@ -4599,15 +3033,6 @@ abline(h = 100, col = "red3")
 abline(h = 400, col = "red3")
 abline(v = LastFreeze$DOY[LastFreeze$StationID == "USW00014735" & LastFreeze$Year == 2012])
 
-# Looking at hard freezes (<-5)
-# creating last freeze data frame 
-LastHardFreeze <- subset(AllData, AllData$tmin <= -5) 
-# finding last day of freeze in each year
-LastHardFreeze <- aggregate(LastHardFreeze$DOY, by = list(LastHardFreeze$StationID, LastHardFreeze$StationName, LastHardFreeze$Year), FUN = "max")
-colnames(LastHardFreeze) <- c("StationID", "StationName", "Year", "DOY")
-# joining with all data to get the TDD on the day of last freeze
-LastHardFreeze <- inner_join(LastHardFreeze, TavData, by = c("StationID", "StationName", "Year","DOY"))
-LastHardFreeze <- LastHardFreeze[c("StationID", "StationName", "Year","DOY", "tmin", "TDD")]
 
 # Boonville
 plot(TavData$DOY[TavData$Year == 2012 & TavData$StationID == "USC00300785"], TavData$GDD41[TavData$Year == 2012 & TavData$StationID == "USC00300785"],
