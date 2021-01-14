@@ -1191,55 +1191,20 @@ HardFreezeDays <- aggregate(HardFreezeDays$DOY, by = list(HardFreezeDays$Station
 colnames(HardFreezeDays) <- c("StationID", "StationName", "Year", "Month", "FreezeDays")
 
 
-current_dataT1 <- subset(FreezeDays, StationID == AllStn$station_id[i])
-current_range <- data.frame(year=seq(AllStn[1, 5], 2019))
-current_data <- full_join(current_dataT1, current_range, by = c("Year" = "year"))
-
-current_data2T1 <- subset(HardFreezeDays, StationID == AllStn$station_id[i])
-current_range2 <- data.frame(year=seq(AllStn[1, 5], 2019))
-current_data2 <- full_join(current_data2T1, current_range, by = c("Year" = "year"))
-
-# march plots
-plot(current_data$Year[current_data$Month == "Mar"], current_data$FreezeDays[current_data$Month == "Mar"],
-     type = "h",
-     pch = 20,
-     lwd = 2,
-     col = "lightskyblue",
-     xlab = "Year",
-     ylab = "Number of Days",
-     main = paste0("Number of Freezes and Hard Freezes in March in ", AllStn$name[1] ,", NY"))
-points(current_data2$Year[current_data2$Month == "Mar"], current_data2$FreezeDays[current_data2$Month == "Mar"],
-       type = "h",
-       col = "green4",
-       lwd = 2)
-legend("topright", c("Days Below 0˚C","Days Below -5˚C"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-
-# april plots
-plot(current_data$Year[current_data$Month == "Apr"], current_data$FreezeDays[current_data$Month == "Apr"],
-     type = "h",
-     pch = 20,
-     lwd = 2,
-     col = "lightskyblue",
-     xlab = "Year",
-     ylab = "Number of Days",
-     main = paste0("Number of Freezes and Hard Freezes in April in ", AllStn$name[1] ,", NY"))
-points(current_data2$Year[current_data2$Month == "Apr"], current_data2$FreezeDays[current_data2$Month == "Apr"],
-       type = "h",
-       col = "green4",
-       lwd = 2)
-legend("top", c("Days Below 0˚C","Days Below -5˚C"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-
-
-# plotting number of days below -5 for march and april
+# plotting number of days below 0 and -5 for march
 for (i in 1:nrow(AllStn)){
-  current_dataT1 <- subset(HardFreezeDays, StationID == AllStn$station_id[i])
-  current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
+  current_dataT1 <- subset(FreezeDays, StationID == AllStn$station_id[i])
+  current_range <- data.frame(year=seq(AllStn[1, 5], 2019))
   current_data <- full_join(current_dataT1, current_range, by = c("Year" = "year"))
   
+  current_data2T1 <- subset(HardFreezeDays, StationID == AllStn$station_id[i])
+  current_range2 <- data.frame(year=seq(AllStn[1, 5], 2019))
+  current_data2 <- full_join(current_data2T1, current_range, by = c("Year" = "year"))
+  
   # saving plot as a png
-  png(paste0(plotDIR[usernumber], "/hard_freeze_days_", AllStn$name[i], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
+  png(paste0(plotDIR[usernumber], "/mar_freeze_days_", AllStn$name[i], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
 
-  # create bar plot of DOY last freeze and temperature
+  # march plots
   plot(current_data$Year[current_data$Month == "Mar"], current_data$FreezeDays[current_data$Month == "Mar"],
        type = "h",
        pch = 20,
@@ -1247,39 +1212,43 @@ for (i in 1:nrow(AllStn)){
        col = "lightskyblue",
        xlab = "Year",
        ylab = "Number of Days",
-       main = paste0("Days below -5˚C in ", AllStn$name[i] ,", NY"))
-  points(current_data$Year[current_data$Month == "Apr"], current_data$FreezeDays[current_data$Month == "Apr"],
+       main = paste0("Number of Freezes and Hard Freezes in March in ", AllStn$name[1] ,", NY"))
+  points(current_data2$Year[current_data2$Month == "Mar"], current_data2$FreezeDays[current_data2$Month == "Mar"],
          type = "h",
          col = "green4",
          lwd = 2)
-  legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
+  legend("top", c("Days Below 0˚C","Days Below -5˚C"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
   
   dev.off()
 }
 
-# plotting number of days below 0 for march and april
+# plotting number of days below 0 and -5 for april
 for (i in 1:nrow(AllStn)){
   current_dataT1 <- subset(FreezeDays, StationID == AllStn$station_id[i])
-  current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
+  current_range <- data.frame(year=seq(AllStn[1, 5], 2019))
   current_data <- full_join(current_dataT1, current_range, by = c("Year" = "year"))
   
-  # saving plot as a png
-  png(paste0(plotDIR[usernumber], "/freeze_days_", AllStn$name[i], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
+  current_data2T1 <- subset(HardFreezeDays, StationID == AllStn$station_id[i])
+  current_range2 <- data.frame(year=seq(AllStn[1, 5], 2019))
+  current_data2 <- full_join(current_data2T1, current_range, by = c("Year" = "year"))
   
-  # create bar plot of DOY last freeze and temperature
-  plot(current_data$Year[current_data$Month == "Mar"], current_data$FreezeDays[current_data$Month == "Mar"],
+  # saving plot as a png
+  png(paste0(plotDIR[usernumber], "/apr_freeze_days_", AllStn$name[i], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
+  
+  # april plots
+  plot(current_data$Year[current_data$Month == "Apr"], current_data$FreezeDays[current_data$Month == "Apr"],
        type = "h",
        pch = 20,
        lwd = 2,
        col = "lightskyblue",
        xlab = "Year",
        ylab = "Number of Days",
-       main = paste0("Days below 0˚C in ", AllStn$name[i] ,", NY"))
-  points(current_data$Year[current_data$Month == "Apr"], current_data$FreezeDays[current_data$Month == "Apr"],
+       main = paste0("Number of Freezes and Hard Freezes in April in ", AllStn$name[1] ,", NY"))
+  points(current_data2$Year[current_data2$Month == "Apr"], current_data2$FreezeDays[current_data2$Month == "Apr"],
          type = "h",
          col = "green4",
          lwd = 2)
-  legend("topright", c("March","April"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
+  legend("top", c("Days Below 0˚C","Days Below -5˚C"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
   
   dev.off()
 }
