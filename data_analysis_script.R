@@ -534,31 +534,31 @@ SpringDecadeAv$ExLoCount <- aggregate(SpringData$ExtrLo,by=list(SpringData$Stati
 SpringDecadeAv$FTdays <- aggregate(SpringData$FreezeThaw, by = list(SpringData$StationID, SpringData$Decade), FUN = "sum", na.rm = TRUE)$x / 30
 SpringDecadeAv$FTrange <- aggregate(SpringData$FTrange, by = list(SpringData$StationID, SpringData$Decade), FUN = "mean", na.rm = TRUE)$x
 
-# TRY TO MAKE FOR LOOP SO WE DONT NEED THESE SUBSETS
-# subset to specific months
-# all march data
-MarData <- subset(AllData, AllData$Month == "Mar")
-# march yearly averages
-MarYear <- subset(SpringMonths, SpringMonths$month == "Mar")
-# march decade averages
-MarDecade <- subset(SpringDecade, SpringDecade$Month == "Mar")
-
-# all april data
-AprData <- subset(AllData, AllData$Month == "Apr")
-# april yearly averages
-AprYear <- subset(SpringMonths, SpringMonths$month == "Apr")
-# april decade averages
-AprDecade <- subset(SpringDecade, SpringDecade$Month == "Apr")
-
-# all may data
-MayData <- subset(AllData, AllData$Month == "May")
-# may yearly averages
-MayYear <- subset(SpringMonths, SpringMonths$month == "May")
-# may decade averages
-MayDecade <- subset(SpringDecade, SpringDecade$Month == "May")
-
-# # subset to specific stations
-# # yearly averages
+# # TRY TO MAKE FOR LOOP SO WE DONT NEED THESE SUBSETS
+# # subset to specific months
+# # all march data
+# MarData <- subset(AllData, AllData$Month == "Mar")
+# # march yearly averages
+# MarYear <- subset(SpringMonths, SpringMonths$month == "Mar")
+# # march decade averages
+# MarDecade <- subset(SpringDecade, SpringDecade$Month == "Mar")
+# 
+# # all april data
+# AprData <- subset(AllData, AllData$Month == "Apr")
+# # april yearly averages
+# AprYear <- subset(SpringMonths, SpringMonths$month == "Apr")
+# # april decade averages
+# AprDecade <- subset(SpringDecade, SpringDecade$Month == "Apr")
+# 
+# # all may data
+# MayData <- subset(AllData, AllData$Month == "May")
+# # may yearly averages
+# MayYear <- subset(SpringMonths, SpringMonths$month == "May")
+# # may decade averages
+# MayDecade <- subset(SpringDecade, SpringDecade$Month == "May")
+# 
+# # # subset to specific stations
+# # # yearly averages
 # stn1 <- subset(SpringYear, SpringYear$StationID == "USC00300785")
 # stn2 <- subset(SpringYear, SpringYear$StationID == "USC00301752")
 # stn3 <- subset(SpringYear, SpringYear$StationID == "USC00304102")
@@ -571,20 +571,7 @@ MayDecade <- subset(SpringDecade, SpringDecade$Month == "May")
 # stn10 <- subset(SpringYear, SpringYear$StationID == "USW00014771")
 # stn11 <- subset(SpringYear, SpringYear$StationID == "USW00094725")
 # stn12 <- subset(SpringYear, SpringYear$StationID == "USW00094790")
-# 
-# #decadal averages
-# stn1dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00300785")
-# stn2dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00301752")
-# stn3dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00304102")
-# stn4dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00304912")
-# stn5dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00306085")
-# stn6dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00306314")
-# stn7dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USC00309000")
-# stn8dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USW00014735")
-# stn9dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USW00014750")
-# stn10dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USW00014771")
-# stn11dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USW00094725")
-# stn12dc <- subset(SpringDecadeAv, SpringDecadeAv$StationID == "USW00094790")
+
 
 ### General temperature trends ----
 
@@ -607,114 +594,7 @@ for (i in 1:nrow(AllStn)){
   ggsave(paste0("temp_trends_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
 
-# # station 1 - Boonville 
-# ggplot(data = stn1, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Boonville, NY")
-# 
-# # station 2 - Cooperstown
-# ggplot(data = stn2, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Cooperstown, NY")
-# 
-# # station 3 - Indian Lake
-# ggplot(data = stn3, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Indian Lake, NY")
-# 
-# # station 4 - Lowville
-# ggplot(data = stn4, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Lowville, NY")
-# 
-# # station 5 - Norwich
-# ggplot(data = stn5, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Norwich, NY")
-# 
-# # station 6  - Oswego
-# ggplot(data = stn6, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Oswego, NY")
-# 
-# # station 7 - Watertown
-# ggplot(data = stn7, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Watertown, NY")
-# 
-# # station 8 - Albany
-# ggplot(data = stn8, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Albany, NY")
-# 
-# # station 9 - Glens Falls
-# ggplot(data = stn9, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Glens Falls, NY")
-# 
-# # station 10 - Syracuse
-# ggplot(data = stn10, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Syracuse, NY")
-# 
-# # station 11 - Massena
-# ggplot(data = stn11, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Massena, NY")
-# 
-# # station 12 - Watertown Airport
-# ggplot(data = stn12, aes(x = year))+
-#   geom_line(aes(y = tav, color = "average temp"))+ 
-#   geom_line(aes(y = tmax, color = "maximum temp"))+
-#   geom_line(aes(y = tmin, color = "minimum temp"))+
-#   scale_color_manual(values = c("slateblue1","tomato3","skyblue"))+
-#   theme_classic()+
-#   labs(x = "Year", y = "Temperature (celsius)", title = "Spring Temperatures in Watertown Airport, NY")
-# 
+
 
 # average temperatures by decade for all stations
 ggplot(data = SpringDecadeAv, aes(x = Decade, y = tav, color = Name))+
@@ -726,238 +606,6 @@ ggplot(data = SpringDecadeAv, aes(x = Decade, y = tav, color = Name))+
 ggsave("average_all.png", plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 
 ## DO WE WANT LINEAR REGRESSIONS IN FINAL CODE?
-# ## Linear regressions for tav ----
-# # by year 
-# # station 1 model
-# stn1.mod <- lm(stn1$tav ~ stn1$year)
-# # assumptions
-# stn1.res <- rstandard(stn1.mod)
-# qqnorm(stn1.res)
-# qqline(stn1.res)
-# plot(stn1$year, stn1.res,
-#      xlab = "average temp",
-#      ylab = "standardized residual")
-# # add a horizontal line at zero
-# abline(h=0)
-# # regression
-# summary(stn1.mod)
-# plot(stn1$year, stn1$tav,
-#      ylab = "average temp",
-#      xlab = "year")
-# abline(stn1.mod)
-# 
-# # station 2 model
-# stn2.mod <- lm(stn2$tav ~ stn2$year)
-# # assumptions
-# stn2.res <- rstandard(stn2.mod)
-# qqnorm(stn2.res)
-# qqline(stn2.res)
-# plot(stn2$year, stn2.res,
-#      xlab = "average temp",
-#      ylab = "standardized residual")
-# # add a horizontal line at zero
-# abline(h=0)
-# # regression
-# summary(stn2.mod)
-# plot(stn2$year, stn2$tav,
-#      ylab = "average temp",
-#      xlab = "year")
-# abline(stn2.mod)
-# 
-# # station 3 model
-# stn3.mod <- lm(stn3$tav ~ stn3$year)
-# # assumptions
-# stn3.res <- rstandard(stn3.mod)
-# qqnorm(stn3.res)
-# qqline(stn3.res)
-# plot(stn3$year, stn3.res,
-#      xlab = "average temp",
-#      ylab = "standardized residual")
-# # add a horizontal line at zero
-# abline(h=0)
-# # regression
-# summary(stn3.mod)
-# plot(stn3$year, stn3$tav,
-#      ylab = "average temp",
-#      xlab = "year")
-# abline(stn3.mod)
-# 
-# # station 4 model
-# stn4.mod <- lm(stn4$tav ~ stn4$year)
-# # assumptions
-# stn4.res <- rstandard(stn4.mod)
-# qqnorm(stn4.res)
-# qqline(stn4.res)
-# plot(stn4$year, stn4.res,
-#      xlab = "average temp",
-#      ylab = "standardized residual")
-# # add a horizontal line at zero
-# abline(h=0)
-# # regression
-# summary(stn4.mod)
-# plot(stn4$year, stn4$tav,
-#      ylab = "average temp",
-#      xlab = "year")
-# abline(stn4.mod)
-# 
-# # station 5 model
-# stn5.mod <- lm(stn5$tav ~ stn5$year)
-# # assumptions
-# stn5.res <- rstandard(stn5.mod)
-# qqnorm(stn5.res)
-# qqline(stn5.res)
-# plot(stn5$year, stn5.res,
-#      xlab = "average temp",
-#      ylab = "standardized residual")
-# # add a horizontal line at zero
-# abline(h=0)
-# # regression
-# summary(stn5.mod)
-# plot(stn5$year, stn5$tav,
-#      ylab = "average temp",
-#      xlab = "year")
-# abline(stn5.mod)
-# 
-# # station 6 model -- SIGNIFICANT!
-# stn6.mod <- lm(stn6$tav ~ stn6$year)
-# # assumptions
-# stn6.res <- rstandard(stn6.mod)
-# qqnorm(stn6.res)
-# qqline(stn6.res)
-# plot(stn6$year, stn6.res,
-#      xlab = "average temp",
-#      ylab = "standardized residual")
-# # add a horizontal line at zero
-# abline(h=0)
-# # regression
-# summary(stn6.mod)
-# plot(stn6$year, stn6$tav,
-#      pch = 19,
-#      ylab = "average temp",
-#      xlab = "year",
-#      main = "Average Spring Temperatures: Oswego, NY")
-# abline(stn6.mod)
-# 
-# # station 7 model
-# stn7.mod <- lm(stn7$tav ~ stn7$year)
-# # assumptions
-# stn7.res <- rstandard(stn7.mod)
-# qqnorm(stn7.res)
-# qqline(stn7.res)
-# plot(stn7$year, stn7.res,
-#      xlab = "average temp",
-#      ylab = "standardized residual")
-# # add a horizontal line at zero
-# abline(h=0)
-# # regression
-# summary(stn7.mod)
-# plot(stn7$year, stn7$tav,
-#      pch = 19,
-#      ylab = "average temp",
-#      xlab = "year",
-#      main = "Average Spring Temperatures: Watertown, NY")
-# abline(stn7.mod)
-# 
-# # station 8 model -- SIGNIFICANT!
-# stn8.mod <- lm(stn8$tav ~ stn8$year)
-# # assumptions
-# stn8.res <- rstandard(stn8.mod)
-# qqnorm(stn8.res)
-# qqline(stn8.res)
-# plot(stn8$year, stn8.res,
-#      xlab = "average temp",
-#      ylab = "standardized residual")
-# # add a horizontal line at zero
-# abline(h=0)
-# # regression
-# summary(stn8.mod)
-# plot(stn8$year, stn8$tav,
-#      pch = 19,
-#      ylab = "average temp",
-#      xlab = "year",
-#      main = "Average Spring Temperatures: Albany, NY")
-# abline(stn8.mod)
-# 
-# # station 9 model
-# stn9.mod <- lm(stn9$tav ~ stn9$year)
-# # assumptions
-# stn9.res <- rstandard(stn9.mod)
-# qqnorm(stn9.res)
-# qqline(stn9.res)
-# plot(stn9$year, stn9.res,
-#      xlab = "average temp",
-#      ylab = "standardized residual")
-# # add a horizontal line at zero
-# abline(h=0)
-# # regression
-# summary(stn9.mod)
-# plot(stn9$year, stn9$tav,
-#      pch = 19,
-#      ylab = "average temp",
-#      xlab = "year",
-#      main = "Average Spring Temperatures: Glens Falls, NY")
-# abline(stn9.mod)
-# 
-# # station 10 model
-# stn10.mod <- lm(stn10$tav ~ stn10$year)
-# # assumptions
-# stn10.res <- rstandard(stn10.mod)
-# qqnorm(stn10.res)
-# qqline(stn10.res)
-# plot(stn10$year, stn10.res,
-#      xlab = "average temp",
-#      ylab = "standardized residual")
-# # add a horizontal line at zero
-# abline(h=0)
-# # regression
-# summary(stn10.mod)
-# plot(stn10$year, stn10$tav,
-#      pch = 19,
-#      ylab = "average temp",
-#      xlab = "year",
-#      main = "Average Spring Temperatures: Syracuse, NY")
-# abline(stn10.mod)
-# 
-# # station 11 model -- SIGNIFICANT (just slope ?)
-# stn11.mod <- lm(stn11$tav ~ stn11$year)
-# # assumptions
-# stn11.res <- rstandard(stn11.mod)
-# qqnorm(stn11.res)
-# qqline(stn11.res)
-# plot(stn11$year, stn11.res,
-#      xlab = "average temp",
-#      ylab = "standardized residual")
-# # add a horizontal line at zero
-# abline(h=0)
-# # regression
-# summary(stn11.mod)
-# plot(stn11$year, stn11$tav,
-#      pch = 19,
-#      ylab = "average temp",
-#      xlab = "year",
-#      main = "Average Spring Temperatures: Massena, NY")
-# abline(stn11.mod)
-# 
-# # station 12 model
-# stn12.mod <- lm(stn12$tav ~ stn12$year)
-# # assumptions
-# stn12.res <- rstandard(stn12.mod)
-# qqnorm(stn12.res)
-# qqline(stn12.res)
-# plot(stn12$year, stn12.res,
-#      xlab = "average temp",
-#      ylab = "standardized residual")
-# # add a horizontal line at zero
-# abline(h=0)
-# # regression
-# summary(stn12.mod)
-# plot(stn12$year, stn12$tav,
-#      pch = 19,
-#      ylab = "average temp",
-#      xlab = "year",
-#      main = "Average Spring Temperatures: Albany, NY")
-# abline(stn12.mod)
-# 
 # # by decade
 # # station 1 model
 # stn1dc.mod <- lm(stn1dc$tav ~ stn1dc$Decade)
@@ -1178,7 +826,37 @@ ggsave("average_all.png", plot = last_plot(), device = png(), path = paste0(plot
 
 ### EXTREME TEMPERATURES ----
 
+# use for reference
+# to subset by month
+monthID <- c("Mar","Apr","May")
+# to put entire month name in title
+monthName <- c("March","April","May")
+
+
 # Extreme temperatures by year ----
+
+##  work on getting ylim to change with current_data
+
+#test
+current_dataT1 <- subset(SpringMonths, SpringMonths$StationID == AllStn$station_id[1])
+current_range <- data.frame(year=rep(seq(AllStn[1,5],2019), times = 3), month = rep(month(c(3,4,5), label = TRUE), each = (2020 - AllStn$StartTmax[AllStn$stnID == 1])))
+current_data <- full_join(current_dataT1, current_range, by = c("year" = "year", "month" = "month"))
+
+# not working for monthID[2]
+plot(current_data$year[current_data$month == monthID[1]], current_data$ExtHi[current_data$month == monthID[1]],
+     type = "l",
+     col = "tomato3",
+     xlab = "Year",
+     ylab = "Temperature (Celsius)",
+     main = paste("Extreme", monthName[1] , "Temperatures in", AllStn$name[1], ", NY"),
+     ylim = c(min(current_data$ExtLo[current_data$month == monthID[1]])-5, max(current_data$ExtHi[current_data$month == monthID[1]])+5))
+lines(current_data$year[current_data$month == monthID[1]], current_data$ExtLo[current_data$month == monthID[1]],
+      col = "skyblue")     
+# maybe add trendline
+lines(predict(lm(current_data$ExtHi[current_data$month == monthID[3]] ~ current_data$year[current_data$month == monthID[3]])))
+legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n")
+
+
 
 # for loop for extreme temperature plots
 for (i in 1:nrow(AllStn)){
@@ -1186,473 +864,33 @@ for (i in 1:nrow(AllStn)){
   current_dataT1 <- subset(SpringMonths, SpringMonths$StationID == AllStn$station_id[i])
   current_range <- data.frame(year=rep(seq(AllStn[i,5],2019), times = 3), month = rep(month(c(3,4,5), label = TRUE), each = (2020 - AllStn$StartTmax[AllStn$stnID == i])))
   current_data <- full_join(current_dataT1, current_range, by = c("year" = "year", "month" = "month"))
+  current_data <- current_data[order(current_data$year),]
   
   # loop through different months 
-  for (j in c("Mar","Apr","May")){
+  for (j in 1:3){
     
-    png(paste0(plotDIR[usernumber], "/ex_temps", AllStn$name[i], "_", j, ".png"))
+    png(paste0(plotDIR[usernumber], "/ex_temps", AllStn$name[i], "_", monthID[j], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
     
     # plot
-    plot(current_data$year[current_data$month == j], current_data$ExtHi[current_data$month == j],
+    plot(current_data$year[current_data$month == monthID[j]], current_data$ExtHi[current_data$month == monthID[j]],
          type = "l",
+         lwd = 2, 
          col = "tomato3",
          xlab = "Year",
          ylab = "Temperature (Celsius)",
-         main = paste("Extreme", j , "Temperatures in", AllStn$name[i], ", NY"),
-         ylim = c(-30, 30))
-    lines(current_data$year[current_data$month == j], current_data$ExtLo[current_data$month == j],
+         main = paste("Extreme", monthName[j] , "Temperatures in", AllStn$name[i], ", NY"),
+         ylim = c(min(current_data$ExtLo[current_data$month == monthID[j]], na.rm=TRUE)-5, max(current_data$ExtHi[current_data$month == monthID[j]], na.rm=TRUE)+5),
+         xlim = c(min(current_data$year[current_data$month == monthID[j]]), 2019))
+    lines(current_data$year[current_data$month == monthID[j]], current_data$ExtLo[current_data$month == monthID[j]],
+          lwd = 2, 
           col = "skyblue")     
-    legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n", cex=.75)
+    legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n")
       
     dev.off()
   }
 }  
   
-  # # test plot
-  # ggplot(data = current_data, aes(x = year))+
-  #   geom_line(aes(y = ExtHi, color = "Extreme High"))+
-  #   geom_line(aes(y = ExtLo, color = "Extreme Low"))+
-  #   scale_color_manual(values = c("tomato3", "skyblue"), name = "Temperatures")+
-  #   theme_classic()+
-  #   labs(x = "Year", y = "Temperature (celsius)", title = paste("Extreme", current_month$month, "Temperatures in", AllStn$name[2], ", NY"))
-  # # fix save name  
-  # ggsave(paste0("ex_temps_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
-  
-
-# # MARCH
-# # station 1 - Boonville 
-# plot(MarYear$year[MarYear$StationID=="USC00300785"], MarYear$ExtHi[MarYear$StationID=="USC00300785"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Boonville, NY",
-#      ylim = c(-30, 30))
-# lines(MarYear$year[MarYear$StationID=="USC00300785"], MarYear$ExtLo[MarYear$StationID=="USC00300785"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n", cex=.75)
-# 
-# # station 2 - Cooperstown
-# plot(MarYear$year[MarYear$StationID=="USC00301752"], MarYear$ExtHi[MarYear$StationID=="USC00301752"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Cooperstown, NY",
-#      ylim = c(-30, 30))
-# lines(MarYear$year[MarYear$StationID=="USC00301752"], MarYear$ExtLo[MarYear$StationID=="USC00301752"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n", cex=.75)
-# 
-# # station 3 - Indian Lake
-# plot(MarYear$year[MarYear$StationID=="USC00304102"], MarYear$ExtHi[MarYear$StationID=="USC00304102"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Indian Lake, NY",
-#      ylim = c(-30, 30))
-# lines(MarYear$year[MarYear$StationID=="USC00304102"], MarYear$ExtLo[MarYear$StationID=="USC00304102"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 4 - Lowville
-# plot(MarYear$year[MarYear$StationID=="USC00304912"], MarYear$ExtHi[MarYear$StationID=="USC00304912"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Lowville, NY",
-#      ylim = c(-30, 30))
-# lines(MarYear$year[MarYear$StationID=="USC00304912"], MarYear$ExtLo[MarYear$StationID=="USC00304912"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 5 - Norwich
-# plot(MarYear$year[MarYear$StationID=="USC00306085"], MarYear$ExtHi[MarYear$StationID=="USC00306085"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Norwich, NY",
-#      ylim = c(-30, 30))
-# lines(MarYear$year[MarYear$StationID=="USC00306085"], MarYear$ExtLo[MarYear$StationID=="USC00306085"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 6  - Oswego
-# plot(MarYear$year[MarYear$StationID=="USC00306314"], MarYear$ExtHi[MarYear$StationID=="USC00306314"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Oswego, NY",
-#      ylim = c(-30, 30))
-# lines(MarYear$year[MarYear$StationID=="USC00306314"], MarYear$ExtLo[MarYear$StationID=="USC00306314"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 7 - Watertown
-# plot(MarYear$year[MarYear$StationID=="USC00309000"], MarYear$ExtHi[MarYear$StationID=="USC00309000"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Watertown, NY",
-#      ylim = c(-30, 30))
-# lines(MarYear$year[MarYear$StationID=="USC00309000"], MarYear$ExtLo[MarYear$StationID=="USC00309000"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 8 - Albany
-# plot(MarYear$year[MarYear$StationID=="USW00014735"], MarYear$ExtHi[MarYear$StationID=="USW00014735"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Albany, NY",
-#      ylim = c(-30, 30))
-# lines(MarYear$year[MarYear$StationID=="USW00014735"], MarYear$ExtLo[MarYear$StationID=="USW00014735"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 9 - Glens Falls
-# plot(MarYear$year[MarYear$StationID=="USW00014750"], MarYear$ExtHi[MarYear$StationID=="USW00014750"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Glens Falls, NY",
-#      ylim = c(-30, 30))
-# lines(MarYear$year[MarYear$StationID=="USW00014750"], MarYear$ExtLo[MarYear$StationID=="USW00014750"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 10 - Syracuse
-# plot(MarYear$year[MarYear$StationID=="USW00014771"], MarYear$ExtHi[MarYear$StationID=="USW00014771"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Syracuse, NY",
-#      ylim = c(-30, 30))
-# lines(MarYear$year[MarYear$StationID=="USW00014771"], MarYear$ExtLo[MarYear$StationID=="USW00014771"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 11 - Massena
-# plot(MarYear$year[MarYear$StationID=="USW00094725"], MarYear$ExtHi[MarYear$StationID=="USW00094725"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Massena, NY",
-#      ylim = c(-30, 30))
-# lines(MarYear$year[MarYear$StationID=="USW00094725"], MarYear$ExtLo[MarYear$StationID=="USW00094725"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 12 - Watertown Airport
-# plot(MarYear$year[MarYear$StationID=="USW00094790"], MarYear$ExtHi[MarYear$StationID=="USW00094790"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Watertown Airport, NY",
-#      ylim = c(-30, 30))
-# lines(MarYear$year[MarYear$StationID=="USW00094790"], MarYear$ExtLo[MarYear$StationID=="USW00094790"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # APRIL
-# # station 1 - Boonville 
-# plot(AprYear$year[AprYear$StationID=="USC00300785"], AprYear$ExtHi[AprYear$StationID=="USC00300785"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Boonville, NY",
-#      ylim = c(-20, 30))
-# lines(AprYear$year[AprYear$StationID=="USC00300785"], AprYear$ExtLo[AprYear$StationID=="USC00300785"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n", cex=.75)
-# 
-# # station 2 - Cooperstown
-# plot(AprYear$year[AprYear$StationID=="USC00301752"], AprYear$ExtHi[AprYear$StationID=="USC00301752"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Cooperstown, NY",
-#      ylim = c(-20, 30))
-# lines(AprYear$year[AprYear$StationID=="USC00301752"], AprYear$ExtLo[AprYear$StationID=="USC00301752"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n", cex=.75)
-# 
-# # station 3 - Indian Lake
-# plot(AprYear$year[AprYear$StationID=="USC00304102"], AprYear$ExtHi[AprYear$StationID=="USC00304102"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Indian Lake, NY",
-#      ylim = c(-20, 30))
-# lines(AprYear$year[AprYear$StationID=="USC00304102"], AprYear$ExtLo[AprYear$StationID=="USC00304102"],
-#       col = "skyblue")     
-# legend("right", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 4 - Lowville
-# plot(AprYear$year[AprYear$StationID=="USC00304912"], AprYear$ExtHi[AprYear$StationID=="USC00304912"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Lowville, NY",
-#      ylim = c(-20, 30))
-# lines(AprYear$year[AprYear$StationID=="USC00304912"], AprYear$ExtLo[AprYear$StationID=="USC00304912"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 5 - Norwich
-# plot(AprYear$year[AprYear$StationID=="USC00306085"], AprYear$ExtHi[AprYear$StationID=="USC00306085"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Norwich, NY",
-#      ylim = c(-20, 30))
-# lines(AprYear$year[AprYear$StationID=="USC00306085"], AprYear$ExtLo[AprYear$StationID=="USC00306085"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 6  - Oswego
-# plot(AprYear$year[AprYear$StationID=="USC00306314"], AprYear$ExtHi[AprYear$StationID=="USC00306314"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Oswego, NY",
-#      ylim = c(-20, 30))
-# lines(AprYear$year[AprYear$StationID=="USC00306314"], AprYear$ExtLo[AprYear$StationID=="USC00306314"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 7 - Watertown
-# plot(AprYear$year[AprYear$StationID=="USC00309000"], AprYear$ExtHi[AprYear$StationID=="USC00309000"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Watertown, NY",
-#      ylim = c(-20, 30))
-# lines(AprYear$year[AprYear$StationID=="USC00309000"], AprYear$ExtLo[AprYear$StationID=="USC00309000"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 8 - Albany
-# plot(AprYear$year[AprYear$StationID=="USW00014735"], AprYear$ExtHi[AprYear$StationID=="USW00014735"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Albany, NY",
-#      ylim = c(-20, 30))
-# lines(AprYear$year[AprYear$StationID=="USW00014735"], AprYear$ExtLo[AprYear$StationID=="USW00014735"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 9 - Glens Falls
-# plot(AprYear$year[AprYear$StationID=="USW00014750"], AprYear$ExtHi[AprYear$StationID=="USW00014750"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Glens Falls, NY",
-#      ylim = c(-20, 30))
-# lines(AprYear$year[AprYear$StationID=="USW00014750"], AprYear$ExtLo[AprYear$StationID=="USW00014750"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 10 - Syracuse
-# plot(AprYear$year[AprYear$StationID=="USW00014771"], AprYear$ExtHi[AprYear$StationID=="USW00014771"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Syracuse, NY",
-#      ylim = c(-20, 30))
-# lines(AprYear$year[AprYear$StationID=="USW00014771"], AprYear$ExtLo[AprYear$StationID=="USW00014771"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 11 - Massena
-# plot(AprYear$year[AprYear$StationID=="USW00094725"], AprYear$ExtHi[AprYear$StationID=="USW00094725"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Massena, NY",
-#      ylim = c(-20, 30))
-# lines(AprYear$year[AprYear$StationID=="USW00094725"], AprYear$ExtLo[AprYear$StationID=="USW00094725"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 12 - Watertown Airport
-# plot(AprYear$year[AprYear$StationID=="USW00094790"], AprYear$ExtHi[AprYear$StationID=="USW00094790"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Watertown Airport, NY",
-#      ylim = c(-20, 30))
-# lines(AprYear$year[AprYear$StationID=="USW00094790"], AprYear$ExtLo[AprYear$StationID=="USW00094790"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # MAY
-# # station 1 - Boonville 
-# plot(MayYear$year[MayYear$StationID=="USC00300785"], MayYear$ExtHi[MayYear$StationID=="USC00300785"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Boonville, NY",
-#      ylim = c(-10, 35))
-# lines(MayYear$year[MayYear$StationID=="USC00300785"], MayYear$ExtLo[MayYear$StationID=="USC00300785"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n", cex=.75)
-# 
-# # station 2 - Cooperstown
-# plot(MayYear$year[MayYear$StationID=="USC00301752"], MayYear$ExtHi[MayYear$StationID=="USC00301752"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Cooperstown, NY",
-#      ylim = c(-10, 35))
-# lines(MayYear$year[MayYear$StationID=="USC00301752"], MayYear$ExtLo[MayYear$StationID=="USC00301752"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n", cex=.75)
-# 
-# # station 3 - Indian Lake
-# plot(MayYear$year[MayYear$StationID=="USC00304102"], MayYear$ExtHi[MayYear$StationID=="USC00304102"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Indian Lake, NY",
-#      ylim = c(-10, 35))
-# lines(MayYear$year[MayYear$StationID=="USC00304102"], MayYear$ExtLo[MayYear$StationID=="USC00304102"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 4 - Lowville
-# plot(MayYear$year[MayYear$StationID=="USC00304912"], MayYear$ExtHi[MayYear$StationID=="USC00304912"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Lowville, NY",
-#      ylim = c(-10, 35))
-# lines(MayYear$year[MayYear$StationID=="USC00304912"], MayYear$ExtLo[MayYear$StationID=="USC00304912"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 5 - Norwich
-# plot(MayYear$year[MayYear$StationID=="USC00306085"], MayYear$ExtHi[MayYear$StationID=="USC00306085"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Norwich, NY",
-#      ylim = c(-10, 35))
-# lines(MayYear$year[MayYear$StationID=="USC00306085"], MayYear$ExtLo[MayYear$StationID=="USC00306085"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 6  - Oswego
-# plot(MayYear$year[MayYear$StationID=="USC00306314"], MayYear$ExtHi[MayYear$StationID=="USC00306314"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Oswego, NY",
-#      ylim = c(-10, 35))
-# lines(MayYear$year[MayYear$StationID=="USC00306314"], MayYear$ExtLo[MayYear$StationID=="USC00306314"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 7 - Watertown
-# plot(MayYear$year[MayYear$StationID=="USC00309000"], MayYear$ExtHi[MayYear$StationID=="USC00309000"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Watertown, NY",
-#      ylim = c(-10, 35))
-# lines(MayYear$year[MayYear$StationID=="USC00309000"], MayYear$ExtLo[MayYear$StationID=="USC00309000"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 8 - Albany
-# plot(MayYear$year[MayYear$StationID=="USW00014735"], MayYear$ExtHi[MayYear$StationID=="USW00014735"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Albany, NY",
-#      ylim = c(-10, 35))
-# lines(MayYear$year[MayYear$StationID=="USW00014735"], MayYear$ExtLo[MayYear$StationID=="USW00014735"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 9 - Glens Falls
-# plot(MayYear$year[MayYear$StationID=="USW00014750"], MayYear$ExtHi[MayYear$StationID=="USW00014750"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Glens Falls, NY",
-#      ylim = c(-10, 35))
-# lines(MayYear$year[MayYear$StationID=="USW00014750"], MayYear$ExtLo[MayYear$StationID=="USW00014750"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 10 - Syracuse
-# plot(MayYear$year[MayYear$StationID=="USW00014771"], MayYear$ExtHi[MayYear$StationID=="USW00014771"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Syracuse, NY",
-#      ylim = c(-10, 35))
-# lines(MayYear$year[MayYear$StationID=="USW00014771"], MayYear$ExtLo[MayYear$StationID=="USW00014771"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 11 - Massena
-# plot(MayYear$year[MayYear$StationID=="USW00094725"], MayYear$ExtHi[MayYear$StationID=="USW00094725"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Massena, NY",
-#      ylim = c(-10, 35))
-# lines(MayYear$year[MayYear$StationID=="USW00094725"], MayYear$ExtLo[MayYear$StationID=="USW00094725"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 12 - Watertown Airport
-# plot(MayYear$year[MayYear$StationID=="USW00094790"], MayYear$ExtHi[MayYear$StationID=="USW00094790"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Year",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Watertown Airport, NY",
-#      ylim = c(-10, 35))
-# lines(MayYear$year[MayYear$StationID=="USW00094790"], MayYear$ExtLo[MayYear$StationID=="USW00094790"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
+ 
 
 # Extreme temperatures by decade ---- 
 # maybe get combine extreme temp graphs for year and decade -- make year lines more transparent
@@ -1664,23 +902,23 @@ for (i in 1:nrow(AllStn)){
   current_data <- subset(SpringDecade, SpringDecade$StationID == AllStn$station_id[i])
   
   # loop through different months 
-  for (j in c("Mar","Apr","May")){
+  for (j in 1:3){
     
-    png(paste0(plotDIR[usernumber], "/ex_temps_decade", AllStn$name[i], "_", j, ".png"))
+    png(paste0(plotDIR[usernumber], "/ex_temps_decade_", AllStn$name[i], "_", monthID[j], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
     
     # plot
-    plot(current_data$Decade[current_data$Month == j], current_data$ExtHi[current_data$Month == j],
+    plot(current_data$Decade[current_data$Month == monthID[j]], current_data$ExtHi[current_data$Month == monthID[j]],
          type = "o",
          pch = 19,
          col = "tomato3",
          xlab = "Decade",
          ylab = "Temperature (Celsius)",
-         main = paste("Extreme", j , "Temperatures in", AllStn$name[i], ", NY"),
-         ylim = c(-30, 30),
+         main = paste("Extreme", monthName[j] , "Temperatures in", AllStn$name[i], ", NY"),
+         ylim = c(min(current_data$ExtLo[current_data$Month == monthID[j]], na.rm=TRUE)-5, max(current_data$ExtHi[current_data$Month == monthID[j]], na.rm=TRUE)+5),
          xlim = c(min(current_data$Decade), 2010))
-    points(current_data$Decade[current_data$Month == j], current_data$ExtLo[current_data$Month == j],
+    points(current_data$Decade[current_data$Month == monthID[j]], current_data$ExtLo[current_data$Month == monthID[j]],
            col = "skyblue", pch = 19)
-    lines(current_data$Decade[current_data$Month == j], current_data$ExtLo[current_data$Month == j],
+    lines(current_data$Decade[current_data$Month == monthID[j]], current_data$ExtLo[current_data$Month == monthID[j]],
           col = "skyblue") 
     legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n", cex=.75)
     
@@ -1688,573 +926,34 @@ for (i in 1:nrow(AllStn)){
   }
 }  
 
-# # MARCH 
-# # station 1 - Boonville 
-# # could points be better than lines?
-# plot(MarDecade$Decade[MarDecade$StationID=="USC00300785"], MarDecade$ExtHi[MarDecade$StationID=="USC00300785"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Boonville, NY",
-#      ylim = c(-20,20))
-# points(MarDecade$Decade[MarDecade$StationID=="USC00300785"], MarDecade$ExtLo[MarDecade$StationID=="USC00300785"],
-#       col = "skyblue", pch = 19)
-# lines(MarDecade$Decade[MarDecade$StationID=="USC00300785"], MarDecade$ExtLo[MarDecade$StationID=="USC00300785"],
-#        col = "skyblue") 
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n", cex=.75)
-# 
-# # station 2 - Cooperstown
-# plot(MarDecade$Decade[MarDecade$StationID=="USC00301752"], MarDecade$ExtHi[MarDecade$StationID=="USC00301752"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Cooperstown, NY",
-#      ylim = c(-30, 30))
-# points(MarDecade$Decade[MarDecade$StationID=="USC00301752"], MarDecade$ExtLo[MarDecade$StationID=="USC00301752"],
-#       col = "skyblue", pch = 19)
-# lines(MarDecade$Decade[MarDecade$StationID=="USC00301752"], MarDecade$ExtLo[MarDecade$StationID=="USC00301752"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n", cex=.75)
-# 
-# # station 3 - Indian Lake
-# plot(MarDecade$Decade[MarDecade$StationID=="USC00304102"], MarDecade$ExtHi[MarDecade$StationID=="USC00304102"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Indian Lake, NY",
-#      ylim = c(-30, 30))
-# lines(MarDecade$Decade[MarDecade$StationID=="USC00304102"], MarDecade$ExtLo[MarDecade$StationID=="USC00304102"],
-#       col = "skyblue")
-# points(MarDecade$Decade[MarDecade$StationID=="USC00304102"], MarDecade$ExtLo[MarDecade$StationID=="USC00304102"],
-#       col = "skyblue", pch = 19)  
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 4 - Lowville
-# plot(MarDecade$Decade[MarDecade$StationID=="USC00304912"], MarDecade$ExtHi[MarDecade$StationID=="USC00304912"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Lowville, NY",
-#      ylim = c(-30, 30))
-# points(MarDecade$Decade[MarDecade$StationID=="USC00304912"], MarDecade$ExtLo[MarDecade$StationID=="USC00304912"],
-#       col = "skyblue", pch = 19) 
-# lines(MarDecade$Decade[MarDecade$StationID=="USC00304912"], MarDecade$ExtLo[MarDecade$StationID=="USC00304912"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 5 - Norwich
-# plot(MarDecade$Decade[MarDecade$StationID=="USC00306085"], MarDecade$ExtHi[MarDecade$StationID=="USC00306085"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Norwich, NY",
-#      ylim = c(-30, 30))
-# points(MarDecade$Decade[MarDecade$StationID=="USC00306085"], MarDecade$ExtLo[MarDecade$StationID=="USC00306085"],
-#       col = "skyblue", pch = 19) 
-# lines(MarDecade$Decade[MarDecade$StationID=="USC00306085"], MarDecade$ExtLo[MarDecade$StationID=="USC00306085"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 6  - Oswego
-# plot(MarDecade$Decade[MarDecade$StationID=="USC00306314"], MarDecade$ExtHi[MarDecade$StationID=="USC00306314"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Oswego, NY",
-#      ylim = c(-30, 30))
-# points(MarDecade$Decade[MarDecade$StationID=="USC00306314"], MarDecade$ExtLo[MarDecade$StationID=="USC00306314"],
-#       col = "skyblue", pch = 19) 
-# lines(MarDecade$Decade[MarDecade$StationID=="USC00306314"], MarDecade$ExtLo[MarDecade$StationID=="USC00306314"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 7 - Watertown
-# plot(MarDecade$Decade[MarDecade$StationID=="USC00309000"], MarDecade$ExtHi[MarDecade$StationID=="USC00309000"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Watertown, NY",
-#      ylim = c(-30, 30))
-# points(MarDecade$Decade[MarDecade$StationID=="USC00309000"], MarDecade$ExtLo[MarDecade$StationID=="USC00309000"],
-#       col = "skyblue", pch = 19) 
-# lines(MarDecade$Decade[MarDecade$StationID=="USC00309000"], MarDecade$ExtLo[MarDecade$StationID=="USC00309000"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 8 - Albany
-# plot(MarDecade$Decade[MarDecade$StationID=="USW00014735"], MarDecade$ExtHi[MarDecade$StationID=="USW00014735"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Albany, NY",
-#      ylim = c(-30, 30))
-# points(MarDecade$Decade[MarDecade$StationID=="USW00014735"], MarDecade$ExtLo[MarDecade$StationID=="USW00014735"],
-#       col = "skyblue", pch = 19)  
-# lines(MarDecade$Decade[MarDecade$StationID=="USW00014735"], MarDecade$ExtLo[MarDecade$StationID=="USW00014735"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 9 - Glens Falls
-# plot(MarDecade$Decade[MarDecade$StationID=="USW00014750"], MarDecade$ExtHi[MarDecade$StationID=="USW00014750"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Glens Falls, NY",
-#      ylim = c(-30, 30))
-# points(MarDecade$Decade[MarDecade$StationID=="USW00014750"], MarDecade$ExtLo[MarDecade$StationID=="USW00014750"],
-#       col = "skyblue", pch = 19)  
-# lines(MarDecade$Decade[MarDecade$StationID=="USW00014750"], MarDecade$ExtLo[MarDecade$StationID=="USW00014750"],
-#       col = "skyblue")     
-# legend("topright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 10 - Syracuse
-# plot(MarDecade$Decade[MarDecade$StationID=="USW00014771"], MarDecade$ExtHi[MarDecade$StationID=="USW00014771"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Syracuse, NY",
-#      ylim = c(-30, 30))
-# points(MarDecade$Decade[MarDecade$StationID=="USW00014771"], MarDecade$ExtLo[MarDecade$StationID=="USW00014771"],
-#       col = "skyblue", pch = 19) 
-# lines(MarDecade$Decade[MarDecade$StationID=="USW00014771"], MarDecade$ExtLo[MarDecade$StationID=="USW00014771"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 11 - Massena
-# plot(MarDecade$Decade[MarDecade$StationID=="USW00094725"], MarDecade$ExtHi[MarDecade$StationID=="USW00094725"],
-#      type = "l",
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Massena, NY",
-#      ylim = c(-30, 30))
-# lines(MarDecade$Decade[MarDecade$StationID=="USW00094725"], MarDecade$ExtLo[MarDecade$StationID=="USW00094725"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 12 - Watertown Airport
-# plot(MarDecade$Decade[MarDecade$StationID=="USW00094790"], MarDecade$ExtHi[MarDecade$StationID=="USW00094790"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme March Temperatures in Watertown Airport, NY",
-#      ylim = c(-30, 30))
-# points(MarDecade$Decade[MarDecade$StationID=="USW00094790"], MarDecade$ExtLo[MarDecade$StationID=="USW00094790"],
-#       col = "skyblue", pch = 19) 
-# lines(MarDecade$Decade[MarDecade$StationID=="USW00094790"], MarDecade$ExtLo[MarDecade$StationID=="USW00094790"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # APRIL
-# # station 1 - Boonville 
-# plot(AprDecade$Decade[AprDecade$StationID=="USC00300785"], AprDecade$ExtHi[AprDecade$StationID=="USC00300785"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Boonville, NY",
-#      ylim = c(-20, 30))
-# points(AprDecade$Decade[AprDecade$StationID=="USC00300785"], AprDecade$ExtLo[AprDecade$StationID=="USC00300785"],
-#       col = "skyblue", pch = 19) 
-# lines(AprDecade$Decade[AprDecade$StationID=="USC00300785"], AprDecade$ExtLo[AprDecade$StationID=="USC00300785"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n", cex=.75)
-# 
-# # station 2 - Cooperstown
-# plot(AprDecade$Decade[AprDecade$StationID=="USC00301752"], AprDecade$ExtHi[AprDecade$StationID=="USC00301752"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Cooperstown, NY",
-#      ylim = c(-20, 30))
-# points(AprDecade$Decade[AprDecade$StationID=="USC00301752"], AprDecade$ExtLo[AprDecade$StationID=="USC00301752"],
-#       col = "skyblue", pch = 19)  
-# lines(AprDecade$Decade[AprDecade$StationID=="USC00301752"], AprDecade$ExtLo[AprDecade$StationID=="USC00301752"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n", cex=.75)
-# 
-# # station 3 - Indian Lake
-# plot(AprDecade$Decade[AprDecade$StationID=="USC00304102"], AprDecade$ExtHi[AprDecade$StationID=="USC00304102"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Indian Lake, NY",
-#      ylim = c(-20, 30))
-# points(AprDecade$Decade[AprDecade$StationID=="USC00304102"], AprDecade$ExtLo[AprDecade$StationID=="USC00304102"],
-#       col = "skyblue", pch = 19) 
-# lines(AprDecade$Decade[AprDecade$StationID=="USC00304102"], AprDecade$ExtLo[AprDecade$StationID=="USC00304102"],
-#       col = "skyblue")     
-# legend("right", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 4 - Lowville
-# plot(AprDecade$Decade[AprDecade$StationID=="USC00304912"], AprDecade$ExtHi[AprDecade$StationID=="USC00304912"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Lowville, NY",
-#      ylim = c(-20, 30))
-# points(AprDecade$Decade[AprDecade$StationID=="USC00304912"], AprDecade$ExtLo[AprDecade$StationID=="USC00304912"],
-#       col = "skyblue", pch = 19)   
-# lines(AprDecade$Decade[AprDecade$StationID=="USC00304912"], AprDecade$ExtLo[AprDecade$StationID=="USC00304912"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 5 - Norwich
-# plot(AprDecade$Decade[AprDecade$StationID=="USC00306085"], AprDecade$ExtHi[AprDecade$StationID=="USC00306085"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Norwich, NY",
-#      ylim = c(-20, 30))
-# points(AprDecade$Decade[AprDecade$StationID=="USC00306085"], AprDecade$ExtLo[AprDecade$StationID=="USC00306085"],
-#       col = "skyblue", pch = 19) 
-# lines(AprDecade$Decade[AprDecade$StationID=="USC00306085"], AprDecade$ExtLo[AprDecade$StationID=="USC00306085"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 6  - Oswego
-# plot(AprDecade$Decade[AprDecade$StationID=="USC00306314"], AprDecade$ExtHi[AprDecade$StationID=="USC00306314"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Oswego, NY",
-#      ylim = c(-20, 30))
-# points(AprDecade$Decade[AprDecade$StationID=="USC00306314"], AprDecade$ExtLo[AprDecade$StationID=="USC00306314"],
-#       col = "skyblue", pch = 19) 
-# lines(AprDecade$Decade[AprDecade$StationID=="USC00306314"], AprDecade$ExtLo[AprDecade$StationID=="USC00306314"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 7 - Watertown
-# plot(AprDecade$Decade[AprDecade$StationID=="USC00309000"], AprDecade$ExtHi[AprDecade$StationID=="USC00309000"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Watertown, NY",
-#      ylim = c(-20, 30))
-# points(AprDecade$Decade[AprDecade$StationID=="USC00309000"], AprDecade$ExtLo[AprDecade$StationID=="USC00309000"],
-#       col = "skyblue", pch = 19) 
-# lines(AprDecade$Decade[AprDecade$StationID=="USC00309000"], AprDecade$ExtLo[AprDecade$StationID=="USC00309000"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 8 - Albany
-# plot(AprDecade$Decade[AprDecade$StationID=="USW00014735"], AprDecade$ExtHi[AprDecade$StationID=="USW00014735"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Albany, NY",
-#      ylim = c(-20, 30))
-# points(AprDecade$Decade[AprDecade$StationID=="USW00014735"], AprDecade$ExtLo[AprDecade$StationID=="USW00014735"],
-#       col = "skyblue", pch = 19) 
-# lines(AprDecade$Decade[AprDecade$StationID=="USW00014735"], AprDecade$ExtLo[AprDecade$StationID=="USW00014735"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 9 - Glens Falls
-# plot(AprDecade$Decade[AprDecade$StationID=="USW00014750"], AprDecade$ExtHi[AprDecade$StationID=="USW00014750"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Glens Falls, NY",
-#      ylim = c(-20, 30))
-# points(AprDecade$Decade[AprDecade$StationID=="USW00014750"], AprDecade$ExtLo[AprDecade$StationID=="USW00014750"],
-#       col = "skyblue", pch = 19)
-# lines(AprDecade$Decade[AprDecade$StationID=="USW00014750"], AprDecade$ExtLo[AprDecade$StationID=="USW00014750"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 10 - Syracuse
-# plot(AprDecade$Decade[AprDecade$StationID=="USW00014771"], AprDecade$ExtHi[AprDecade$StationID=="USW00014771"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Syracuse, NY",
-#      ylim = c(-20, 30))
-# points(AprDecade$Decade[AprDecade$StationID=="USW00014771"], AprDecade$ExtLo[AprDecade$StationID=="USW00014771"],
-#       col = "skyblue", pch = 19) 
-# lines(AprDecade$Decade[AprDecade$StationID=="USW00014771"], AprDecade$ExtLo[AprDecade$StationID=="USW00014771"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 11 - Massena
-# plot(AprDecade$Decade[AprDecade$StationID=="USW00094725"], AprDecade$ExtHi[AprDecade$StationID=="USW00094725"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Massena, NY",
-#      ylim = c(-20, 30))
-# points(AprDecade$Decade[AprDecade$StationID=="USW00094725"], AprDecade$ExtLo[AprDecade$StationID=="USW00094725"],
-#       col = "skyblue", pch = 19) 
-# lines(AprDecade$Decade[AprDecade$StationID=="USW00094725"], AprDecade$ExtLo[AprDecade$StationID=="USW00094725"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 12 - Watertown Airport
-# plot(AprDecade$Decade[AprDecade$StationID=="USW00094790"], AprDecade$ExtHi[AprDecade$StationID=="USW00094790"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme April Temperatures in Watertown Airport, NY",
-#      ylim = c(-20, 30))
-# points(AprDecade$Decade[AprDecade$StationID=="USW00094790"], AprDecade$ExtLo[AprDecade$StationID=="USW00094790"],
-#       col = "skyblue", pch = 19) 
-# lines(AprDecade$Decade[AprDecade$StationID=="USW00094790"], AprDecade$ExtLo[AprDecade$StationID=="USW00094790"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # MAY
-# # station 1 - Boonville 
-# plot(MayDecade$Decade[MayDecade$StationID=="USC00300785"], MayDecade$ExtHi[MayDecade$StationID=="USC00300785"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Boonville, NY",
-#      ylim = c(-10, 35))
-# points(MayDecade$Decade[MayDecade$StationID=="USC00300785"], MayDecade$ExtLo[MayDecade$StationID=="USC00300785"],
-#       col = "skyblue", pch = 19)
-# lines(MayDecade$Decade[MayDecade$StationID=="USC00300785"], MayDecade$ExtLo[MayDecade$StationID=="USC00300785"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n", cex=.75)
-# 
-# # station 2 - Cooperstown
-# plot(MayDecade$Decade[MayDecade$StationID=="USC00301752"], MayDecade$ExtHi[MayDecade$StationID=="USC00301752"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Cooperstown, NY",
-#      ylim = c(-10, 35))
-# points(MayDecade$Decade[MayDecade$StationID=="USC00301752"], MayDecade$ExtLo[MayDecade$StationID=="USC00301752"],
-#       col = "skyblue", pch = 19) 
-# lines(MayDecade$Decade[MayDecade$StationID=="USC00301752"], MayDecade$ExtLo[MayDecade$StationID=="USC00301752"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n", cex=.75)
-# 
-# # station 3 - Indian Lake
-# plot(MayDecade$Decade[MayDecade$StationID=="USC00304102"], MayDecade$ExtHi[MayDecade$StationID=="USC00304102"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Indian Lake, NY",
-#      ylim = c(-10, 35))
-# points(MayDecade$Decade[MayDecade$StationID=="USC00304102"], MayDecade$ExtLo[MayDecade$StationID=="USC00304102"],
-#       col = "skyblue", pch = 19) 
-# lines(MayDecade$Decade[MayDecade$StationID=="USC00304102"], MayDecade$ExtLo[MayDecade$StationID=="USC00304102"],
-#       col = "skyblue")     
-# legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 4 - Lowville
-# plot(MayDecade$Decade[MayDecade$StationID=="USC00304912"], MayDecade$ExtHi[MayDecade$StationID=="USC00304912"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Lowville, NY",
-#      ylim = c(-10, 35))
-# points(MayDecade$Decade[MayDecade$StationID=="USC00304912"], MayDecade$ExtLo[MayDecade$StationID=="USC00304912"],
-#       col = "skyblue", pch = 19) 
-# lines(MayDecade$Decade[MayDecade$StationID=="USC00304912"], MayDecade$ExtLo[MayDecade$StationID=="USC00304912"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 5 - Norwich
-# plot(MayDecade$Decade[MayDecade$StationID=="USC00306085"], MayDecade$ExtHi[MayDecade$StationID=="USC00306085"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Norwich, NY",
-#      ylim = c(-10, 35))
-# points(MayDecade$Decade[MayDecade$StationID=="USC00306085"], MayDecade$ExtLo[MayDecade$StationID=="USC00306085"],
-#       col = "skyblue", pch = 19) 
-# lines(MayDecade$Decade[MayDecade$StationID=="USC00306085"], MayDecade$ExtLo[MayDecade$StationID=="USC00306085"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 6  - Oswego
-# plot(MayDecade$Decade[MayDecade$StationID=="USC00306314"], MayDecade$ExtHi[MayDecade$StationID=="USC00306314"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Oswego, NY",
-#      ylim = c(-10, 35))
-# points(MayDecade$Decade[MayDecade$StationID=="USC00306314"], MayDecade$ExtLo[MayDecade$StationID=="USC00306314"],
-#       col = "skyblue", pch = 19) 
-# lines(MayDecade$Decade[MayDecade$StationID=="USC00306314"], MayDecade$ExtLo[MayDecade$StationID=="USC00306314"],
-#       col = "skyblue")     
-# legend("bottomright", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 7 - Watertown
-# plot(MayDecade$Decade[MayDecade$StationID=="USC00309000"], MayDecade$ExtHi[MayDecade$StationID=="USC00309000"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Watertown, NY",
-#      ylim = c(-10, 35))
-# points(MayDecade$Decade[MayDecade$StationID=="USC00309000"], MayDecade$ExtLo[MayDecade$StationID=="USC00309000"],
-#       col = "skyblue", pch = 19) 
-# lines(MayDecade$Decade[MayDecade$StationID=="USC00309000"], MayDecade$ExtLo[MayDecade$StationID=="USC00309000"],
-#       col = "skyblue")     
-# legend("right", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 8 - Albany
-# plot(MayDecade$Decade[MayDecade$StationID=="USW00014735"], MayDecade$ExtHi[MayDecade$StationID=="USW00014735"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Albany, NY",
-#      ylim = c(-10, 35))
-# points(MayDecade$Decade[MayDecade$StationID=="USW00014735"], MayDecade$ExtLo[MayDecade$StationID=="USW00014735"],
-#       col = "skyblue", pch = 19) 
-# lines(MayDecade$Decade[MayDecade$StationID=="USW00014735"], MayDecade$ExtLo[MayDecade$StationID=="USW00014735"],
-#       col = "skyblue")     
-# legend("right", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 9 - Glens Falls
-# plot(MayDecade$Decade[MayDecade$StationID=="USW00014750"], MayDecade$ExtHi[MayDecade$StationID=="USW00014750"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Glens Falls, NY",
-#      ylim = c(-10, 35))
-# points(MayDecade$Decade[MayDecade$StationID=="USW00014750"], MayDecade$ExtLo[MayDecade$StationID=="USW00014750"],
-#       col = "skyblue", pch = 19)   
-# lines(MayDecade$Decade[MayDecade$StationID=="USW00014750"], MayDecade$ExtLo[MayDecade$StationID=="USW00014750"],
-#       col = "skyblue")     
-# legend("right", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 10 - Syracuse
-# plot(MayDecade$Decade[MayDecade$StationID=="USW00014771"], MayDecade$ExtHi[MayDecade$StationID=="USW00014771"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Syracuse, NY",
-#      ylim = c(-10, 35))
-# points(MayDecade$Decade[MayDecade$StationID=="USW00014771"], MayDecade$ExtLo[MayDecade$StationID=="USW00014771"],
-#       col = "skyblue", pch = 19) 
-# lines(MayDecade$Decade[MayDecade$StationID=="USW00014771"], MayDecade$ExtLo[MayDecade$StationID=="USW00014771"],
-#       col = "skyblue")     
-# legend("right", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 11 - Massena
-# plot(MayDecade$Decade[MayDecade$StationID=="USW00094725"], MayDecade$ExtHi[MayDecade$StationID=="USW00094725"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Massena, NY",
-#      ylim = c(-10, 35))
-# points(MayDecade$Decade[MayDecade$StationID=="USW00094725"], MayDecade$ExtLo[MayDecade$StationID=="USW00094725"],
-#       col = "skyblue", pch = 19) 
-# lines(MayDecade$Decade[MayDecade$StationID=="USW00094725"], MayDecade$ExtLo[MayDecade$StationID=="USW00094725"],
-#       col = "skyblue")     
-# legend("right", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-# 
-# # station 12 - Watertown Airport
-# plot(MayDecade$Decade[MayDecade$StationID=="USW00094790"], MayDecade$ExtHi[MayDecade$StationID=="USW00094790"],
-#      type = "o",
-#      pch = 19,
-#      col = "tomato3",
-#      xlab = "Decade",
-#      ylab = "Temperature (Celsius)",
-#      main = "Extreme May Temperatures in Watertown Airport, NY",
-#      ylim = c(-10, 35))
-# points(MayDecade$Decade[MayDecade$StationID=="USW00094790"], MayDecade$ExtLo[MayDecade$StationID=="USW00094790"],
-#       col = "skyblue", pch = 19) 
-# lines(MayDecade$Decade[MayDecade$StationID=="USW00094790"], MayDecade$ExtLo[MayDecade$StationID=="USW00094790"],
-#       col = "skyblue")     
-# legend("right", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n",cex=.75)
-
 
 # plot of extreme temperatures all spring months on same graph
+# by decade so we still have the problem of missing data
 for (i in 1:nrow(AllStn)){
   
   current_data <- subset(SpringDecade, SpringDecade$StationID == AllStn$station_id[i])
   
-  png(paste0(plotDIR[usernumber], "/ex_temps_decade_", AllStn$name[i], "_", "allmonths", ".png"))
+  png(paste0(plotDIR[usernumber], "/ex_temps_decade_", AllStn$name[i], "_", "allmonths", ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
   
   plot(current_data$Decade[current_data$Month == "Mar"], current_data$ExtHi[current_data$Month == "Mar"],
      type = "l",
+     lwd = 2,
      col = "tomato3",
      xlab = "Decade",
      ylab = "Temperature (Celsius)",
-     main = paste("Extreme Spring Temperatures in", AllStn$name[i], "NY"),
+     main = paste0("Extreme Spring Temperatures in ", AllStn$name[i], ", NY"),
      ylim = c(-30,30),
      xlim = c(min(current_data$Decade), 2010))
   lines(current_data$Decade[current_data$Month == "Mar"], current_data$ExtLo[current_data$Month == "Mar"],
-      col = "skyblue") 
+        lwd = 2,  col = "skyblue") 
   lines(current_data$Decade[current_data$Month == "Apr"], current_data$ExtHi[current_data$Month == "Apr"],
-      col = "tomato3", lty = "dashed")
+        lwd = 2, col = "tomato3", lty = "dashed")
   lines(current_data$Decade[current_data$Month == "Apr"], current_data$ExtLo[current_data$Month == "Apr"],
-      col = "skyblue", lty = "dashed")
+        lwd = 2, col = "skyblue", lty = "dashed")
   lines(current_data$Decade[current_data$Month == "May"], current_data$ExtHi[current_data$Month == "May"],
-      col = "tomato3", lty = "dotted")
+        lwd = 2, col = "tomato3", lty = "dotted")
   lines(current_data$Decade[current_data$Month == "May"], current_data$ExtLo[current_data$Month == "May"],
-      col = "skyblue", lty = "dotted")
+        lwd = 2, col = "skyblue", lty = "dotted")
   legend("bottomright", c("May Hi", "April Hi", "March Hi", "May Lo", "April Lo", "March Lo"), col = c("tomato3", "tomato3", "tomato3","skyblue","skyblue","skyblue"), lty = 3:1, bty="n", cex=.75)
   
   dev.off()
@@ -2265,42 +964,45 @@ for (i in 1:nrow(AllStn)){
 
 # test
 current_data <- subset(SpringMonths, SpringMonths$StationID == AllStn$station_id[1])
-# won't plot :(
-plot(current_data$year[current_data$month == "Mar"], current_data$ExHiCount[current_data$month == "Mar"],
+
+plot(current_data$year[current_data$month == "May"]+.25, current_data$ExHiCount[current_data$month == "May"],
      type = "h",
      col = "tomato3",
      main = "March Extreme High Temperature Days in Boonville, NY",
      xlab = "Year",
      ylab = "Number of Days",
-     ylim = c(0, max(current_data$ExHiCount[current_data$month == "Mar"])),
-     xlim = c(min(current_data$year[current_data$month == "Mar"]), 2019))
-lines(current_data$year[current_data$month == "Mar"], current_data$ExLoCount[current_data$month == "Mar"],
+     ylim = c(0, max(c(current_data$ExHiCount[current_data$month == "May"],current_data$ExLoCount[current_data$month == "May"]))),
+     xlim = c(min(current_data$year[current_data$month == "May"]), 2019))
+lines(current_data$year[current_data$month == "May"], current_data$ExLoCount[current_data$month == "May"],
       type = "h",
       col = "skyblue")
 legend("topright", c("High","Low"), col = c("tomato3","skyblue"), lwd = 2, bty = "n", cex = .5)
 
 
 # for loop for plots -  number of extreme temp days per year
-for (i in 1:nrows(AllStn)){
+
+for (i in 1:nrow(AllStn)){
   
   current_data <- subset(SpringMonths, SpringMonths$StationID == AllStn$station_id[i])
-  for (j in c("Mar","Apr","May")){
+  for (j in 1:3){
     
-    png(paste0(plotDIR[usernumber], "/ex_temp_N_", AllStn$name[i], "_", j, ".png"))
+    png(paste0(plotDIR[usernumber], "/ex_tempN_", AllStn$name[i], "_", monthID[j], ".png"), 
+        width = 10, height = 10, units = "in", res = 144, pointsize = 15)
     
-    plot(current_data$year[current_data$month == j], current_data$ExHiCount[current_data$month == j],
+    plot(current_data$year[current_data$month == monthID[j]]+.25, current_data$ExHiCount[current_data$month == monthID[j]],
          type = "h",
+         lwd = 2,
          col = "tomato3",
-         main = paste0(j,"Extreme Temperature Days in ", AllStn$name[i], ", NY"),
+         main = paste0(monthName[j]," Extreme Temperature Days in ", AllStn$name[i], ", NY"),
          xlab = "Year",
          ylab = "Number of Days",
-         ylim = c(0, max(current_data$ExHiCount[current_data$month == j])),
-         xlim = c(min(current_data$year[current_data$month == j]), 2019))
-    lines(current_data$year[current_data$month == j], current_data$ExLoCount[current_data$month == j],
+         ylim = c(0, max(c(current_data$ExHiCount[current_data$month == monthID[j]],current_data$ExLoCount[current_data$month == monthID[j]]))+1),
+         xlim = c(min(current_data$year[current_data$month == monthID[j]]), 2019))
+    lines(current_data$year[current_data$month == monthID[j]], current_data$ExLoCount[current_data$month == monthID[j]],
           type = "h",
+          lwd = 2,
           col = "skyblue")
-    legend("topright", c("High","Low"), col = c("tomato3","skyblue"), lwd = 2, bty = "n", cex = .5)
-    
+    legend("topright", c("Low","High"), col = c("skyblue","tomato3"), lwd = 2, bty = "n")
     
     dev.off()
   }
@@ -2309,1059 +1011,60 @@ for (i in 1:nrows(AllStn)){
 
 
 
-# # boonville 
-# # MARCH
-# ## did we have to make this a vector?
-# MarYear$ExHiCount <- as.vector(MarYear$ExHiCount)
-# MarYear$ExLoCount <- as.vector(MarYear$ExLoCount)
-# # station 1
-# plot(MarYear$year[MarYear$StationID=="USC00300785"], MarYear$ExHiCount[MarYear$StationID=="USC00300785"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Boonville, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MarYear$year[MarYear$StationID=="USC00300785"], MarYear$ExLoCount[MarYear$StationID=="USC00300785"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "March Extreme Low Temperature Days in Boonville, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# 
-# # APRIL
-# AprYear$ExHiCount <- as.vector(AprYear$ExHiCount)
-# AprYear$ExLoCount <- as.vector(AprYear$ExLoCount)
-# # station 1
-# plot(AprYear$year[AprYear$StationID=="USC00300785"], AprYear$ExHiCount[AprYear$StationID=="USC00300785"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Boonville, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(AprYear$year[AprYear$StationID=="USC00300785"], AprYear$ExLoCount[AprYear$StationID=="USC00300785"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "April Extreme Low Temperature Days in Boonville, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# 
-# # MAY
-# MayYear$ExHiCount <- as.vector(MayYear$ExHiCount)
-# MayYear$ExLoCount <- as.vector(MayYear$ExLoCount)
-# #station 1
-# plot(MayYear$year[MayYear$StationID=="USC00300785"], MayYear$ExHiCount[MayYear$StationID=="USC00300785"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Boonville, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MayYear$year[MayYear$StationID=="USC00300785"], MayYear$ExLoCount[MayYear$StationID=="USC00300785"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "May Extreme Low Temperature Days in Boonville, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# 
-# # cooperstown
-# # march
-# plot(MarYear$year[MarYear$StationID=="USC00301752"], MarYear$ExHiCount[MarYear$StationID=="USC00301752"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Cooperstown, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MarYear$year[MarYear$StationID=="USC00301752"], MarYear$ExLoCount[MarYear$StationID=="USC00301752"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "March Extreme Low Temperature Days in Cooperstown, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # april
-# plot(AprYear$year[AprYear$StationID=="USC00301752"], AprYear$ExHiCount[AprYear$StationID=="USC00301752"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Cooperstown, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(AprYear$year[AprYear$StationID=="USC00301752"], AprYear$ExLoCount[AprYear$StationID=="USC00301752"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "April Extreme Low Temperature Days in Cooperstown, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # may
-# plot(MayYear$year[MayYear$StationID=="USC00301752"], MayYear$ExHiCount[MayYear$StationID=="USC00301752"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Cooperstown, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MayYear$year[MayYear$StationID=="USC00301752"], MayYear$ExLoCount[MayYear$StationID=="USC00301752"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "May Extreme Low Temperature Days in Cooperstown, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# 
-# # indian lake
-# # march
-# plot(MarYear$year[MarYear$StationID=="USC00304102"], MarYear$ExHiCount[MarYear$StationID=="USC00304102"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Indian Lake, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MarYear$year[MarYear$StationID=="USC00304102"], MarYear$ExLoCount[MarYear$StationID=="USC00304102"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "March Extreme Low Temperature Days in Indian Lake, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # april
-# plot(AprYear$year[AprYear$StationID=="USC00304102"], AprYear$ExHiCount[AprYear$StationID=="USC00304102"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Indian Lake, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(AprYear$year[AprYear$StationID=="USC00304102"], AprYear$ExLoCount[AprYear$StationID=="USC00304102"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "April Extreme Low Temperature Days in Indian Lake, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # may
-# plot(MayYear$year[MayYear$StationID=="USC00304102"], MayYear$ExHiCount[MayYear$StationID=="USC00304102"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Indian Lake, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MayYear$year[MayYear$StationID=="USC00304102"], MayYear$ExLoCount[MayYear$StationID=="USC00304102"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "May Extreme Low Temperature Days in Indian Lake, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# 
-# # lowville 
-# # march
-# plot(MarYear$year[MarYear$StationID=="USC00304912"], MarYear$ExHiCount[MarYear$StationID=="USC00304912"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Lowville, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MarYear$year[MarYear$StationID=="USC00304912"], MarYear$ExLoCount[MarYear$StationID=="USC00304912"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "March Extreme Low Temperature Days in Lowville, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # april
-# plot(AprYear$year[AprYear$StationID=="USC00304912"], AprYear$ExHiCount[AprYear$StationID=="USC00304912"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Lowville, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(AprYear$year[AprYear$StationID=="USC00304912"], AprYear$ExLoCount[AprYear$StationID=="USC00304912"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "April Extreme Low Temperature Days in Lowville, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # may
-# plot(MayYear$year[MayYear$StationID=="USC00304912"], MayYear$ExHiCount[MayYear$StationID=="USC00304912"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Lowville, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MayYear$year[MayYear$StationID=="USC00304912"], MayYear$ExLoCount[MayYear$StationID=="USC00304912"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "May Extreme Low Temperature Days in Lowville, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# 
-# # norwich
-# # march
-# plot(MarYear$year[MarYear$StationID=="USC00306085"], MarYear$ExHiCount[MarYear$StationID=="USC00306085"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Norwich, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MarYear$year[MarYear$StationID=="USC00306085"], MarYear$ExLoCount[MarYear$StationID=="USC00306085"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "March Extreme Low Temperature Days in Norwich, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # april
-# plot(AprYear$year[AprYear$StationID=="USC00306085"], AprYear$ExHiCount[AprYear$StationID=="USC00306085"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Norwich, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(AprYear$year[AprYear$StationID=="USC00306085"], AprYear$ExLoCount[AprYear$StationID=="USC00306085"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "April Extreme Low Temperature Days in Norwich, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # may
-# plot(MayYear$year[MayYear$StationID=="USC00306085"], MayYear$ExHiCount[MayYear$StationID=="USC00306085"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Norwich, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MayYear$year[MayYear$StationID=="USC00306085"], MayYear$ExLoCount[MayYear$StationID=="USC00306085"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "May Extreme Low Temperature Days in Norwich, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# 
-# # oswego
-# # march
-# plot(MarYear$year[MarYear$StationID=="USC00306314"], MarYear$ExHiCount[MarYear$StationID=="USC00306314"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Oswego, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MarYear$year[MarYear$StationID=="USC00306314"], MarYear$ExLoCount[MarYear$StationID=="USC00306314"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "March Extreme Low Temperature Days in Oswego, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # april
-# plot(AprYear$year[AprYear$StationID=="USC00306314"], AprYear$ExHiCount[AprYear$StationID=="USC00306314"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Oswego, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(AprYear$year[AprYear$StationID=="USC00306314"], AprYear$ExLoCount[AprYear$StationID=="USC00306314"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "April Extreme Low Temperature Days in Oswego, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # may
-# plot(MayYear$year[MayYear$StationID=="USC00306314"], MayYear$ExHiCount[MayYear$StationID=="USC00306314"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Oswego, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MayYear$year[MayYear$StationID=="USC00306314"], MayYear$ExLoCount[MayYear$StationID=="USC00306314"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "May Extreme Low Temperature Days in Oswego, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# 
-# # Watertown
-# # march
-# plot(MarYear$year[MarYear$StationID=="USC00309000"], MarYear$ExHiCount[MarYear$StationID=="USC00309000"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Watertown, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MarYear$year[MarYear$StationID=="USC00309000"], MarYear$ExLoCount[MarYear$StationID=="USC00309000"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "March Extreme Low Temperature Days in Watertown, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # april
-# plot(AprYear$year[AprYear$StationID=="USC00309000"], AprYear$ExHiCount[AprYear$StationID=="USC00309000"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Watertown, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(AprYear$year[AprYear$StationID=="USC00309000"], AprYear$ExLoCount[AprYear$StationID=="USC00309000"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "April Extreme Low Temperature Days in Watertown, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # may
-# plot(MayYear$year[MayYear$StationID=="USC00309000"], MayYear$ExHiCount[MayYear$StationID=="USC00309000"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Watertown, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MayYear$year[MayYear$StationID=="USC00309000"], MayYear$ExLoCount[MayYear$StationID=="USC00309000"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "May Extreme Low Temperature Days in Watertown, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# 
-# # albany
-# # march
-# plot(MarYear$year[MarYear$StationID=="USW00014735"], MarYear$ExHiCount[MarYear$StationID=="USW00014735"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Albany, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MarYear$year[MarYear$StationID=="USW00014735"], MarYear$ExLoCount[MarYear$StationID=="USW00014735"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "March Extreme Low Temperature Days in Albany, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # april
-# plot(AprYear$year[AprYear$StationID=="USW00014735"], AprYear$ExHiCount[AprYear$StationID=="USW00014735"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Albany, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(AprYear$year[AprYear$StationID=="USW00014735"], AprYear$ExLoCount[AprYear$StationID=="USW00014735"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "April Extreme Low Temperature Days in Albany, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # may
-# plot(MayYear$year[MayYear$StationID=="USW00014735"], MayYear$ExHiCount[MayYear$StationID=="USW00014735"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Albany, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MayYear$year[MayYear$StationID=="USW00014735"], MayYear$ExLoCount[MayYear$StationID=="USW00014735"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "May Extreme Low Temperature Days in Albany, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# 
-# # glens falls
-# # march
-# plot(MarYear$year[MarYear$StationID=="USW00014750"], MarYear$ExHiCount[MarYear$StationID=="USW00014750"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Glens Falls, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MarYear$year[MarYear$StationID=="USW00014750"], MarYear$ExLoCount[MarYear$StationID=="USW00014750"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "March Extreme Low Temperature Days in Glens Falls, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # april
-# plot(AprYear$year[AprYear$StationID=="USW00014750"], AprYear$ExHiCount[AprYear$StationID=="USW00014750"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Glens Falls, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(AprYear$year[AprYear$StationID=="USW00014750"], AprYear$ExLoCount[AprYear$StationID=="USW00014750"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "April Extreme Low Temperature Days in Glens Falls, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # may
-# plot(MayYear$year[MayYear$StationID=="USW00014750"], MayYear$ExHiCount[MayYear$StationID=="USW00014750"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Glens Falls, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MayYear$year[MayYear$StationID=="USW00014750"], MayYear$ExLoCount[MayYear$StationID=="USW00014750"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "May Extreme Low Temperature Days in Glens Falls, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# 
-# # syracuse
-# # march
-# plot(MarYear$year[MarYear$StationID=="USW00014771"], MarYear$ExHiCount[MarYear$StationID=="USW00014771"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Syracuse, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MarYear$year[MarYear$StationID=="USW00014771"], MarYear$ExLoCount[MarYear$StationID=="USW00014771"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "March Extreme Low Temperature Days in Syracuse, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # april
-# plot(AprYear$year[AprYear$StationID=="USW00014771"], AprYear$ExHiCount[AprYear$StationID=="USW00014771"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Syracuse, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(AprYear$year[AprYear$StationID=="USW00014771"], AprYear$ExLoCount[AprYear$StationID=="USW00014771"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "April Extreme Low Temperature Days in Syracuse, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # may
-# plot(MayYear$year[MayYear$StationID=="USW00014771"], MayYear$ExHiCount[MayYear$StationID=="USW00014771"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Syracuse, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MayYear$year[MayYear$StationID=="USW00014771"], MayYear$ExLoCount[MayYear$StationID=="USW00014771"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "May Extreme Low Temperature Days in Syracuse, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# 
-# # massena
-# # march
-# plot(MarYear$year[MarYear$StationID=="USW00094725"], MarYear$ExHiCount[MarYear$StationID=="USW00094725"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Massena, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MarYear$year[MarYear$StationID=="USW00094725"], MarYear$ExLoCount[MarYear$StationID=="USW00094725"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "March Extreme Low Temperature Days in Massena, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # april
-# plot(AprYear$year[AprYear$StationID=="USW00094725"], AprYear$ExHiCount[AprYear$StationID=="USW00094725"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Massena, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(AprYear$year[AprYear$StationID=="USW00094725"], AprYear$ExLoCount[AprYear$StationID=="USW00094725"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "April Extreme Low Temperature Days in Massena, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # may
-# plot(MayYear$year[MayYear$StationID=="USW00094725"], MayYear$ExHiCount[MayYear$StationID=="USW00094725"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Massena, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MayYear$year[MayYear$StationID=="USW00094725"], MayYear$ExLoCount[MayYear$StationID=="USW00094725"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "May Extreme Low Temperature Days in Massena, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# 
-# 
-# # Watertown airport
-# # march
-# plot(MarYear$year[MarYear$StationID=="USW00094790"], MarYear$ExHiCount[MarYear$StationID=="USW00094790"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Watertown Airport, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MarYear$year[MarYear$StationID=="USW00094790"], MarYear$ExLoCount[MarYear$StationID=="USW00094790"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "March Extreme Low Temperature Days in Watertown Airport, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # april
-# plot(AprYear$year[AprYear$StationID=="USW00094790"], AprYear$ExHiCount[AprYear$StationID=="USW00094790"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Watertown Airport, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(AprYear$year[AprYear$StationID=="USW00094790"], AprYear$ExLoCount[AprYear$StationID=="USW00094790"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "April Extreme Low Temperature Days in Watertown Airport, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# # may
-# plot(MayYear$year[MayYear$StationID=="USW00094790"], MayYear$ExHiCount[MayYear$StationID=="USW00094790"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Watertown Airport, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# plot(MayYear$year[MayYear$StationID=="USW00094790"], MayYear$ExLoCount[MayYear$StationID=="USW00094790"], 
-#      type = "h",
-#      col = "skyblue",
-#      main = "May Extreme Low Temperature Days in Watertown Airport, NY",
-#      xlab = "Year",
-#      ylab = "Number of Days",
-#      ylim = c(0,16))
-# 
+
+
 
 # Number of extreme days by decade ----
-# plots stopped working -- need to test
+#  test
+current_data <- subset(SpringDecade, SpringDecade$StationID == AllStn$station_id[1])
+plot(current_data$Decade[current_data$Month == "Mar"]+.5, current_data$ExHiCount[current_data$Month == "Mar"],
+     type = "h",
+     lwd = 3,
+     col = "tomato3",
+     main = paste0(j," Extreme Temperature Days in ", AllStn$name[1], ", NY"),
+     xlab = "Decade",
+     ylab = "Number of Days",
+     ylim = c(0, max(current_data$ExHiCount[current_data$Month == "Mar"])),
+     xlim = c(min(current_data$Decade[current_data$Month == "Mar"]), 2010))
+points(current_data$Decade[current_data$Month == "Mar"]-.5, current_data$ExLoCount[current_data$Month == "Mar"],
+       type = "h",
+       lwd = 3,
+       col = "skyblue")
+legend("topright", c("High","Low"), col = c("tomato3","skyblue"), lwd = 2, bty = "n")
+
 
 # loop through stations
-for (i in 1:nrows(AllStn)){
+for (i in 1:nrow(AllStn)){
   
   current_data <- subset(SpringDecade, SpringDecade$StationID == AllStn$station_id[i])
   
   # loop through months
-  for (j in c("Mar","Apr","May")){
+  for (j in 1:3){
     
-    png(paste0(plotDIR[usernumber], "/ex_temp_decN_", AllStn$name[i], "_", j, ".png"))
+    png(paste0(plotDIR[usernumber], "/ex_temp_decN_", AllStn$name[i], "_", monthID[j], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
     
-    plot(current_data$Decade[current_data$Month == j]=.5, current_data$ExHiCount[current_data$Month == j],
+    plot(current_data$Decade[current_data$Month == monthID[j]]+.5, current_data$ExHiCount[current_data$Month == monthID[j]],
          type = "h",
+         lwd = 5,
          col = "tomato3",
-         main = paste0(j,"Extreme Temperature Days in ", AllStn$name[i], ", NY"),
+         main = paste0(monthName[j]," Extreme Temperature Days in ", AllStn$name[i], ", NY"),
          xlab = "Decade",
          ylab = "Number of Days",
-         ylim = c(0, max(current_data$ExHiCount[current_data$month == j])),
-         xlim = c(min(current_data$year[current_data$month == j]), 2019))
-    points(current_data$Decade[current_data$Month == j], current_data$ExLoCount[current_data$Month == j],
-          type = "h",
-          col = "skyblue")
-    legend("topright", c("High","Low"), col = c("tomato3","skyblue"), lwd = 2, bty = "n", cex = .5)
+         ylim = c(0, max(c(current_data$ExHiCount[current_data$Month == monthID[j]],current_data$ExLoCount[current_data$Month == monthID[j]])+2)),
+         xlim = c(min(current_data$Decade[current_data$Month == monthID[j]]), 2010))
+    points(current_data$Decade[current_data$Month == monthID[j]]-.5, current_data$ExLoCount[current_data$Month == monthID[j]],
+           type = "h",
+           lwd = 5,
+           col = "skyblue")
+    legend("topright", c("High","Low"), col = c("tomato3","skyblue"), lwd = 2, bty = "n")
     
     dev.off()
+    
   }
+  
 }
-
-
-
-# # MARCH
-# MarDecade$ExHiCount <- as.vector(MarDecade$ExHiCount)
-# MarDecade$ExLoCount <- as.vector(MarDecade$ExLoCount)
-# # station 1
-# plot(MarDecade$Decade[MarDecade$StationID=="USC00300785"]+.5, MarDecade$ExHiCount[MarDecade$StationID=="USC00300785"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Boonville, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,30))
-# points(MarDecade$Decade[MarDecade$StationID=="USC00300785"]-.5, MarDecade$ExLoCount[MarDecade$StationID=="USC00300785"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 2
-# plot(MarDecade$Decade[MarDecade$StationID=="USC00301752"]+.5, MarDecade$ExHiCount[MarDecade$StationID=="USC00301752"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Cooperstown, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,30))
-# points(MarDecade$Decade[MarDecade$StationID=="USC00301752"]-.5, MarDecade$ExLoCount[MarDecade$StationID=="USC00301752"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 3
-# plot(MarDecade$Decade[MarDecade$StationID=="USC00304102"]+.5, MarDecade$ExHiCount[MarDecade$StationID=="USC00304102"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Indian Lake, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,30))
-# points(MarDecade$Decade[MarDecade$StationID=="USC00304102"]-.5, MarDecade$ExLoCount[MarDecade$StationID=="USC00304102"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 4
-# plot(MarDecade$Decade[MarDecade$StationID=="USC00304912"]+.5, MarDecade$ExHiCount[MarDecade$StationID=="USC00304912"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Lowville, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,30))
-# points(MarDecade$Decade[MarDecade$StationID=="USC00304912"]-.5, MarDecade$ExLoCount[MarDecade$StationID=="USC00304912"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 5
-# plot(MarDecade$Decade[MarDecade$StationID=="USC00306085"]+.5, MarDecade$ExHiCount[MarDecade$StationID=="USC00306085"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Norwich, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,30))
-# points(MarDecade$Decade[MarDecade$StationID=="USC00306085"]-.5, MarDecade$ExLoCount[MarDecade$StationID=="USC00306085"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 6
-# plot(MarDecade$Decade[MarDecade$StationID=="USC00306314"]+.5, MarDecade$ExHiCount[MarDecade$StationID=="USC00306314"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Oswego, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,30))
-# points(MarDecade$Decade[MarDecade$StationID=="USC00306314"]-.5, MarDecade$ExLoCount[MarDecade$StationID=="USC00306314"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 7
-# plot(MarDecade$Decade[MarDecade$StationID=="USC00309000"]+.5, MarDecade$ExHiCount[MarDecade$StationID=="USC00309000"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Watertown, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,30))
-# points(MarDecade$Decade[MarDecade$StationID=="USC00309000"]-.5, MarDecade$ExLoCount[MarDecade$StationID=="USC00309000"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 8
-# plot(MarDecade$Decade[MarDecade$StationID=="USW00014735"]+.5, MarDecade$ExHiCount[MarDecade$StationID=="USW00014735"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Albany, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,30))
-# points(MarDecade$Decade[MarDecade$StationID=="USW00014735"]-.5, MarDecade$ExLoCount[MarDecade$StationID=="USW00014735"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 9
-# plot(MarDecade$Decade[MarDecade$StationID=="USW00014750"]+.5, MarDecade$ExHiCount[MarDecade$StationID=="USW00014750"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Glens Falls, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,35))
-# points(MarDecade$Decade[MarDecade$StationID=="USW00014750"]-.5, MarDecade$ExLoCount[MarDecade$StationID=="USW00014750"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 10
-# plot(MarDecade$Decade[MarDecade$StationID=="USW00014771"]+.5, MarDecade$ExHiCount[MarDecade$StationID=="USW00014771"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Syracuse, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,30))
-# points(MarDecade$Decade[MarDecade$StationID=="USW00014771"]-.5, MarDecade$ExLoCount[MarDecade$StationID=="USW00014771"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 11
-# plot(MarDecade$Decade[MarDecade$StationID=="USW00094725"]+.5, MarDecade$ExHiCount[MarDecade$StationID=="USW00094725"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Massena, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,30))
-# points(MarDecade$Decade[MarDecade$StationID=="USW00094725"]-.5, MarDecade$ExLoCount[MarDecade$StationID=="USW00094725"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 12
-# plot(MarDecade$Decade[MarDecade$StationID=="USW00094790"]+.5, MarDecade$ExHiCount[MarDecade$StationID=="USW00094790"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "March Extreme High Temperature Days in Watertown Airport, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,30))
-# points(MarDecade$Decade[MarDecade$StationID=="USW00094790"]-.5, MarDecade$ExLoCount[MarDecade$StationID=="USW00094790"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # APRIL
-# AprDecade$ExHiCount <- as.vector(AprDecade$ExHiCount)
-# AprDecade$ExLoCount <- as.vector(AprDecade$ExLoCount)
-# # station 1
-# plot(AprDecade$Decade[AprDecade$StationID=="USC00300785"]+.5, AprDecade$ExHiCount[AprDecade$StationID=="USC00300785"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Boonville, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,40))
-# points(AprDecade$Decade[AprDecade$StationID=="USC00300785"]-.5, AprDecade$ExLoCount[AprDecade$StationID=="USC00300785"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 2
-# plot(AprDecade$Decade[AprDecade$StationID=="USC00301752"]+.5, AprDecade$ExHiCount[AprDecade$StationID=="USC00301752"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Cooperstown, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,40))
-# points(AprDecade$Decade[AprDecade$StationID=="USC00301752"]-.5, AprDecade$ExLoCount[AprDecade$StationID=="USC00301752"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 3
-# plot(AprDecade$Decade[AprDecade$StationID=="USC00304102"]+.5, AprDecade$ExHiCount[AprDecade$StationID=="USC00304102"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Indian Lake, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,40))
-# points(AprDecade$Decade[AprDecade$StationID=="USC00304102"]-.5, AprDecade$ExLoCount[AprDecade$StationID=="USC00304102"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 4
-# plot(AprDecade$Decade[AprDecade$StationID=="USC00304912"]+.5, AprDecade$ExHiCount[AprDecade$StationID=="USC00304912"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Lowville, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,40))
-# points(AprDecade$Decade[AprDecade$StationID=="USC00304912"]-.5, AprDecade$ExLoCount[AprDecade$StationID=="USC00304912"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 5
-# plot(AprDecade$Decade[AprDecade$StationID=="USC00306085"]+.5, AprDecade$ExHiCount[AprDecade$StationID=="USC00306085"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Norwich, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,40))
-# points(AprDecade$Decade[AprDecade$StationID=="USC00306085"]-.5, AprDecade$ExLoCount[AprDecade$StationID=="USC00306085"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 6
-# plot(AprDecade$Decade[AprDecade$StationID=="USC00306314"]+.5, AprDecade$ExHiCount[AprDecade$StationID=="USC00306314"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Oswego, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,40))
-# points(AprDecade$Decade[AprDecade$StationID=="USC00306314"]-.5, AprDecade$ExLoCount[AprDecade$StationID=="USC00306314"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 7
-# plot(AprDecade$Decade[AprDecade$StationID=="USC00309000"]+.5, AprDecade$ExHiCount[AprDecade$StationID=="USC00309000"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Watertown, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,40))
-# points(AprDecade$Decade[AprDecade$StationID=="USC00309000"]-.5, AprDecade$ExLoCount[AprDecade$StationID=="USC00309000"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 8
-# plot(AprDecade$Decade[AprDecade$StationID=="USW00014735"]+.5, AprDecade$ExHiCount[AprDecade$StationID=="USW00014735"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Albany, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,40))
-# points(AprDecade$Decade[AprDecade$StationID=="USW00014735"]-.5, AprDecade$ExLoCount[AprDecade$StationID=="USW00014735"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 9
-# plot(AprDecade$Decade[AprDecade$StationID=="USW00014750"]+.5, AprDecade$ExHiCount[AprDecade$StationID=="USW00014750"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Glens Falls, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,40))
-# points(AprDecade$Decade[AprDecade$StationID=="USW00014750"]-.5, AprDecade$ExLoCount[AprDecade$StationID=="USW00014750"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 10
-# plot(AprDecade$Decade[AprDecade$StationID=="USW00014771"]+.5, AprDecade$ExHiCount[AprDecade$StationID=="USW00014771"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Syracuse, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,40))
-# points(AprDecade$Decade[AprDecade$StationID=="USW00014771"]-.5, AprDecade$ExLoCount[AprDecade$StationID=="USW00014771"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 11
-# plot(AprDecade$Decade[AprDecade$StationID=="USW00094725"]+.5, AprDecade$ExHiCount[AprDecade$StationID=="USW00094725"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Massena, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,40))
-# points(AprDecade$Decade[AprDecade$StationID=="USW00094725"]-.5, AprDecade$ExLoCount[AprDecade$StationID=="USW00094725"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 12
-# plot(AprDecade$Decade[AprDecade$StationID=="USW00094790"]+.5, AprDecade$ExHiCount[AprDecade$StationID=="USW00094790"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "April Extreme High Temperature Days in Watertown Airport, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,40))
-# points(AprDecade$Decade[AprDecade$StationID=="USW00094790"]-.5, AprDecade$ExLoCount[AprDecade$StationID=="USW00094790"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# 
-# # MAY
-# MayDecade$ExHiCount <- as.vector(MayDecade$ExHiCount)
-# MayDecade$ExLoCount <- as.vector(MayDecade$ExLoCount)
-# #station 1
-# plot(MayDecade$Decade[MayDecade$StationID=="USC00300785"]+.5, MayDecade$ExHiCount[MayDecade$StationID=="USC00300785"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Boonville, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,45))
-# points(MayDecade$Decade[MayDecade$StationID=="USC00300785"]-.5, MayDecade$ExLoCount[MayDecade$StationID=="USC00300785"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 2
-# plot(MayDecade$Decade[MayDecade$StationID=="USC00301752"]+.5, MayDecade$ExHiCount[MayDecade$StationID=="USC00301752"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Cooperstown, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,45))
-# points(MayDecade$Decade[MayDecade$StationID=="USC00301752"]-.5, MayDecade$ExLoCount[MayDecade$StationID=="USC00301752"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 3
-# plot(MayDecade$Decade[MayDecade$StationID=="USC00304102"]+.5, MayDecade$ExHiCount[MayDecade$StationID=="USC00304102"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Indian Lake, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,45))
-# points(MayDecade$Decade[MayDecade$StationID=="USC00304102"]-.5, MayDecade$ExLoCount[MayDecade$StationID=="USC00304102"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 4
-# plot(MayDecade$Decade[MayDecade$StationID=="USC00304912"]+.5, MayDecade$ExHiCount[MayDecade$StationID=="USC00304912"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Lowville, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,45))
-# points(MayDecade$Decade[MayDecade$StationID=="USC00304912"]-.5, MayDecade$ExLoCount[MayDecade$StationID=="USC00304912"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 5
-# plot(MayDecade$Decade[MayDecade$StationID=="USC00306085"]+.5, MayDecade$ExHiCount[MayDecade$StationID=="USC00306085"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Norwich, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,45))
-# points(MayDecade$Decade[MayDecade$StationID=="USC00306085"]-.5, MayDecade$ExLoCount[MayDecade$StationID=="USC00306085"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 6
-# plot(MayDecade$Decade[MayDecade$StationID=="USC00306314"]+.5, MayDecade$ExHiCount[MayDecade$StationID=="USC00306314"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Oswego, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,45))
-# points(MayDecade$Decade[MayDecade$StationID=="USC00306314"]-.5, MayDecade$ExLoCount[MayDecade$StationID=="USC00306314"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 7
-# plot(MayDecade$Decade[MayDecade$StationID=="USC00309000"]+.5, MayDecade$ExHiCount[MayDecade$StationID=="USC00309000"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Watertown, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,45))
-# points(MayDecade$Decade[MayDecade$StationID=="USC00309000"]-.5, MayDecade$ExLoCount[MayDecade$StationID=="USC00309000"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 8
-# plot(MayDecade$Decade[MayDecade$StationID=="USW00014735"]+.5, MayDecade$ExHiCount[MayDecade$StationID=="USW00014735"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Albany, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,45))
-# points(MayDecade$Decade[MayDecade$StationID=="USW00014735"]-.5, MayDecade$ExLoCount[MayDecade$StationID=="USW00014735"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 9
-# plot(MayDecade$Decade[MayDecade$StationID=="USW00014750"]+.5, MayDecade$ExHiCount[MayDecade$StationID=="USW00014750"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Glens Falls, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,45))
-# points(MayDecade$Decade[MayDecade$StationID=="USW00014750"]-.5, MayDecade$ExLoCount[MayDecade$StationID=="USW00014750"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 10
-# plot(MayDecade$Decade[MayDecade$StationID=="USW00014771"]+.5, MayDecade$ExHiCount[MayDecade$StationID=="USW00014771"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Syracuse, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,45))
-# points(MayDecade$Decade[MayDecade$StationID=="USW00014771"]-.5, MayDecade$ExLoCount[MayDecade$StationID=="USW00014771"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 11
-# plot(MayDecade$Decade[MayDecade$StationID=="USW00094725"]+.5, MayDecade$ExHiCount[MayDecade$StationID=="USW00094725"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Massena, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,45))
-# points(MayDecade$Decade[MayDecade$StationID=="USW00094725"]-.5, MayDecade$ExLoCount[MayDecade$StationID=="USW00094725"], 
-#        type = "h",
-#        col = "skyblue")
-# 
-# # station 12
-# plot(MayDecade$Decade[MayDecade$StationID=="USW00094790"]+.5, MayDecade$ExHiCount[MayDecade$StationID=="USW00094790"], 
-#      type = "h",
-#      col = "tomato3",
-#      main = "May Extreme High Temperature Days in Watertown Airport, NY",
-#      xlab = "Decade",
-#      ylab = "Number of Days",
-#      ylim = c(0,45))
-# points(MayDecade$Decade[MayDecade$StationID=="USW00094790"]-.5, MayDecade$ExLoCount[MayDecade$StationID=="USW00094790"], 
-#        type = "h",
-#        col = "skyblue")
-
-
+  
+ 
 ## still need to 
 # Decadal Trends in Extreme Temps by Month
 # create scatter plot march high temperatures
@@ -4260,13 +1963,13 @@ for (i in 1:nrow(AllStn)){
   stn1yrs$color <- ifelse(stn1yrs$Decade >= 2010, alpha("#FF9900", 1), alpha("#00008b", 0.3))
   
   # saving plot as a png
-  png(paste0(plotDIR[usernumber], "/tdd_", AllStn$name[i], ".png"))
+  png(paste0(plotDIR[usernumber], "/tdd_", AllStn$name[i], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
   
   # get the base plot with just the first year on there
   plot(tavdata1$DOY[tavdata1$Year == stn1yrs$Year[1]], tavdata1$TDD[tavdata1$Year == stn1yrs$Year[1]],
        type = "l",
        col = stn1yrs$color[1],
-       xlab = "DOY",
+       xlab = "Day of Year",
        ylab = "Degrees (C)",
        main = paste("Thawing Degree Days Accumulation", AllStn$name[i]))
   # loop through the rest of the years starting at the second index and add the line onto the plot
