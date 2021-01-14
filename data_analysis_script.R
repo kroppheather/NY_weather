@@ -600,6 +600,15 @@ ggplot(data = SpringDecadeAv, aes(x = Decade, y = tav, color = Name))+
 ggsave("average_all.png", plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 
 
+# Violin plots of decade averages ----
+current_data <- subset(SpringData, SpringData$StationID == AllStn$station_id[1])
+current_data$Decade <- as.factor(current_data$Decade)
+ggplot(data = current_data, aes(x = Decade, y = tav, group = Decade, fill = Decade))+
+  geom_violin()+
+  geom_boxplot(width = 0.8)+
+  scale_fill_brewer(palette = "Paired", name = "Decade") +
+  theme_classic()
+
 ### EXTREME TEMPERATURES ----
 
 # use for reference
