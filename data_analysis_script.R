@@ -584,6 +584,7 @@ for (i in 1:nrow(AllStn)){
     geom_abline(data = RegressionTmin, aes(slope = Slope[i], intercept = Int[i]), color = alpha("deepskyblue3", 0.6))+
     scale_color_manual(values = c("slateblue1","tomato3","skyblue"), name = "Temperature Measurement")+
     theme_classic()+
+    theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
     labs(x = "Year", y = "Temperature (celsius)", title = paste0("Spring Temperatures in ", AllStn$name[i], ", NY"))
   ggsave(paste0("temp_trends_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
@@ -593,6 +594,7 @@ ggplot(data = SpringDecadeAv, aes(x = Decade, y = tav, color = Name))+
   geom_line()+
   scale_color_brewer(palette = "Paired", name = "Station Name")+
   theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
   xlim(1950,2010)+
   labs(x = "Decade", y = "Temperature (celsius)", title = "Average Spring Temperatures")
 ggsave("average_all.png", plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
@@ -855,77 +857,6 @@ for (i in 1:nrow(AllStn)){
 # Number of Freeze Thaw Days Graphs ----
 # have 20 as differentiating mark but we could look up how many in one year is problematic and use that as a threshold
 
-# station 1
-ggplot(data = stn1, aes(x = year, y = FTdays)) +
-  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn1$FTdays > 20, "tomato3", "deepskyblue3"))+
-  theme_classic()+
-  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Boonville, NY")
-
-# station 2
-ggplot(data = stn2, aes(x = year, y = FTdays)) +
-  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn2$FTdays > 20, "tomato3", "deepskyblue3"))+
-  theme_classic()+
-  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Cooperstown, NY")
-
-# station 3
-ggplot(data = stn3, aes(x = year, y = FTdays)) +
-  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn3$FTdays > 20, "tomato3", "deepskyblue3"))+
-  theme_classic()+
-  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Indian Lake, NY")
-
-# station 4
-ggplot(data = stn4, aes(x = year, y = FTdays)) +
-  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn4$FTdays > 20, "tomato3", "deepskyblue3"))+
-  theme_classic()+
-  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Lowville, NY")
-
-# station 5
-ggplot(data = stn5, aes(x = year, y = FTdays)) +
-  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn5$FTdays > 20, "tomato3", "deepskyblue3"))+
-  theme_classic()+
-  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Norwich, NY")
-
-# station 6
-ggplot(data = stn6, aes(x = year, y = FTdays)) +
-  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn6$FTdays > 20, "tomato3", "deepskyblue3"))+
-  theme_classic()+
-  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Oswego, NY")
-
-# station 7
-ggplot(data = stn7, aes(x = year, y = FTdays)) +
-  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn7$FTdays > 20, "tomato3", "deepskyblue3"))+
-  theme_classic()+
-  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Watertown, NY")
-
-# station 8
-ggplot(data = stn8, aes(x = year, y = FTdays)) +
-  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn8$FTdays > 20, "tomato3", "deepskyblue3"))+
-  theme_classic()+
-  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Albany, NY")
-
-# station 9
-ggplot(data = stn9, aes(x = year, y = FTdays)) +
-  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn9$FTdays > 20, "tomato3", "deepskyblue3"))+
-  theme_classic()+
-  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Glens Falls, NY")
-
-# station 10
-ggplot(data = stn10, aes(x = year, y = FTdays)) +
-  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn10$FTdays > 20, "tomato3", "deepskyblue3"))+
-  theme_classic()+
-  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Syracuse, NY")
-
-# station 11
-ggplot(data = stn11, aes(x = year, y = FTdays)) +
-  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn11$FTdays > 20, "tomato3", "deepskyblue3"))+
-  theme_classic()+
-  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Massena, NY")
-
-# station 12
-ggplot(data = stn12, aes(x = year, y = FTdays)) +
-  geom_bar(position = "dodge", stat="identity", fill = ifelse(stn12$FTdays > 20, "tomato3", "deepskyblue3"))+
-  theme_classic()+
-  labs(x = "Year", y = "Number of Freeze Thaw Days", title = "Spring Freeze Thaw Days in Watertown Airport, NY")
 
 ### FREEZE THAW ----
 # Number of Freeze Thaw Days Graphs ----
@@ -934,11 +865,13 @@ for (i in 1:nrow(AllStn)){
   current_dataT1 <- subset(SpringYear, SpringYear$StationID == AllStn$station_id[i])
   current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
   current_data <- full_join(current_dataT1, current_range, by = c("year" = "year"))
+  current_av <- mean(current_data$FTdays, na.rm = TRUE)
   
   # plot general temperature trends
   ggplot(data = current_data, aes(x = year, y = FTdays)) +
-    geom_bar(position = "dodge", stat="identity", fill = ifelse(current_data$FTdays > 20, "tomato3", "deepskyblue3"))+
+    geom_bar(position = "dodge", stat="identity", fill = ifelse(current_data$FTdays > current_av, "tomato3", "deepskyblue3"))+
     theme_classic()+
+    theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
     labs(x = "Year", y = "Number of Freeze Thaw Days", title = paste0("Spring Freeze Thaw Days in ", AllStn$name[i],", NY"))
   
   ggsave(paste0("num_FTdays_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
@@ -957,6 +890,7 @@ for (i in 1:nrow(AllStn)){
     geom_point() +
     geom_line() +
     theme_classic()+
+    theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
     labs(x = "Year", y = "Temperature Range (celcius)", title = paste0("Temperature Amplitude of Spring Freeze Thaw Days in ", AllStn$name[i],", NY"))
   
   ggsave(paste0("FT_amp_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
@@ -972,6 +906,7 @@ for (i in 1:nrow(AllStn)){
   ggplot(data = current_data, mapping = aes(x = Year, y = DayID, fill = tav)) +
     geom_tile() +
     theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
     labs(title = paste0("Daily Spring Temperatures in ", AllStn$name[i],", NY"))+
     geom_hline(yintercept = c(1, 32, 62))+
     scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
@@ -986,6 +921,7 @@ for (i in 1:nrow(AllStn)){
   ggplot(data = current_data, mapping = aes(x = Year, y = DayID, fill = AnStd)) +
     geom_tile() +
     theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
     labs(title = paste0("Standardized Daily Spring Temperature Anomalies in ", AllStn$name[i],", NY"))+
     geom_hline(yintercept = c(1, 32, 62))+
     scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
@@ -1000,6 +936,7 @@ for (i in 1:nrow(AllStn)){
   ggplot(data = current_data, mapping = aes(x = Year, y = DayID, fill = AnRaw)) +
     geom_tile() +
     theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
     labs(title = paste0("Raw Spring Temperatures Anomalies in ", AllStn$name[i],", NY"))+
     geom_hline(yintercept = c(1, 32, 62))+
     scale_y_continuous("Month", breaks = c(1, 32, 62), labels = c("March", "April", "May")) +
@@ -1023,6 +960,7 @@ for (i in 1:nrow(AllStn)){
   ggplot(data= current_data, mapping = aes(x= Year, y = DOY, fill = DayType))+
     geom_tile() +
     theme_classic()+
+    theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
     scale_y_continuous("Month", breaks = c(1, 32, 61, 93, 124, 156), labels = c("January", "February", "March", "April", "May","June")) +
     scale_fill_manual(name = "Day Types", values = c("#3399FF", "#FFFF99", "#EE6F6F"), na.value = "white", labels = c("Freezing", "Freeze-Thaw", "Warm", "Missing Data"))+
     labs(title = paste0("Types of Days in ", AllStn$name[i], ", NY"))
@@ -1081,7 +1019,7 @@ for (i in 1:nrow(AllStn)){
     lines(current_data$DOY[current_data$Year == current_year], current_data$TDD[current_data$Year == current_year],
           col = stnyrs$color[j])
   }
-  legend("topleft", c("Before 2010","2010-2019"), col = c("#00008b","#FF9900"), lwd = 2, bty = "n", cex = .5)
+  legend("topleft", c("Before 2010","2010-2019"), col = c("#00008b","#FF9900"), lwd = 2, bty = "n", cex = 1)
   dev.off()
 }
 
@@ -1136,7 +1074,7 @@ for (i in 1:nrow(AllStn)){
        ylab = "")
   axis(side = 4, at = seq(0,900, by = 200))
   mtext("Accumulated TDD (C)", side = 4, line = 3) 
-  legend("bottom", c("DOY","TDD"), col = c("black","red3"), lwd = 2, bty = "n", cex = .5)
+  legend("bottom", c("DOY","TDD"), col = c("black","red3"), lwd = 2, bty = "n", cex = 1)
   
   dev.off()
 }
@@ -1173,7 +1111,7 @@ for (i in 1:nrow(AllStn)){
        ylim = c(-10, 0))
   axis(side = 4, at = seq(-10, 0, by = 2))
   mtext("Minimum Temperature (C)", side = 4, line = 3)
-  legend("bottom", c("DOY","Tmin"), col = c("black","deepskyblue3"), lwd = 2, bty = "n", cex = .5)
+  legend("bottom", c("DOY","Tmin"), col = c("black","deepskyblue3"), lwd = 2, bty = "n", cex = 1)
   
   dev.off()
 }
@@ -1217,7 +1155,7 @@ for (i in 1:nrow(AllStn)){
          type = "h",
          col = "green4",
          lwd = 2)
-  legend("top", c("Days Below 0˚C","Days Below -5˚C"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
+  legend("top", c("Days Below 0˚C","Days Below -5˚C"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = 1)
   
   dev.off()
 }
@@ -1248,7 +1186,7 @@ for (i in 1:nrow(AllStn)){
          type = "h",
          col = "green4",
          lwd = 2)
-  legend("top", c("Days Below 0˚C","Days Below -5˚C"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
+  legend("top", c("Days Below 0˚C","Days Below -5˚C"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = 1)
   
   dev.off()
 }
