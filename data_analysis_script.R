@@ -451,7 +451,6 @@ SpringYear$ExLoCount <- aggregate(SpringData$ExtrLo, by=list(SpringData$Year, Sp
 SpringYear$FTdays <- aggregate(SpringData$FreezeThaw, by=list(SpringData$Year, SpringData$StationID, SpringData$StationName,SpringData$Name), FUN="sum", na.rm = TRUE)$x
 SpringYear$FTrange <- aggregate(SpringData$FTrange, by=list(SpringData$Year, SpringData$StationID, SpringData$StationName,SpringData$Name), FUN="mean", na.rm = TRUE)$x
 
-
 # decade averages by month
 SpringDecade<- aggregate(SpringData$tmax, by = list(SpringData$StationID, SpringData$StationName,SpringData$Name, SpringData$Decade, SpringData$Month), FUN = "mean", na.rm = TRUE)
 colnames(SpringDecade) <- c("StationID", "StationName", "Name", "Decade", "Month", "tmax")
@@ -600,14 +599,40 @@ ggplot(data = SpringDecadeAv, aes(x = Decade, y = tav, color = Name))+
 ggsave("average_all.png", plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 
 
-# Violin plots of decade averages ----
-current_data <- subset(SpringData, SpringData$StationID == AllStn$station_id[1])
-current_data$Decade <- as.factor(current_data$Decade)
-ggplot(data = current_data, aes(x = Decade, y = tav, group = Decade, fill = Decade))+
-  geom_violin()+
-  geom_boxplot(width = 0.8)+
-  scale_fill_brewer(palette = "Paired", name = "Decade") +
-  theme_classic()
+# violin plots to show distribution of temperatures ----
+# jan - june
+for (i in 1:nrow(AllStn)){
+  
+  current_data = subset(TavData, TavData$StationID == AllStn$station_id[i])
+  current_data$Decade <- as.factor(current_data$Decade)
+  
+  ggplot(data = current_data, aes(x = Decade, y = tav, group = Decade))+
+    geom_violin(fill = "lightskyblue")+
+    geom_boxplot(width = .4, fill = "lightskyblue")+
+    scale_x_discrete(breaks = current_data$Decade, labels = current_data$Decade)+
+    ylab("Average Temperature (C)")+
+    ggtitle(paste0("Distribution of Daily Average Temperatures in ", AllStn$name[i], ", NY"))+
+    theme_classic()+
+    theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
+  ggsave(paste0("violin_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
+}
+
+# mar - may
+for (i in 1:nrow(AllStn)){
+  
+  current_data = subset(SpringData, SpringData$StationID == AllStn$station_id[i])
+  current_data$Decade <- as.factor(current_data$Decade)
+  
+  ggplot(data = current_data, aes(x = Decade, y = tav, group = Decade))+
+    geom_violin(fill = "lightskyblue")+
+    geom_boxplot(width = .4, fill = "lightskyblue")+
+    scale_x_discrete(breaks = current_data$Decade, labels = current_data$Decade)+
+    ylab("Average Temperature (C)")+
+    ggtitle(paste0("Distribution of Daily Average Spring Temperatures in ", AllStn$name[i], ", NY"))+
+    theme_classic()+
+    theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
+  ggsave(paste0("violin_spring_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
+}
 
 ### EXTREME TEMPERATURES ----
 
@@ -864,7 +889,19 @@ for (i in 1:nrow(AllStn)){
 
 ### FREEZE THAW ----
 # Number of Freeze Thaw Days Graphs ----
-# have 20 as differentiating mark but we could look up how many in one year is problematic and use that as a threshold
+# test
+# can't add a separate legend to ggplot
+# do we want a horizontal reference line for the average?
+current_range <- data.frame(year=seq(AllStn[1, 5], 2019))
+current_data <- full_join(current_dataT1, current_range, by = c("year" = "year"))
+current_av <- mean(current_data$FTdays, na.rm = TRUE)
+
+ggplot(data = current_data, aes(x = year, y = FTdays)) +
+  geom_bar(position = "dodge", stat="identity", fill = ifelse(current_data$FTdays > current_av, "tomato3", "deepskyblue3"))+
+  geom_hline(yintercept = current_av, color = "black")+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
+  labs(x = "Year", y = "Number of Freeze Thaw Days", title = paste0("Spring Freeze Thaw Days in ", AllStn$name[1],", NY"))
 
 
 ### FREEZE THAW ----
@@ -886,13 +923,27 @@ for (i in 1:nrow(AllStn)){
   ggsave(paste0("num_FTdays_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
 
-# Freeze Thaw Amplitude Graphs ----
+ # Freeze Thaw Amplitude Graphs ----
+current_dataT1 <- subset(SpringDecade, SpringDecade$StationID == AllStn$station_id[7])
+maytest <- current_dataT1[c("Month", "Decade", "FTrange")]
+
+
+
+# plot general temperature trends
+ggplot(data = current_dataT1, aes(x = Decade, y = FTrange, color = Month))+
+  geom_point() +
+  geom_line() +
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
+  labs(x = "Year", y = "Temperature Range (celcius)", title = paste0("Temperature Amplitude of Spring Freeze Thaw Days in ", AllStn$name[1],", NY"))
+
+
 ### some graphs missing may data 
 # lots of missing data in these graphs -- should we change or remove them?
 for (i in 1:nrow(AllStn)){
   current_dataT1 <- subset(SpringDecade, SpringDecade$StationID == AllStn$station_id[i])
-  #current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
-  #current_data <- full_join(current_dataT1, current_range, by = c("year" = "year"))
+  current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
+  current_data <- full_join(current_dataT1, current_range, by = c("year" = "year"))
   
   # plot general temperature trends
   ggplot(data = current_dataT1, aes(x = Decade, y = FTrange, color = Month))+
@@ -1083,7 +1134,7 @@ for (i in 1:nrow(AllStn)){
        ylab = "")
   axis(side = 4, at = seq(0,900, by = 200))
   mtext("Accumulated TDD (C)", side = 4, line = 3) 
-  legend("bottom", c("DOY","TDD"), col = c("black","red3"), lwd = 2, bty = "n", cex = 1)
+  legend("topright", c("DOY","TDD"), col = c("black","red3"), lwd = 2, bty = "n", cex = 1)
   
   dev.off()
 }
@@ -1159,12 +1210,12 @@ for (i in 1:nrow(AllStn)){
        col = "lightskyblue",
        xlab = "Year",
        ylab = "Number of Days",
-       main = paste0("Number of Freezes and Hard Freezes in March in ", AllStn$name[1] ,", NY"))
+       main = paste0("Number of Freezes and Hard Freezes in March in ", AllStn$name[i] ,", NY"))
   points(current_data2$Year[current_data2$Month == "Mar"], current_data2$FreezeDays[current_data2$Month == "Mar"],
          type = "h",
          col = "green4",
          lwd = 2)
-  legend("top", c("Days Below 0˚C","Days Below -5˚C"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = 1)
+  legend("topright", c("Days Below 0˚C","Days Below -5˚C"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = 1)
   
   dev.off()
 }
@@ -1190,12 +1241,12 @@ for (i in 1:nrow(AllStn)){
        col = "lightskyblue",
        xlab = "Year",
        ylab = "Number of Days",
-       main = paste0("Number of Freezes and Hard Freezes in April in ", AllStn$name[1] ,", NY"))
+       main = paste0("Number of Freezes and Hard Freezes in April in ", AllStn$name[i] ,", NY"))
   points(current_data2$Year[current_data2$Month == "Apr"], current_data2$FreezeDays[current_data2$Month == "Apr"],
          type = "h",
          col = "green4",
          lwd = 2)
-  legend("top", c("Days Below 0˚C","Days Below -5˚C"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = 1)
+  legend("topright", c("Days Below 0˚C","Days Below -5˚C"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = 1)
   
   dev.off()
 }
