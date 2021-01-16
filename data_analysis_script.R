@@ -6,7 +6,8 @@ library(lubridate)
 library(rgdal)
 library(sp)
 library(ggplot2)
-
+# install.packages("zoo") - for rolling average function
+library(zoo)
 
 
 ### Set up directories   -----
@@ -662,15 +663,58 @@ for (i in 1:nrow(AllStn)){
   ggsave(paste0("temp_trends_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
 
-# average temperatures by decade for all stations
+# average temperatures by decade for all stations ----
 ggplot(data = SpringDecadeAv, aes(x = Decade, y = tav, color = Name))+
   geom_line()+
   scale_color_brewer(palette = "Paired", name = "Station Name")+
   theme_classic()+
-  xlim(1950,2010)+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
   labs(x = "Decade", y = "Temperature (celsius)", title = "Average Spring Temperatures")
 ggsave("average_all.png", plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
+
+# rolling average temperatures for all stations ----
+# add rolling av column - move this step higher?
+current_dataT1 <- SpringYear %>%
+  group_by(StationID) %>%
+  mutate(RollAv5 = rollmean(tav, k = 5, fill = NA),
+         RollAv10 = rollmean(tav, k = 10, fill = NA),
+         RollAv15 = rollmean(tav, k = 15, fill = NA),
+         RollAv20 = rollmean(tav, k = 20, fill = NA))
+
+current_range <- data.frame(year=seq(1893, 2019))
+current_data <- full_join(current_dataT1, current_range, by = c("year" = "year"))
+
+# 5 year 
+ggplot(data = current_data, aes(x = year, y = RollAv5, color = Name))+
+  geom_line()+
+  scale_color_brewer(palette = "Paired", name = "Station Name")+
+  xlab("Year")+
+  ylab("Temperature (C)")+
+  ggtitle("Average Mar-Apr-May Temperatures (5 year rolling)")+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
+ggsave("RollAv5_All.png", plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
+
+# 10 year
+ggplot(data = current_data, aes(x = year, y = RollAv10, color = Name))+
+  geom_line()+
+  scale_color_brewer(palette = "Paired", name = "Station Name")+
+  labs(x = "Year", y = "Temperature (C)")+
+  ggtitle("Average Mar-Apr-May Temperatures (10 year rolling)")+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
+ggsave("RollAv10_All.png", plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
+
+# 15 year
+ggplot(data = current_data, aes(x = year, y = RollAv15, color = Name))+
+  geom_line()+
+  scale_color_brewer(palette = "Paired", name = "Station Name")+
+  labs(x = "Year", y = "Temperature (C)")+
+  ggtitle("Average Mar-Apr-May Temperatures (15 year rolling)")+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
+ggsave("RollAv15_All.png", plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
+
 
 
 # violin plots to show distribution of temperatures ----
@@ -708,6 +752,71 @@ for (i in 1:nrow(AllStn)){
   ggsave(paste0("violin_spring_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
 
+### turn months below into for loop ###
+
+# march
+current_dataT1 = subset(SpringData, SpringData$StationID == AllStn$station_id[1])
+current_dataT1$Decade <- as.factor(current_dataT1$Decade)
+current_data = subset(current_dataT1, current_dataT1$Month == "Mar")
+
+ggplot(data = current_data, aes(x = Decade, y = tav, group = Decade))+
+  geom_violin(fill = "skyblue")+
+  geom_boxplot(width = .4, fill = "skyblue")+
+  scale_x_discrete(breaks = current_data$Decade, labels = current_data$Decade)+
+  ylim(c(-20,30))+
+  ylab("Average Temperature (C)")+
+  ggtitle(paste0("Distribution of Daily March Temperatures in ", AllStn$name[1], ", NY"))+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
+ggsave(paste0("violin_mar_", AllStn$name[1],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
+
+# april
+current_dataT1 = subset(SpringData, SpringData$StationID == AllStn$station_id[1])
+current_dataT1$Decade <- as.factor(current_dataT1$Decade)
+current_data = subset(current_dataT1, current_dataT1$Month == "Apr")
+
+ggplot(data = current_data, aes(x = Decade, y = tav, group = Decade))+
+  geom_violin(fill = "lightgreen")+
+  geom_boxplot(width = .4, fill = "lightgreen")+
+  scale_x_discrete(breaks = current_data$Decade, labels = current_data$Decade)+
+  ylim(c(-20,30))+
+  ylab("Average Temperature (C)")+
+  ggtitle(paste0("Distribution of Daily April Temperatures in ", AllStn$name[1], ", NY"))+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
+ggsave(paste0("violin_apr_", AllStn$name[1],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
+
+# may
+current_dataT1 = subset(SpringData, SpringData$StationID == AllStn$station_id[1])
+current_dataT1$Decade <- as.factor(current_dataT1$Decade)
+current_data = subset(current_dataT1, current_dataT1$Month == "May")
+
+ggplot(data = current_data, aes(x = Decade, y = tav, group = Decade))+
+  geom_violin(fill = "springgreen4")+
+  geom_boxplot(width = .4, fill = "springgreen4")+
+  scale_x_discrete(breaks = current_data$Decade, labels = current_data$Decade)+
+  ylim(c(-20,30))+
+  ylab("Average Temperature (C)")+
+  ggtitle(paste0("Distribution of Daily May Temperatures in ", AllStn$name[1], ", NY"))+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
+ggsave(paste0("violin_may_", AllStn$name[1],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
+
+# mar-apr-may
+current_data = subset(SpringData, SpringData$StationID == AllStn$station_id[2])
+current_data$Decade <- as.factor(current_data$Decade)
+
+ggplot(data = current_data, aes(x = Decade, y = tav, fill = Month))+
+  geom_violin(position = position_dodge(1))+
+  geom_boxplot(position = position_dodge(1), width = .2)+
+  scale_fill_manual(values = c("skyblue", "lightgreen","springgreen4"))+
+  scale_x_discrete(breaks = current_data$Decade, labels = current_data$Decade)+
+  ylab("Average Temperature (C)")+
+  ggtitle(paste0("Distribution of Daily Average Temperatures in ", AllStn$name[2], ", NY"))+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
+ggsave(paste0("violin_maraprmay_", AllStn$name[2],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
+
 
 
 
@@ -723,7 +832,7 @@ monthName <- c("March","April","May")
 # Extreme temperatures by year ----
 # maybe add trend line? 
 
-# for loop for extreme temperature plots
+# seperated by month
 for (i in 1:nrow(AllStn)){
   
   current_dataT1 <- subset(SpringMonths, SpringMonths$StationID == AllStn$station_id[i])
@@ -754,7 +863,41 @@ for (i in 1:nrow(AllStn)){
     dev.off()
   }
 }  
+
+# all months on same plot
+for (i in 1:nrow(AllStn)){
   
+  current_dataT1 <- subset(SpringMonths, SpringMonths$StationID == AllStn$station_id[i])
+  current_range <- data.frame(year=rep(seq(AllStn[i,5],2019), times = 3), month = rep(month(c(3,4,5), label = TRUE), each = (2020 - AllStn$StartTmax[AllStn$stnID == i])))
+  current_data <- full_join(current_dataT1, current_range, by = c("year" = "year", "month" = "month"))
+  current_data <- current_data[order(current_data$year),]
+  
+  png(paste0(plotDIR[usernumber], "/ex_temps_", AllStn$name[i], "_", "allmonths", ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
+  
+  plot(current_data$year[current_data$month == "Mar"], current_data$ExtHi[current_data$month == "Mar"],
+       type = "l",
+       lwd = 2,
+       col = "skyblue",
+       xlab = "Decade",
+       ylab = "Temperature (Celsius)",
+       main = paste0("Extreme Spring Temperatures in ", AllStn$name[i], ", NY"),
+       ylim = c(min(current_data$ExtLo[current_data$month == "Mar"], na.rm=TRUE)-7, max(current_data$ExtHi[current_data$month == "May"], na.rm=TRUE)+5),
+       xlim = c(min(current_data$year), 2019))
+  lines(current_data$year[current_data$month == "Mar"], current_data$ExtLo[current_data$month == "Mar"],
+        lwd = 2,  col = "skyblue", lty = "dotted") 
+  lines(current_data$year[current_data$month == "Apr"], current_data$ExtHi[current_data$month == "Apr"],
+        lwd = 2, col = "lightgreen")
+  lines(current_data$year[current_data$month == "Apr"], current_data$ExtLo[current_data$month == "Apr"],
+        lwd = 2, col = "lightgreen", lty = "dotted")
+  lines(current_data$year[current_data$month == "May"], current_data$ExtHi[current_data$month == "May"],
+        lwd = 2, col = "springgreen4")
+  lines(current_data$year[current_data$month == "May"], current_data$ExtLo[current_data$month == "May"],
+        lwd = 2, col = "springgreen4", lty = "dotted")
+  legend("bottomleft", c("May Hi", "April Hi", "March Hi", "May Lo", "April Lo", "March Lo"), col = c("springgreen4", "lightgreen", "skyblue","springgreen4","lightgreen","skyblue"), lty = (c(1,1,1,3,3,3)), lwd = 2, bty="n", cex=.75)
+  
+  dev.off()
+}  
+
  
 
 # Extreme temperatures by decade ---- 
@@ -791,9 +934,7 @@ for (i in 1:nrow(AllStn)){
   }
 }  
 
-
-# plot of extreme temperatures all spring months on same graph
-# by decade so we still have the problem of missing data
+# all months on same plot 
 for (i in 1:nrow(AllStn)){
   
   current_data <- subset(SpringDecade, SpringDecade$StationID == AllStn$station_id[i])
@@ -838,16 +979,16 @@ for (i in 1:nrow(AllStn)){
     
     plot(current_data$year[current_data$month == monthID[j]]+.25, current_data$ExHiCount[current_data$month == monthID[j]],
          type = "h",
-         lwd = 2,
+         lwd = 3,
          col = "tomato3",
          main = paste0(monthName[j]," Extreme Temperature Days in ", AllStn$name[i], ", NY"),
          xlab = "Year",
          ylab = "Number of Days",
          ylim = c(0, max(c(current_data$ExHiCount[current_data$month == monthID[j]],current_data$ExLoCount[current_data$month == monthID[j]]))+1),
          xlim = c(min(current_data$year[current_data$month == monthID[j]]), 2019))
-    lines(current_data$year[current_data$month == monthID[j]], current_data$ExLoCount[current_data$month == monthID[j]],
+    lines(current_data$year[current_data$month == monthID[j]]-.25, current_data$ExLoCount[current_data$month == monthID[j]],
           type = "h",
-          lwd = 2,
+          lwd = 3,
           col = "skyblue")
     legend("topright", c("Low","High"), col = c("skyblue","tomato3"), lwd = 2, bty = "n")
     
