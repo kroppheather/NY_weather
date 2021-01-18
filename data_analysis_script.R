@@ -6,6 +6,8 @@ library(lubridate)
 library(rgdal)
 library(sp)
 library(ggplot2)
+library(zoo)
+library(plyr)
 
 ### Set up directories   -----
 
@@ -505,7 +507,8 @@ RegressionTav <- data.frame(StationID=character(0),
                             SlopeP = numeric(0), 
                             Int = numeric(0), 
                             IntP = numeric(0),
-                            Rsq = numeric(0))
+                            Rsq = numeric(0),
+                            Sig = numeric(0))
 
 for (i in 1:nrow(AllStn)){
   RegressionTav[i,1] <- AllStn$station_id[i]
@@ -517,6 +520,7 @@ for (i in 1:nrow(AllStn)){
   RegressionTav[i,5] <- summary(current.mod)$coefficients[1,1]
   RegressionTav[i,6] <- summary(current.mod)$coefficients[1,4]
   RegressionTav[i,7] <- summary(current.mod)$r.squared
+  RegressionTav[i,8] <- ifelse(RegressionTav[i,4] <= 0.05 & RegressionTav[i,6] <= 0.05, 1, 0)
   
 }
 
@@ -527,7 +531,8 @@ RegressionTmin <- data.frame(StationID=character(0),
                              SlopeP = numeric(0), 
                              Int = numeric(0), 
                              IntP = numeric(0),
-                             Rsq = numeric(0))
+                             Rsq = numeric(0),
+                             Sig = numeric(0))
 
 for (i in 1:nrow(AllStn)){
   RegressionTmin[i,1] <- AllStn$station_id[i]
@@ -539,6 +544,8 @@ for (i in 1:nrow(AllStn)){
   RegressionTmin[i,5] <- summary(current.mod)$coefficients[1,1]
   RegressionTmin[i,6] <- summary(current.mod)$coefficients[1,4]
   RegressionTmin[i,7] <- summary(current.mod)$r.squared
+  RegressionTmin[i,8] <- ifelse(RegressionTmin[i,4] <= 0.05 & RegressionTmin[i,6] <= 0.05, 1, 0)
+  
   
 }
 
@@ -549,7 +556,8 @@ RegressionTmax <- data.frame(StationID=character(0),
                              SlopeP = numeric(0), 
                              Int = numeric(0), 
                              IntP = numeric(0),
-                             Rsq = numeric(0))
+                             Rsq = numeric(0),
+                             Sig = numeric(0))
 
 for (i in 1:nrow(AllStn)){
   RegressionTmax[i,1] <- AllStn$station_id[i]
@@ -561,9 +569,11 @@ for (i in 1:nrow(AllStn)){
   RegressionTmax[i,5] <- summary(current.mod)$coefficients[1,1]
   RegressionTmax[i,6] <- summary(current.mod)$coefficients[1,4]
   RegressionTmax[i,7] <- summary(current.mod)$r.squared
+  RegressionTmax[i,8] <- ifelse(RegressionTmax[i,4] <= 0.05 & RegressionTmax[i,6] <= 0.05, 1, 0)
+  
   
 }
-
+  
 
 ### General temperature trends ----
 # plot general temperature trends
@@ -576,28 +586,63 @@ for (i in 1:nrow(AllStn)){
   # plot general temperature trends
   ggplot(data = current_data, aes(x = year))+
     geom_line(aes(y = tav, color = "Average"))+
-    geom_abline(data = RegressionTav, aes(slope = Slope[i], intercept = Int[i]), color = alpha("slateblue3", 0.6))+
+    geom_abline(data = RegressionTav, aes(slope = Slope[i], intercept = Int[i]), color = alpha("slateblue3", 0.6), 
+                linetype = ifelse(RegressionTav$Sig[i] == 1, "solid", "longdash"))+
     geom_line(aes(y = tmax, color = "Maximum"))+
-    geom_abline(data = RegressionTmax, aes(slope = Slope[i], intercept = Int[i]), color = alpha("tomato4", 0.6))+
+    geom_abline(data = RegressionTmax, aes(slope = Slope[i], intercept = Int[i]), color = alpha("tomato4", 0.6),
+                linetype = ifelse(RegressionTmax$Sig[i] == 1, "solid", "longdash"))+
     geom_line(aes(y = tmin, color = "Minimum"))+
-    geom_abline(data = RegressionTmin, aes(slope = Slope[i], intercept = Int[i]), color = alpha("deepskyblue3", 0.6))+
+    geom_abline(data = RegressionTmin, aes(slope = Slope[i], intercept = Int[i]), color = alpha("deepskyblue3", 0.6),
+                linetype = ifelse(RegressionTmin$Sig[i] == 1, "solid", "longdash"))+
     scale_color_manual(values = c("slateblue1","tomato3","skyblue"), name = "Temperature Measurement")+
     theme_classic()+
-    theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
+    theme(plot.title = element_text(hjust = 0.5, face = "bold"))+ 
     labs(x = "Year", y = "Temperature (celsius)", title = paste0("Spring Temperatures in ", AllStn$name[i], ", NY"))
   ggsave(paste0("temp_trends_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
 
-# average temperatures by decade for all stations
-ggplot(data = SpringDecadeAv, aes(x = Decade, y = tav, color = Name))+
+# rolling average temperatures for all stations ----
+# add rolling av column - move this step higher?
+current_dataT1 <- SpringYear %>%
+  group_by(StationID) %>%
+  mutate(RollAv5 = rollmean(tav, k = 5, fill = NA),
+         RollAv10 = rollmean(tav, k = 10, fill = NA),
+         RollAv15 = rollmean(tav, k = 15, fill = NA),
+         RollAv20 = rollmean(tav, k = 20, fill = NA))
+
+current_range <- data.frame(year=seq(1893, 2019))
+current_data <- full_join(current_dataT1, current_range, by = c("year" = "year"))
+
+# 5 year 
+ggplot(data = current_data, aes(x = year, y = RollAv5, color = Name))+
   geom_line()+
   scale_color_brewer(palette = "Paired", name = "Station Name")+
+  xlab("Year")+
+  ylab("Temperature (C)")+
+  ggtitle("Average Mar-Apr-May Temperatures (5 year rolling)")+
   theme_classic()+
-  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-  xlim(1950,2010)+
-  labs(x = "Decade", y = "Temperature (celsius)", title = "Average Spring Temperatures")
-ggsave("average_all.png", plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
+ggsave("RollAv5_All.png", plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 
+# 10 year
+ggplot(data = current_data, aes(x = year, y = RollAv10, color = Name))+
+  geom_line()+
+  scale_color_brewer(palette = "Paired", name = "Station Name")+
+  labs(x = "Year", y = "Temperature (C)")+
+  ggtitle("Average Mar-Apr-May Temperatures (10 year rolling)")+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
+ggsave("RollAv10_All.png", plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
+
+# 15 year
+ggplot(data = current_data, aes(x = year, y = RollAv15, color = Name))+
+  geom_line()+
+  scale_color_brewer(palette = "Paired", name = "Station Name")+
+  labs(x = "Year", y = "Temperature (C)")+
+  ggtitle("Average Mar-Apr-May Temperatures (15 year rolling)")+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
+ggsave("RollAv15_All.png", plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 
 # violin plots to show distribution of temperatures ----
 # jan - june
@@ -889,20 +934,6 @@ for (i in 1:nrow(AllStn)){
 
 ### FREEZE THAW ----
 # Number of Freeze Thaw Days Graphs ----
-# test
-# can't add a separate legend to ggplot
-# do we want a horizontal reference line for the average?
-current_range <- data.frame(year=seq(AllStn[1, 5], 2019))
-current_data <- full_join(current_dataT1, current_range, by = c("year" = "year"))
-current_av <- mean(current_data$FTdays, na.rm = TRUE)
-
-ggplot(data = current_data, aes(x = year, y = FTdays)) +
-  geom_bar(position = "dodge", stat="identity", fill = ifelse(current_data$FTdays > current_av, "tomato3", "deepskyblue3"))+
-  geom_hline(yintercept = current_av, color = "black")+
-  theme_classic()+
-  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-  labs(x = "Year", y = "Number of Freeze Thaw Days", title = paste0("Spring Freeze Thaw Days in ", AllStn$name[1],", NY"))
-
 
 ### FREEZE THAW ----
 # Number of Freeze Thaw Days Graphs ----
@@ -913,45 +944,41 @@ for (i in 1:nrow(AllStn)){
   current_data <- full_join(current_dataT1, current_range, by = c("year" = "year"))
   current_av <- mean(current_data$FTdays, na.rm = TRUE)
   
-  # plot general temperature trends
   ggplot(data = current_data, aes(x = year, y = FTdays)) +
-    geom_bar(position = "dodge", stat="identity", fill = ifelse(current_data$FTdays > current_av, "tomato3", "deepskyblue3"))+
+    geom_line(color = "deepskyblue3")+
+    geom_point(pch = 20, color = "deepskyblue3")+
+    geom_hline(yintercept = current_av, color = "red3")+
     theme_classic()+
     theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
     labs(x = "Year", y = "Number of Freeze Thaw Days", title = paste0("Spring Freeze Thaw Days in ", AllStn$name[i],", NY"))
-  
   ggsave(paste0("num_FTdays_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
 
- # Freeze Thaw Amplitude Graphs ----
-current_dataT1 <- subset(SpringDecade, SpringDecade$StationID == AllStn$station_id[7])
-maytest <- current_dataT1[c("Month", "Decade", "FTrange")]
-
-
-
-# plot general temperature trends
-ggplot(data = current_dataT1, aes(x = Decade, y = FTrange, color = Month))+
-  geom_point() +
-  geom_line() +
-  theme_classic()+
-  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-  labs(x = "Year", y = "Temperature Range (celcius)", title = paste0("Temperature Amplitude of Spring Freeze Thaw Days in ", AllStn$name[1],", NY"))
-
+# Freeze Thaw Amplitude Graphs ----
+# Creating spring year data frame with rolling avs
+SpringYear1 <- SpringYear %>%
+  group_by(StationID) %>%
+  mutate(FTRollAv5 = rollmean(FTrange, k = 5, fill = NA),
+         FTRollAv10 = rollmean(FTrange, k = 10, fill = NA),
+         FTRollAv15 = rollmean(FTrange, k = 15, fill = NA),
+         FTRollAv20 = rollmean(FTrange, k = 20, fill = NA))
 
 ### some graphs missing may data 
-# lots of missing data in these graphs -- should we change or remove them?
+# fix title --> goes off the page
 for (i in 1:nrow(AllStn)){
-  current_dataT1 <- subset(SpringDecade, SpringDecade$StationID == AllStn$station_id[i])
+  current_dataT1 <- subset(SpringYear1, SpringYear1$StationID == AllStn$station_id[i])
   current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
   current_data <- full_join(current_dataT1, current_range, by = c("year" = "year"))
   
   # plot general temperature trends
-  ggplot(data = current_dataT1, aes(x = Decade, y = FTrange, color = Month))+
-    geom_point() +
-    geom_line() +
+  ggplot(data = current_data, aes(x = year, y = FTRollAv5))+
+    geom_line(color = "deepskyblue3") +
     theme_classic()+
     theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-    labs(x = "Year", y = "Temperature Range (celcius)", title = paste0("Temperature Amplitude of Spring Freeze Thaw Days in ", AllStn$name[i],", NY"))
+    labs(x = "Year", y = "Temperature Range (celcius)", 
+         title = paste0("Amplitude of Spring (Mar-May) Freeze Thaw Days in ", AllStn$name[i],", NY"),
+         subtitle = "Calculated with a 5 Year Rolling Averge")
+  
   
   ggsave(paste0("FT_amp_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
@@ -1029,25 +1056,25 @@ for (i in 1:nrow(AllStn)){
 
 ### Thawing Degree Days ----
 # Accumulation Jan 1 - June 30 ----
-# what were these graphs supposed to look like??
-# did we want the total accumulated per year?
-# use station 1 as test
-
+# do we want to have multiple stations on the same graph?
 
 for (i in 1:nrow(AllStn)){
   current_dataT1 <- subset(TavData, TavData$StationID == AllStn$station_id[i])
+  current_dataT2 <- subset(current_dataT1, current_dataT1$DOY == max(current_dataT1$DOY))
   current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
-  current_data <- full_join(current_dataT1, current_range, by = c("Year" = "year"))
+  current_data <- full_join(current_dataT2, current_range, by = c("Year" = "year"))
+  current_data <- current_data[order(current_data$Year),]
   
   # saving plot as a png
   png(paste0(plotDIR[usernumber], "/tdd_bar", AllStn$name[i], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
 
   # get the base plot with just the first year on there
   plot(current_data$Year, current_data$TDD,
-       type = "h",
+       type = "o",
+       pch = 20,
        xlab = "Year",
        ylab = "Degrees (C)",
-       lwd = 3,
+       lwd = 1.5,
        col = "deepskyblue3",
        main = paste0("Thawing Degree Day Accumulation (Jan - June) in ", AllStn$name[i], ", NY"))
   
@@ -1066,12 +1093,13 @@ for (i in 1:nrow(AllStn)){
   png(paste0(plotDIR[usernumber], "/tdd_", AllStn$name[i], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
 
   # get the base plot with just the first year on there
-  plot(current_data$DOY[current_data$Year == stnyrs$Year[1]], current_data$TDD[current_data$Year == stnyrs$Year[1]],
-     type = "l",
-     col = stnyrs$color[1],
-     xlab = "DOY",
-     ylab = "Degrees (C)",
-     main = paste("Thawing Degree Days Accumulation", AllStn$name[i]))
+  plot(current_data$DOY[current_data$Year == stnyrs$Year[i]], current_data$TDD[current_data$Year == stnyrs$Year[i]],
+       type = "l",
+       col = stnyrs$color[1],
+       ylim = c(0, round_any(max(current_data$TDD), 100, f = ceiling)),
+       xlab = "DOY",
+       ylab = "Degrees (C)",
+       main = paste("Thawing Degree Days Accumulation", AllStn$name[10]))
   # loop through the rest of the years starting at the second index and add the line onto the plot
   # current year just keeps track of what year we're on to make it easier but we don't have to use it
   for (j in 2:nrow(stnyrs)){
