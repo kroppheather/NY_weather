@@ -8,6 +8,8 @@ library(sp)
 library(ggplot2)
 # install.packages("zoo") - for rolling average function
 library(zoo)
+# install.packages("jpeg")
+library(jpeg)
 
 
 ### Set up directories   -----
@@ -424,7 +426,6 @@ colnames(TavCount) <- c("StationID", "StationName", "Year", "ncount")
 TavCount <- subset(TavCount, TavCount$ncount >= 171)
 # keep only years with enough tav data
 TavData <- inner_join(TavData, TavCount, by = c("StationID", "StationName", "Year"))
-# CHECK IF ALL COLUMNS ARE NECESSARY IN TAVDATA
 
 # add thawing degree day accumulation to TavData
 TavData <- TavData %>%
@@ -437,7 +438,6 @@ TavData <- TavData %>%
   group_by(Year, StationID) %>%
   arrange(DOY) %>%
   mutate(GDD41 = cumsum(ifelse(is.na(tav), 0, ifelse(tav >= 5, (tav-5), 0))))
-
 
 # # subset to each station 
 # alldata1 <- subset(AllData, AllData$StationID=="USC00300785")
@@ -695,7 +695,8 @@ ggplot(data = current_data, aes(x = year, y = RollAv5, color = Name))+
   theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
 ggsave("RollAv5_All.png", plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 
-# 10 year
+# 10 year 
+## change colors
 ggplot(data = current_data, aes(x = year, y = RollAv10, color = Name))+
   geom_line()+
   scale_color_brewer(palette = "Paired", name = "Station Name")+
@@ -752,57 +753,38 @@ for (i in 1:nrow(AllStn)){
   ggsave(paste0("violin_spring_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
 
-### turn months below into for loop ###
 
-# march
-current_dataT1 = subset(SpringData, SpringData$StationID == AllStn$station_id[1])
-current_dataT1$Decade <- as.factor(current_dataT1$Decade)
-current_data = subset(current_dataT1, current_dataT1$Month == "Mar")
+# mar-apr-may separate months
 
-ggplot(data = current_data, aes(x = Decade, y = tav, group = Decade))+
-  geom_violin(fill = "skyblue")+
-  geom_boxplot(width = .4, fill = "skyblue")+
-  scale_x_discrete(breaks = current_data$Decade, labels = current_data$Decade)+
-  ylim(c(-20,30))+
-  ylab("Average Temperature (C)")+
-  ggtitle(paste0("Distribution of Daily March Temperatures in ", AllStn$name[1], ", NY"))+
-  theme_classic()+
-  theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
-ggsave(paste0("violin_mar_", AllStn$name[1],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
+monthID <- c("Mar","Apr","May")
+monthName <- c("March","April","May")
+colorID <- c("skyblue", "lightgreen", "springgreen4")
 
-# april
-current_dataT1 = subset(SpringData, SpringData$StationID == AllStn$station_id[1])
-current_dataT1$Decade <- as.factor(current_dataT1$Decade)
-current_data = subset(current_dataT1, current_dataT1$Month == "Apr")
+# loop through stations
+for (i in 1:nrow(AllStn)){
+  
+  current_data = subset(SpringData, SpringData$StationID == AllStn$station_id[i])
+  current_data$Decade <- as.factor(current_data$Decade)
+  
+  # loop through  months 
+  for (j in 1:3){
+    
+    ggplot(data = current_data[current_data$Month == monthID[j],], aes(x = Decade, y = tav, group = Decade))+
+      geom_violin(position = position_dodge(1), fill = colorID[j])+
+      geom_boxplot(position = position_dodge(1), width = .2, fill = colorID[j])+
+      ylab("Average Temperature (C)")+
+      ylim(c(-20,30))+
+      ggtitle(paste0("Distribution of Daily Average ", monthName[j], " Temperatures in ", AllStn$name[i], ", NY"))+
+      theme_classic()+
+      theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
+    ggsave(paste0("violin_", monthID[j], "_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 
-ggplot(data = current_data, aes(x = Decade, y = tav, group = Decade))+
-  geom_violin(fill = "lightgreen")+
-  geom_boxplot(width = .4, fill = "lightgreen")+
-  scale_x_discrete(breaks = current_data$Decade, labels = current_data$Decade)+
-  ylim(c(-20,30))+
-  ylab("Average Temperature (C)")+
-  ggtitle(paste0("Distribution of Daily April Temperatures in ", AllStn$name[1], ", NY"))+
-  theme_classic()+
-  theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
-ggsave(paste0("violin_apr_", AllStn$name[1],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
+  }
+}  
 
-# may
-current_dataT1 = subset(SpringData, SpringData$StationID == AllStn$station_id[1])
-current_dataT1$Decade <- as.factor(current_dataT1$Decade)
-current_data = subset(current_dataT1, current_dataT1$Month == "May")
 
-ggplot(data = current_data, aes(x = Decade, y = tav, group = Decade))+
-  geom_violin(fill = "springgreen4")+
-  geom_boxplot(width = .4, fill = "springgreen4")+
-  scale_x_discrete(breaks = current_data$Decade, labels = current_data$Decade)+
-  ylim(c(-20,30))+
-  ylab("Average Temperature (C)")+
-  ggtitle(paste0("Distribution of Daily May Temperatures in ", AllStn$name[1], ", NY"))+
-  theme_classic()+
-  theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
-ggsave(paste0("violin_may_", AllStn$name[1],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 
-# mar-apr-may
+# mar-apr-may on same plot
 current_data = subset(SpringData, SpringData$StationID == AllStn$station_id[2])
 current_data$Decade <- as.factor(current_data$Decade)
 
@@ -832,7 +814,7 @@ monthName <- c("March","April","May")
 # Extreme temperatures by year ----
 # maybe add trend line? 
 
-# seperated by month
+# separated by month
 for (i in 1:nrow(AllStn)){
   
   current_dataT1 <- subset(SpringMonths, SpringMonths$StationID == AllStn$station_id[i])
@@ -1191,6 +1173,22 @@ for (i in 1:nrow(AllStn)){
   ggsave(paste0("raw_anom_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
 
+# count number of days with anomaly >10
+springEx <- SpringData[(SpringData$AnRaw >= 10) | (SpringData$AnRaw <= -10),]
+springEx <- springEx %>% drop_na(AnRaw)
+anomN <- aggregate(springEx$AnRaw, by = list(springEx$StationID, springEx$StationName, springEx$Decade), FUN = "length")
+colnames(anomN) <- c("StationID", "StationName", "Decade","AnomN")
+
+# format to subset stations
+subset(anomN, anomN$StationID == AllStn$station_id[1])
+
+# format to visualize by stations
+plot(anomN$Decade[anomN$StationID == AllStn$station_id[2]], anomN$AnomN[anomN$StationID == AllStn$station_id[2]],
+     type = "h",
+     ylab = "Number of Days",
+     xlab = "Decade",
+     main = paste("Extreme Anomalies in", AllStn$name[2] ))
+
 
 ### WEEK 2 ----
 ### Freeze Thaw Day Type Heat Maps----
@@ -1264,6 +1262,29 @@ for (i in 1:nrow(AllStn)){
   }
   dev.off()
 }
+
+
+
+for (i in 1:nrow(AllStn)){
+  current_dataT1 <- subset(TavData, TavData$StationID == AllStn$station_id[i])
+  current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
+  current_data <- full_join(current_dataT1, current_range, by = c("Year" = "year"))
+  
+  # saving plot as a png
+  png(paste0(plotDIR[usernumber], "/tdd_bar", AllStn$name[i], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
+  
+  # get the base plot with just the first year on there
+  plot(current_data$Year, current_data$TDD,
+       type = "h",
+       xlab = "Year",
+       ylab = "Degrees (C)",
+       lwd = 3,
+       col = "deepskyblue3",
+       main = paste0("Thawing Degree Day Accumulation (Jan - June) in ", AllStn$name[i], ", NY"))
+  
+  dev.off()
+}
+
 
 ### Day of Last Freeze ----
 # creating last freeze data frame 
@@ -1464,4 +1485,45 @@ for (i in 1:nrow(stn2012)){
   dev.off()
 }
 
+# focus on one station for storymap
+# find temperatures at days noted as damaging freeze
+frz2012 <- subset(tav2012, (tav2012$DOY == 87) | (tav2012$DOY == 119) | (tav2012$DOY == 120))
+frz2012 <- data.frame(StationID = frz2012$StationID,
+                      StationName = frz2012$StationName,
+                      DOY = frz2012$DOY,
+                      tmin = frz2012$tmin)
+frz2012[frz2012$StationID == AllStn$station_id[10],]
+
+# read in pictures of apple stations
+silvertip <- readJPEG(paste0(diru[usernumber], "/silvertip.jpg"))
+firstbloom <- readJPEG(paste0(diru[usernumber], "/firstbloom.jpeg"))
+
+# plot of 2012 apple freeze in syracuse
+png(paste0(plotDIR[usernumber], "/apple_gdd_final_", AllStn$name[10], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
+
+plot(tav2012$DOY[tav2012$StationID == AllStn$station_id[10]], tav2012$GDD41[tav2012$StationID == AllStn$station_id[10]],
+     type = "l",
+     lwd = 1.5,
+     col = "deepskyblue3",
+     xlab = "DOY",
+     ylab = "Degrees (C)",
+     main = "2012 Apple Growing Degree Days in Syracuse, NY")
+rect(xleft = -10, xright = 200, ybottom = 400, ytop =  1500, col = alpha("blueviolet", 0.2), border = NA)
+rect(xleft = -10, xright = 200, ybottom = 100, ytop =  400, col = alpha("lightgreen", 0.2), border = NA)
+abline(h = 100, col = alpha("springgreen4", 0.6), lwd = 1.5)
+abline(h = 400, col = alpha("blueviolet", 0.6), lwd = 1.5)
+
+arrows(x0 = 87, y0 = 300, x1 = 87, y1 = 180, length = 0.1, lwd = 2)
+text(87, 350, labels = "-6.7 ˚C")
+arrows(x0 = 119, y0 = 410, x1 = 119, y1 = 280, length = 0.1, lwd = 2)
+text(119, 450, labels = "-3.3 ˚C")
+
+rasterImage(silvertip, 0, 110, 20, 220)
+text(20, 120, pos = 4, labels = "First Bud at 100 GDD", cex = 0.75, col = "springgreen4")
+rasterImage(firstbloom, 0, 410, 20, 520)
+text(20, 420, pos = 4, labels = "First Bloom at 400 GDD", cex = 0.75, col = "blueviolet")
+
+legend("topleft", "Accumulated GDD", col = "deepskyblue3", lwd = 2, bty = "n", cex = 1)
+
+dev.off()
 
