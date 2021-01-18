@@ -1137,11 +1137,12 @@ for (i in 1:nrow(AllStn)){
   current_dataT1 <- subset(LastFreeze, LastFreeze$StationID == AllStn$station_id[i])
   current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
   current_data <- full_join(current_dataT1, current_range, by = c("Year" = "year"))
+  current_data$TminFlag <- ifelse(current_data$tmin < -2.2, current_data$DOY, NA)
   current_data <- current_data[order(current_data$Year),]
   
   # saving plot as a png
   png(paste0(plotDIR[usernumber], "/lf_tdd_", AllStn$name[i], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
-
+  
   # get the base plot with just the first year on there
   par(mar = c(5, 4, 4, 4) + 0.3)
   plot(current_data$Year, current_data$DOY,
@@ -1151,6 +1152,10 @@ for (i in 1:nrow(AllStn)){
        xlab = "Year",
        ylab = "DOY of Last Freeze",
        main = paste0("Day of Year of Last Freeze in ", AllStn$name[i],", NY"))
+  points(current_data$Year, current_data$TminFlag,
+         type = "p",
+         col = "deepskyblue2",
+         pch = 8)
   par(new = TRUE)
   plot(current_data$Year, current_data$TDD,
        type = "l",
@@ -1162,7 +1167,8 @@ for (i in 1:nrow(AllStn)){
        ylab = "")
   axis(side = 4, at = seq(0,900, by = 200))
   mtext("Accumulated TDD (C)", side = 4, line = 3) 
-  legend("topright", c("DOY","TDD"), col = c("black","red3"), lwd = 2, bty = "n", cex = 1)
+  legend("topright", c("DOY","TDD", "Tmin < -2.2˚C"), col = c("black","red3", "deepskyblue2"), 
+         lwd = 2, bty = "n", lty = c(1, 1, NA), pch = c(NA, NA, 8), cex = 1)
   
   dev.off()
 }
