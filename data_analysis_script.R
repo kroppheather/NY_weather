@@ -672,14 +672,31 @@ ggplot(data = SpringDecadeAv, aes(x = Decade, y = tav, color = Name))+
   labs(x = "Decade", y = "Temperature (celsius)", title = "Average Spring Temperatures")
 ggsave("average_all.png", plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 
+ggplot(data = SpringDecadeAv, aes(x = Decade, y = tav, color = Name))+
+  geom_line()+
+  scale_color_manual(values = c("#c58644",
+                                "#563fc4",
+                                "#62b34e",
+                                "#c164b9",
+                                "#cfc83c",
+                                "#89abf0",
+                                "#cc5235",
+                                "#82edcd",
+                                "#d83d79",
+                                "#5b6b26",
+                                "#822944",
+                                "#df8094"), name = "Station Name")+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
+  labs(x = "Decade", y = "Temperature (celsius)", title = "Average Spring Temperatures")
+
+
 # rolling average temperatures for all stations ----
 # add rolling av column - move this step higher?
 current_dataT1 <- SpringYear %>%
   group_by(StationID) %>%
   mutate(RollAv5 = rollmean(tav, k = 5, fill = NA),
-         RollAv10 = rollmean(tav, k = 10, fill = NA),
-         RollAv15 = rollmean(tav, k = 15, fill = NA),
-         RollAv20 = rollmean(tav, k = 20, fill = NA))
+         RollAv10 = rollmean(tav, k = 10, fill = NA))
 
 current_range <- data.frame(year=seq(1893, 2019))
 current_data <- full_join(current_dataT1, current_range, by = c("year" = "year"))
@@ -698,23 +715,26 @@ ggsave("RollAv5_All.png", plot = last_plot(), device = png(), path = paste0(plot
 # 10 year 
 ## change colors
 ggplot(data = current_data, aes(x = year, y = RollAv10, color = Name))+
-  geom_line()+
-  scale_color_brewer(palette = "Paired", name = "Station Name")+
+  geom_line(alpha = .8)+
+  scale_color_manual(values = c("#822944",
+                                "#cfc83c",
+                                "#89abf0",
+                                "#c58644",
+                                "#82edcd",
+                                "#7fd06a",
+                                "#fb99ad",
+                                "#ef622e",
+                                "#5b6b26",
+                                "#003fbb",
+                                "#d83d79",
+                                "#9f4ca5"), 
+                     name = "Station Name")+
+  guides(colour = guide_legend(override.aes = list(size=2)))+
   labs(x = "Year", y = "Temperature (C)")+
   ggtitle("Average Mar-Apr-May Temperatures (10 year rolling)")+
   theme_classic()+
   theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
 ggsave("RollAv10_All.png", plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
-
-# 15 year
-ggplot(data = current_data, aes(x = year, y = RollAv15, color = Name))+
-  geom_line()+
-  scale_color_brewer(palette = "Paired", name = "Station Name")+
-  labs(x = "Year", y = "Temperature (C)")+
-  ggtitle("Average Mar-Apr-May Temperatures (15 year rolling)")+
-  theme_classic()+
-  theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
-ggsave("RollAv15_All.png", plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 
 
 
