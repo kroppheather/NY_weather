@@ -731,7 +731,7 @@ ggplot(data = current_data, aes(x = year, y = RollAv10, color = Name))+
                      name = "Station Name")+
   guides(colour = guide_legend(override.aes = list(size=2)))+
   labs(x = "Year", y = "Temperature (C)")+
-  ggtitle("Average Mar-Apr-May Temperatures (10 year rolling)")+
+  ggtitle("Average Mar-Apr-May Temperatures")+
   theme_classic()+
   theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
 ggsave("RollAv10_All.png", plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
@@ -1200,7 +1200,7 @@ anomN <- aggregate(springEx$AnRaw, by = list(springEx$StationID, springEx$Statio
 colnames(anomN) <- c("StationID", "StationName", "Decade","AnomN")
 
 # format to subset stations
-subset(anomN, anomN$StationID == AllStn$station_id[1])
+subset(anomN, anomN$StationID == AllStn$station_id[6])
 
 # format to visualize by stations
 plot(anomN$Decade[anomN$StationID == AllStn$station_id[2]], anomN$AnomN[anomN$StationID == AllStn$station_id[2]],
@@ -1546,4 +1546,7 @@ text(20, 420, pos = 4, labels = "First Bloom at 400 GDD", cex = 0.75, col = "blu
 legend("topleft", "Accumulated GDD", col = "deepskyblue3", lwd = 2, bty = "n", cex = 1)
 
 dev.off()
+
+# pull out Syracuse 2012
+syr2012 <- tav2012[tav2012$StationID == AllStn$station_id[10],]
 
