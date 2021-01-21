@@ -1,4 +1,3 @@
-#updated 1/4
 
 library(dplyr)
 library(tidyr)
@@ -6,9 +5,7 @@ library(lubridate)
 library(rgdal)
 library(sp)
 library(ggplot2)
-# install.packages("zoo") - for rolling average function
 library(zoo)
-# install.packages("jpeg")
 library(jpeg)
 
 
@@ -25,6 +22,10 @@ diru = c("/Users/abby/Documents/NYweather",
          "/Users/hkropp/Google Drive/research/students/NYweather/data",
          "/Volumes/GoogleDrive/.shortcut-targets-by-id/10ARTNFd7_vF4j5cC_nYlyqrsTjmLzCsj/NYweather/data")
 # to save plots
+plotDIR = c("/Users/abby/Documents/NYweather/plots", 
+            "/Users/hkropp/Google Drive/research/students/NYweather/plots", 
+            "/Users/rachelpike/Desktop/2020-2021/Research/plots")
+
 plotDIR = c("/Users/abby/Documents/NYweather/plots", 
             "/Users/hkropp/Google Drive/research/students/NYweather/plots", 
             "/Users/rachelpike/Desktop/2020-2021/Research/plots")
@@ -99,6 +100,9 @@ TmaxDataYear <- subset(TmaxDataYear, TmaxDataYear$ncount >= 171)
 # Remove years with too much missing data 
 TmaxData <- inner_join(TmaxData, TmaxDataYear, by = c("id" = "station", "year"="year"))
 
+# Getting rid of years with less than 171 observations in TmaxData
+TmaxData <- inner_join(TmaxData, TmaxDataYear, by = c("id" = "station", "year" = "year"))
+
 # Counting observations per year for the tmin data
 # Make new data frame with just the id, tmin value, and year
 TminDataYear <- aggregate(TminData$tmin, by=list(TminData$id,TminData$year), FUN="length")
@@ -111,6 +115,9 @@ TminDataYear <- subset(TminDataYear, TminDataYear$ncount >= 171)
 # get rid of years with missing data from TminData
 TminData <- inner_join(TminData, TminDataYear, by = c("id" = "station", "year"="year"))
 
+# Getting rid of years with less than 171 observations in TminData
+TminData <- inner_join(TminData, TminDataYear, by = c("id" = "station", "year" = "year"))
+
 # Counting observations per year for the prcp data
 # Make new data frame with just the id, prcp value, and year
 PrcpDataYear <- aggregate(PrcpData$prcp, by=list(PrcpData$id,PrcpData$year), FUN="length")
@@ -122,6 +129,9 @@ colnames(PrcpDataYear) <- c("station", "year", "ncount")
 PrcpDataYear <- subset(PrcpDataYear, PrcpDataYear$ncount >= 171)
 # get rid of years with missing data from PrcpData
 PrcpData <- inner_join(PrcpData, PrcpDataYear, by = c("id" = "station", "year"="year"))
+
+# Getting rid of years with less than 171 observations in PrcpData
+PrcpData <- inner_join(PrcpData, PrcpDataYear, by = c("id" = "station", "year" = "year"))
 
 # Counting number of years per station for tmax
 TmaxStn <- aggregate(TmaxDataYear$year, by=list(TmaxDataYear$station), FUN="length")
@@ -227,11 +237,11 @@ MajorZones$col <- c("#e28946",	"#ebb355","#db5236","#36638f","#74a1c3",
 ez@data <- left_join(ez@data,MajorZones, by="MAJOR")
 
 # look at tmax stations
-#make a map of all weather sites
+# make a map of all weather sites
 plot(ez, col=ez@data$col, border=NA)
 legend("topleft", paste(MajorZones$MAJOR),fill=MajorZones$col, bty="n", cex=0.35)
 plot(siteP, add=TRUE, pch=19, col=rgb(0.5,0.5,0.5,0.45), cex=0.5)
-#look at Tmax
+# look at Tmax
 TmaxStn$station_id <- TmaxStn$station
 sitesMax <- left_join(TmaxStn,StationInfo, by ="station_id")
 maxPoints <- SpatialPoints(matrix(c(sitesMax $long,sitesMax $lat), ncol=2,byrow=FALSE),
@@ -273,13 +283,14 @@ prcpP <- spTransform(prcpPoints ,ez@proj4string)
 plot(prcpP, col="grey25",pch=19, add=TRUE)
 title(main= "Map of Precip Stations")
 
-### identify sites with all data types
+
+### identify sites with all data types and create AllStn data frame
 ### do we need to keep T1 and T2? 
 AllStnT1 <- data.frame(station_id = sitesMax$station_id, 
-                       lat = sitesMax$lat, 
-                       long = sitesMax$long, 
-                       StationName = sitesMax$name,
-                       StartTmax = sitesMax$min) 
+                     lat = sitesMax$lat, 
+                     long = sitesMax$long, 
+                     StationName = sitesMax$name,
+                     StartTmax = sitesMax$min) 
 sitesMin2 <- data.frame(station_id = sitesMin$station_id, StartTmin = sitesMin$min)
 AllStnT2 <- inner_join(AllStnT1, sitesMin2, by="station_id")
 sitesPrcp2 <- data.frame(station_id = sitesPrcp$station_id, StartPrcp = sitesPrcp$min)
@@ -287,6 +298,7 @@ AllStn <- inner_join(AllStnT2, sitesPrcp2, by="station_id")
 AllStn$stnID <- seq(1, nrow(AllStn))
 AllStn$name <- c("Boonville", "Cooperstown", "Indian Lake", "Lowville", "Norwich", "Oswego",
                  "Watertown", "Albany AP", "Glens Falls AP", "Syracuse AP", "Massena AP", "Watertown AP")
+
 
 
 # map the stations that have all data types
@@ -303,24 +315,11 @@ plot(allP, col="grey25",pch=19, add=TRUE)
 title(main= "Map of Stations with Tmax, Tmin, and Prcp")
 
 
-
+### WEEK 1 ----
 ### Creating one large data frame ----
 
-# GET RID OF THIS
-# make data frame to join with AllData to fill in missing spots
-# create a data frame with all years and stations 
-# StnList <- as.vector(AllStn$station_id)
-# AllYear <- data.frame(year=rep(seq(1890,2020), each = 12))
-# AllYear$id = rep(StnList, times = 131)
-# 
-# # create a data frame with all years, stations, and months 
-# AllMonth <- data.frame(year=rep(seq(1890,2020), each = 12, times = 6))
-# AllMonth$id <- rep(StnList, times = 131*6)
-# AllMonth$Month <- rep(month(c(1, 2, 3, 4, 5, 6), label = TRUE), each = 12, times = 131)
-
-
-# GET RID OF T1 AND T2
-# join tmax, tmin, and prcp data into AllData
+# get rid of T1 and T2 ?
+# join tmax, tmin, and prcp data 
 AllDataT1 <- full_join(TmaxData, TminData, by = c("id"="id", "date" = "date", "year"="year", "DOY" = "DOY"))
 AllDataT2 <- full_join(AllDataT1, PrcpData, by = c("id"="id", "date" = "date", "year"="year", "DOY" = "DOY"))
 
@@ -333,9 +332,6 @@ AllData$Month <- month(AllData$date, label = TRUE)
 # add decade column
 AllData$Decade <- AllData$year - (AllData$year %% 10)
 
-# GET RID OF THIS
-# add back in years/months with missing data (fill with NA)
-# AllData <- full_join(AllData, AllMonth, by = c("year","id","Month"))
 
 # Subset to just keep id, tmin, tmax, year, doy
 AllData <- data.frame(StationID = AllData$id, 
@@ -350,35 +346,23 @@ AllData <- data.frame(StationID = AllData$id,
                       tmin = AllData$tmin)
 
 # Adding average temperature column
-AllData$tav <- ((AllData$tmax - AllData$tmin)/2) + AllData$tmin 
+AllData$tav <- ((AllData$tmax - AllData$tmin)/2) + AllData$tmin
 
 # Adding freeze-thaw flag (less than -2.2 degrees and higher than 0 degrees in the same day)
-# Maybe change these numbers?
 AllData$FreezeThaw <- ifelse(AllData$tmin<(-2.2) & AllData$tmax>0, 1 , NA)
 
-# adding column of all freeze-thaw flags
-# 1 - freeze
-# 2 - freeze thaw day
-# 3 - thaw 
 
-
+# Adding Freeze Thaw Flags for types of days
+# Day Types: 1 = min/max < 0, 2 = min < 0 and max > 0, 3 = min/max > 0, 
 AllData$DayType <- ifelse(AllData$tmin<0 & AllData$tmax<0, 1,
-                          ifelse(AllData$tmin<=0 & AllData$tmax>=0, 2,
-                                 ifelse(AllData$tmin>0 & AllData$tmax>0, 3, 0)))
-
-# format as factor - REMOVE IF NOT USED
-# AllData$DayType <- as.factor(AllData$DayType)
+                        ifelse(AllData$tmin<=0 & AllData$tmax>=0, 2,
+                               ifelse(AllData$tmin>0 & AllData$tmax>0, 3, 0)))
 
 # Adding range of freeze thaw column
 AllData$FTrange <- ifelse(AllData$FreezeThaw == 1, AllData$tmax - AllData$tmin, NA)
 
-# Making station column a factor - REMOVE IF NOT USED
-# AllData$StationID <- as.factor(AllData$StationID)
-
-
 
 # Extreme values (occur <5% of the time) 
-# what would happen if we changed to <1% ???
 
 ## make table of extreme values for each station, then can join into AllData, then can highlight tmax higher than extreme value
 ## by decade 
@@ -416,13 +400,15 @@ ExtVals$LoTmin <- aggregate(AllData$tmin, by = list(AllData$StationID, AllData$M
 # join extreme values to alldata
 AllData <- left_join(AllData, ExtVals, by = c("StationID", "Month","Year"))
 
+
 # checking continuity of tav data
 # filtering out tav with na
 TavData <- AllData %>% drop_na(tav)
 # count number of tav observations per year
 TavCount <- aggregate(TavData$tav, by = list(TavData$StationID, TavData$StationName, TavData$Year), FUN = "length")
 colnames(TavCount) <- c("StationID", "StationName", "Year", "ncount")
-# identify years with less than 10 missing observations 
+
+# identify years with less than 10 missing observations
 TavCount <- subset(TavCount, TavCount$ncount >= 171)
 # keep only years with enough tav data
 TavData <- inner_join(TavData, TavCount, by = c("StationID", "StationName", "Year"))
@@ -438,20 +424,6 @@ TavData <- TavData %>%
   group_by(Year, StationID) %>%
   arrange(DOY) %>%
   mutate(GDD41 = cumsum(ifelse(is.na(tav), 0, ifelse(tav >= 5, (tav-5), 0))))
-
-# # subset to each station 
-# alldata1 <- subset(AllData, AllData$StationID=="USC00300785")
-# alldata2 <- subset(AllData, AllData$StationID=="USC00301752")
-# alldata3 <- subset(AllData, AllData$StationID=="USC00304102")
-# alldata4 <- subset(AllData, AllData$StationID=="USC00304912")
-# alldata5 <- subset(AllData, AllData$StationID=="USC00306085")
-# alldata6 <- subset(AllData, AllData$StationID=="USC00306314")
-# alldata7 <- subset(AllData, AllData$StationID=="USC00309000")
-# alldata8 <- subset(AllData, AllData$StationID=="USW00014735")
-# alldata9 <- subset(AllData, AllData$StationID=="USW00014750")
-# alldata10 <- subset(AllData, AllData$StationID=="USW00014771")
-# alldata11 <- subset(AllData, AllData$StationID=="USW00094725")
-# alldata12 <- subset(AllData, AllData$StationID=="USW00094790")
 
 
 ## subset to spring data frame
@@ -485,14 +457,10 @@ SpringMonths$ExLoCount <- aggregate(SpringData$ExtrLo, by=list(SpringData$Year, 
 SpringMonths$FTdays <- aggregate(SpringData$FreezeThaw, by=list(SpringData$Year, SpringData$StationID, SpringData$StationName,SpringData$Name,SpringData$Month), FUN="sum", na.rm = TRUE)$x
 SpringMonths$FTrange <- aggregate(SpringData$FTrange, by=list(SpringData$Year, SpringData$StationID, SpringData$StationName,SpringData$Name,SpringData$Month), FUN="mean", na.rm = TRUE)$x
 
-# REMOVE
-# join with AllMonth to fill in missing months
-# SpringMonths <- full_join(SpringMonths, AllMonth[AllMonth$Month %in% c("Mar","Apr","May"),], by = (c("year" = "year", "StationID" = "id", "month" = "Month")))
 
-
-# data frame with yearly averages - spring months averaged together
+# spring data frame with yearly averages - spring months averaged together
 SpringYear <- aggregate(SpringData$tmax, by=list(SpringData$Year,SpringData$StationID, SpringData$StationName,SpringData$Name), FUN="mean", na.rm = TRUE)
-colnames(SpringYear) <- c("year","StationID","StationName","Name", "tmax")
+colnames(SpringYear) <- c("year","StationID","StationName","Name","tmax")
 SpringYear$tmin <- aggregate(SpringData$tmin, by=list(SpringData$Year,SpringData$StationID,SpringData$StationName,SpringData$Name), FUN="mean", na.rm = TRUE)$x
 SpringYear$tav <- aggregate(SpringData$tav, by=list(SpringData$Year,SpringData$StationID,SpringData$StationName,SpringData$Name), FUN="mean", na.rm = TRUE)$x
 # add columns of extreme hi and lo temperature values
@@ -505,12 +473,7 @@ SpringYear$ExLoCount <- aggregate(SpringData$ExtrLo, by=list(SpringData$Year, Sp
 SpringYear$FTdays <- aggregate(SpringData$FreezeThaw, by=list(SpringData$Year, SpringData$StationID, SpringData$StationName,SpringData$Name), FUN="sum", na.rm = TRUE)$x
 SpringYear$FTrange <- aggregate(SpringData$FTrange, by=list(SpringData$Year, SpringData$StationID, SpringData$StationName,SpringData$Name), FUN="mean", na.rm = TRUE)$x
 
-# REMOVE
-# join with AllYear to fill in missing years
-# SpringYear <- full_join(SpringYear, AllYear, by = (c("year" = "year", "StationID" = "id")))
 
-
-# MAKE SURE EVERY AGGREGATE DOESNT NEED SPRINGDATA$NAME
 # decade averages by month
 SpringDecade<- aggregate(SpringData$tmax, by = list(SpringData$StationID, SpringData$StationName, SpringData$Name, SpringData$Decade, SpringData$Month), FUN = "mean", na.rm = TRUE)
 colnames(SpringDecade) <- c("StationID", "StationName", "Name", "Decade", "Month", "tmax")
@@ -535,43 +498,6 @@ SpringDecadeAv$ExLoCount <- aggregate(SpringData$ExtrLo,by=list(SpringData$Stati
 SpringDecadeAv$FTdays <- aggregate(SpringData$FreezeThaw, by = list(SpringData$StationID, SpringData$Decade), FUN = "sum", na.rm = TRUE)$x / 30
 SpringDecadeAv$FTrange <- aggregate(SpringData$FTrange, by = list(SpringData$StationID, SpringData$Decade), FUN = "mean", na.rm = TRUE)$x
 
-# # TRY TO MAKE FOR LOOP SO WE DONT NEED THESE SUBSETS
-# # subset to specific months
-# # all march data
-# MarData <- subset(AllData, AllData$Month == "Mar")
-# # march yearly averages
-# MarYear <- subset(SpringMonths, SpringMonths$month == "Mar")
-# # march decade averages
-# MarDecade <- subset(SpringDecade, SpringDecade$Month == "Mar")
-# 
-# # all april data
-# AprData <- subset(AllData, AllData$Month == "Apr")
-# # april yearly averages
-# AprYear <- subset(SpringMonths, SpringMonths$month == "Apr")
-# # april decade averages
-# AprDecade <- subset(SpringDecade, SpringDecade$Month == "Apr")
-# 
-# # all may data
-# MayData <- subset(AllData, AllData$Month == "May")
-# # may yearly averages
-# MayYear <- subset(SpringMonths, SpringMonths$month == "May")
-# # may decade averages
-# MayDecade <- subset(SpringDecade, SpringDecade$Month == "May")
-# 
-# # # subset to specific stations
-# # # yearly averages
-# stn1 <- subset(SpringYear, SpringYear$StationID == "USC00300785")
-# stn2 <- subset(SpringYear, SpringYear$StationID == "USC00301752")
-# stn3 <- subset(SpringYear, SpringYear$StationID == "USC00304102")
-# stn4 <- subset(SpringYear, SpringYear$StationID == "USC00304912")
-# stn5 <- subset(SpringYear, SpringYear$StationID == "USC00306085")
-# stn6 <- subset(SpringYear, SpringYear$StationID == "USC00306314")
-# stn7 <- subset(SpringYear, SpringYear$StationID == "USC00309000")
-# stn8 <- subset(SpringYear, SpringYear$StationID == "USW00014735")
-# stn9 <- subset(SpringYear, SpringYear$StationID == "USW00014750")
-# stn10 <- subset(SpringYear, SpringYear$StationID == "USW00014771")
-# stn11 <- subset(SpringYear, SpringYear$StationID == "USW00094725")
-# stn12 <- subset(SpringYear, SpringYear$StationID == "USW00094790")
 
 ## Linear regressions for tav ----
 RegressionTav <- data.frame(StationID=character(0), 
@@ -580,7 +506,8 @@ RegressionTav <- data.frame(StationID=character(0),
                             SlopeP = numeric(0), 
                             Int = numeric(0), 
                             IntP = numeric(0),
-                            Rsq = numeric(0))
+                            Rsq = numeric(0),
+                            Sig = numeric(0))
 
 for (i in 1:nrow(AllStn)){
   RegressionTav[i,1] <- AllStn$station_id[i]
@@ -592,6 +519,7 @@ for (i in 1:nrow(AllStn)){
   RegressionTav[i,5] <- summary(current.mod)$coefficients[1,1]
   RegressionTav[i,6] <- summary(current.mod)$coefficients[1,4]
   RegressionTav[i,7] <- summary(current.mod)$r.squared
+  RegressionTav[i,8] <- ifelse(RegressionTav[i,4] <= 0.05 & RegressionTav[i,6] <= 0.05, 1, 0)
   
 }
 
@@ -602,7 +530,8 @@ RegressionTmin <- data.frame(StationID=character(0),
                              SlopeP = numeric(0), 
                              Int = numeric(0), 
                              IntP = numeric(0),
-                             Rsq = numeric(0))
+                             Rsq = numeric(0),
+                             Sig = numeric(0))
 
 for (i in 1:nrow(AllStn)){
   RegressionTmin[i,1] <- AllStn$station_id[i]
@@ -614,6 +543,8 @@ for (i in 1:nrow(AllStn)){
   RegressionTmin[i,5] <- summary(current.mod)$coefficients[1,1]
   RegressionTmin[i,6] <- summary(current.mod)$coefficients[1,4]
   RegressionTmin[i,7] <- summary(current.mod)$r.squared
+  RegressionTmin[i,8] <- ifelse(RegressionTmin[i,4] <= 0.05 & RegressionTmin[i,6] <= 0.05, 1, 0)
+  
   
 }
 
@@ -624,7 +555,8 @@ RegressionTmax <- data.frame(StationID=character(0),
                              SlopeP = numeric(0), 
                              Int = numeric(0), 
                              IntP = numeric(0),
-                             Rsq = numeric(0))
+                             Rsq = numeric(0),
+                             Sig = numeric(0))
 
 for (i in 1:nrow(AllStn)){
   RegressionTmax[i,1] <- AllStn$station_id[i]
@@ -636,9 +568,11 @@ for (i in 1:nrow(AllStn)){
   RegressionTmax[i,5] <- summary(current.mod)$coefficients[1,1]
   RegressionTmax[i,6] <- summary(current.mod)$coefficients[1,4]
   RegressionTmax[i,7] <- summary(current.mod)$r.squared
+  RegressionTmax[i,8] <- ifelse(RegressionTmax[i,4] <= 0.05 & RegressionTmax[i,6] <= 0.05, 1, 0)
+  
   
 }
-
+  
 
 ### General temperature trends ----
 # plot general temperature trends
@@ -651,17 +585,21 @@ for (i in 1:nrow(AllStn)){
   # plot general temperature trends
   ggplot(data = current_data, aes(x = year))+
     geom_line(aes(y = tav, color = "Average"))+
-    geom_abline(data = RegressionTav, aes(slope = Slope[i], intercept = Int[i]), color = alpha("slateblue3", 0.6))+
+    geom_abline(data = RegressionTav, aes(slope = Slope[i], intercept = Int[i]), color = alpha("slateblue3", 0.6), 
+                linetype = ifelse(RegressionTav$Sig[i] == 1, "solid", "longdash"))+
     geom_line(aes(y = tmax, color = "Maximum"))+
-    geom_abline(data = RegressionTmax, aes(slope = Slope[i], intercept = Int[i]), color = alpha("tomato4", 0.6))+
+    geom_abline(data = RegressionTmax, aes(slope = Slope[i], intercept = Int[i]), color = alpha("tomato4", 0.6),
+                linetype = ifelse(RegressionTmax$Sig[i] == 1, "solid", "longdash"))+
     geom_line(aes(y = tmin, color = "Minimum"))+
-    geom_abline(data = RegressionTmin, aes(slope = Slope[i], intercept = Int[i]), color = alpha("deepskyblue3", 0.6))+
+    geom_abline(data = RegressionTmin, aes(slope = Slope[i], intercept = Int[i]), color = alpha("deepskyblue3", 0.6),
+                linetype = ifelse(RegressionTmin$Sig[i] == 1, "solid", "longdash"))+
     scale_color_manual(values = c("slateblue1","tomato3","skyblue"), name = "Temperature Measurement")+
     theme_classic()+
-    theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
+    theme(plot.title = element_text(hjust = 0.5, face = "bold"))+ 
     labs(x = "Year", y = "Temperature (celsius)", title = paste0("Spring Temperatures in ", AllStn$name[i], ", NY"))
   ggsave(paste0("temp_trends_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
+
 
 # average temperatures by decade for all stations ----
 ggplot(data = SpringDecadeAv, aes(x = Decade, y = tav, color = Name))+
@@ -671,24 +609,6 @@ ggplot(data = SpringDecadeAv, aes(x = Decade, y = tav, color = Name))+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
   labs(x = "Decade", y = "Temperature (celsius)", title = "Average Spring Temperatures")
 ggsave("average_all.png", plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
-
-ggplot(data = SpringDecadeAv, aes(x = Decade, y = tav, color = Name))+
-  geom_line()+
-  scale_color_manual(values = c("#c58644",
-                                "#563fc4",
-                                "#62b34e",
-                                "#c164b9",
-                                "#cfc83c",
-                                "#89abf0",
-                                "#cc5235",
-                                "#82edcd",
-                                "#d83d79",
-                                "#5b6b26",
-                                "#822944",
-                                "#df8094"), name = "Station Name")+
-  theme_classic()+
-  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-  labs(x = "Decade", y = "Temperature (celsius)", title = "Average Spring Temperatures")
 
 
 # rolling average temperatures for all stations ----
@@ -713,7 +633,6 @@ ggplot(data = current_data, aes(x = year, y = RollAv5, color = Name))+
 ggsave("RollAv5_All.png", plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 
 # 10 year 
-## change colors
 ggplot(data = current_data, aes(x = year, y = RollAv10, color = Name))+
   geom_line(alpha = .8)+
   scale_color_manual(values = c("#822944",
@@ -775,7 +694,7 @@ for (i in 1:nrow(AllStn)){
 
 
 # mar-apr-may separate months
-
+# month IDs to use in loop
 monthID <- c("Mar","Apr","May")
 monthName <- c("March","April","May")
 colorID <- c("skyblue", "lightgreen", "springgreen4")
@@ -821,20 +740,11 @@ ggsave(paste0("violin_maraprmay_", AllStn$name[2],".png"), plot = last_plot(), d
 
 
 
-
 ### EXTREME TEMPERATURES ----
 
-# use for reference
-# to subset by month
-monthID <- c("Mar","Apr","May")
-# to put entire month name in title
-monthName <- c("March","April","May")
-
-
 # Extreme temperatures by year ----
-# maybe add trend line? 
-
 # separated by month
+# loop through different stations
 for (i in 1:nrow(AllStn)){
   
   current_dataT1 <- subset(SpringMonths, SpringMonths$StationID == AllStn$station_id[i])
@@ -861,7 +771,7 @@ for (i in 1:nrow(AllStn)){
           lwd = 2, 
           col = "skyblue")     
     legend("topleft", c("Extreme High", "Extreme Low"), col = c("tomato3","skyblue"), lwd = 2, bty="n")
-      
+
     dev.off()
   }
 }  
@@ -903,10 +813,9 @@ for (i in 1:nrow(AllStn)){
  
 
 # Extreme temperatures by decade ---- 
-# maybe get combine extreme temp graphs for year and decade -- make year lines more transparent
 #  note: decade averages from SpringDecade are still impacted by missing data 
 
-# for loop for plots
+# loop through different stations
 for (i in 1:nrow(AllStn)){
   
   current_data <- subset(SpringDecade, SpringDecade$StationID == AllStn$station_id[i])
@@ -936,7 +845,9 @@ for (i in 1:nrow(AllStn)){
   }
 }  
 
-# all months on same plot 
+# extreme temps by decade - all spring months on same graph
+# by decade so we still have the problem of missing data
+
 for (i in 1:nrow(AllStn)){
   
   current_data <- subset(SpringDecade, SpringDecade$StationID == AllStn$station_id[i])
@@ -969,8 +880,7 @@ for (i in 1:nrow(AllStn)){
 
 # Number of extreme days by year ----
 
-# for loop for plots
-
+# loop through different stations
 for (i in 1:nrow(AllStn)){
   
   current_data <- subset(SpringMonths, SpringMonths$StationID == AllStn$station_id[i])
@@ -997,10 +907,6 @@ for (i in 1:nrow(AllStn)){
     dev.off()
   }
 }
-
-
-
-
 
 
 
@@ -1036,105 +942,52 @@ for (i in 1:nrow(AllStn)){
   }
   
 }
-  
+
  
-# # Decadal Trends in Extreme Temps by Month
-# # crowded graph, maybe not good for storymap
-# # create scatter plot march high temperatures
-# MarchHiAv <- mean(AllData$HiTmax[AllData$Month == "Mar"], na.rm = TRUE)
-# ggplot(data = MarDecade, aes(x = Decade, y = ExtHi, color = StationName))+
-#   geom_point()+
-#   geom_line()+
-#   geom_hline(yintercept = MarchHiAv)+
-#   theme_classic()+
-#   labs(title = "March Extreme High Temperatures by Decade", x = "Decade", y = "Temperature (celcius)")
-# 
-# # scatter plot march low temperatures
-# MarchLoAv <- mean(AllData$LoTmin[AllData$Month == "Mar"], na.rm = TRUE)
-# ggplot(data = MarDecade, aes(x = Decade, y = ExtLo, color = StationName))+
-#   geom_point()+
-#   geom_line()+
-#   geom_hline(yintercept = MarchLoAv)+
-#   theme_classic()+
-#   labs(title = "March Extreme Low Temperatures by Decade", x = "Decade", y = "Temperature (celcius)")
-# 
-# # create scatter plot april high temperatures
-# AprilHiAv <- mean(AllData$HiTmax[AllData$Month == "Apr"], na.rm = TRUE)
-# ggplot(data = AprDecade, aes(x = Decade, y = ExtHi, color = StationName))+
-#   geom_point()+
-#   geom_line()+
-#   geom_hline(yintercept = AprilHiAv)+
-#   theme_classic()+
-#   labs(title = "April Extreme High Temperatures by Decade", x = "Decade", y = "Temperature (celcius)")
-# 
-# # scatter plot april low temperatures
-# AprilLoAv <- mean(AllData$LoTmin[AllData$Month == "Apr"], na.rm = TRUE)
-# ggplot(data = AprDecade, aes(x = Decade, y = ExtLo, color = StationName))+
-#   geom_point()+
-#   geom_line()+
-#   geom_hline(yintercept = AprilLoAv)+
-#   theme_classic()+
-#   labs(title = "April Extreme Low Temperatures by Decade", x = "Decade", y = "Temperature (celcius)")
-# 
-# # create scatter plot may high temperatures
-# MayHiAv <- mean(AllData$HiTmax[AllData$Month == "May"], na.rm = TRUE)
-# ggplot(data = MayDecade, aes(x = Decade, y = ExtHi, color = StationName))+
-#   geom_point()+
-#   geom_line()+
-#   geom_hline(yintercept = MayHiAv)+
-#   theme_classic()+
-#   labs(title = "May Extreme High Temperatures by Decade", x = "Decade", y = "Temperature (celcius)")
-# 
-# # scatter plot march low temperatures
-# MayLoAv <- mean(AllData$LoTmin[AllData$Month == "May"], na.rm = TRUE)
-# ggplot(data = MayDecade, aes(x = Decade, y = ExtLo, color = StationName))+
-#   geom_point()+
-#   geom_line()+
-#   geom_hline(yintercept = MayLoAv)+
-#   theme_classic()+
-#   labs(title = "May Extreme Low Temperatures by Decade", x = "Decade", y = "Temperature (celcius)")
 
 ### FREEZE THAW ----
 # Number of Freeze Thaw Days Graphs ----
-# have 20 as differentiating mark but we could look up how many in one year is problematic and use that as a threshold
-
-### FREEZE THAW ----
-# Number of Freeze Thaw Days Graphs ----
-# have 20 as differentiating mark but we could look up how many in one year is problematic and use that as a threshold
+# loop through stations
 for (i in 1:nrow(AllStn)){
   current_dataT1 <- subset(SpringYear, SpringYear$StationID == AllStn$station_id[i])
   current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
   current_data <- full_join(current_dataT1, current_range, by = c("year" = "year"))
+  current_av <- mean(current_data$FTdays, na.rm = TRUE)
   
-  # plot general temperature trends
   ggplot(data = current_data, aes(x = year, y = FTdays)) +
-    geom_bar(position = "dodge", stat="identity", fill = ifelse(current_data$FTdays > 20, "tomato3", "deepskyblue3"))+
+    geom_line(color = "deepskyblue3")+
+    geom_point(pch = 20, color = "deepskyblue3")+
+    geom_hline(yintercept = current_av, color = "red3")+
     theme_classic()+
     theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
     labs(x = "Year", y = "Number of Freeze Thaw Days", title = paste0("Spring Freeze Thaw Days in ", AllStn$name[i],", NY"))
-  
   ggsave(paste0("num_FTdays_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
 
-
-
 # Freeze Thaw Amplitude Graphs ----
-### some graphs missing may data 
-### add standard deviation as error bar on scatter plot by decade (maybe)
-# lots of missing data in these graphs -- should we change or remove them?
+# Creating spring year data frame with rolling avs
+SpringYear1 <- SpringYear %>%
+  group_by(StationID) %>%
+  mutate(FTRollAv5 = rollmean(FTrange, k = 5, fill = NA),
+         FTRollAv10 = rollmean(FTrange, k = 10, fill = NA),
+         FTRollAv15 = rollmean(FTrange, k = 15, fill = NA),
+         FTRollAv20 = rollmean(FTrange, k = 20, fill = NA))
 
+### some graphs missing may data 
+# fix title --> goes off the page
 for (i in 1:nrow(AllStn)){
-  current_dataT1 <- subset(SpringDecade, SpringDecade$StationID == AllStn$station_id[i])
-  #current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
-  #current_data <- full_join(current_dataT1, current_range, by = c("year" = "year"))
+  current_dataT1 <- subset(SpringYear1, SpringYear1$StationID == AllStn$station_id[i])
+  current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
+  current_data <- full_join(current_dataT1, current_range, by = c("year" = "year"))
   
   # plot general temperature trends
-  ggplot(data = current_dataT1, aes(x = Decade, y = FTrange, color = Month))+
-    geom_point() +
-    geom_line() +
+  ggplot(data = current_data, aes(x = year, y = FTRollAv5))+
+    geom_line(color = "deepskyblue3") +
     theme_classic()+
     theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-    labs(x = "Year", y = "Temperature Range (celcius)", title = paste0("Temperature Amplitude of Spring Freeze Thaw Days in ", AllStn$name[i],", NY"))
+    labs(x = "Year", y = "Temperature Range (celcius)", 
+         title = paste0("Amplitude of Spring (Mar-May) Freeze Thaw Days in ", AllStn$name[i],", NY"),
+         subtitle = "Calculated with a 5 Year Rolling Averge")
   
   ggsave(paste0("FT_amp_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
@@ -1142,7 +995,6 @@ for (i in 1:nrow(AllStn)){
 
 
 ### Heat Maps ----
-
 for (i in 1:nrow(AllStn)){
   current_dataT1 <- subset(SpringData, SpringData$StationID == AllStn$station_id[i])
   current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
@@ -1193,21 +1045,16 @@ for (i in 1:nrow(AllStn)){
   ggsave(paste0("raw_anom_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
 
-# count number of days with anomaly >10
+
+# count number of days with temperature anomaly >10
 springEx <- SpringData[(SpringData$AnRaw >= 10) | (SpringData$AnRaw <= -10),]
 springEx <- springEx %>% drop_na(AnRaw)
 anomN <- aggregate(springEx$AnRaw, by = list(springEx$StationID, springEx$StationName, springEx$Decade), FUN = "length")
 colnames(anomN) <- c("StationID", "StationName", "Decade","AnomN")
 
-# format to subset stations
+# look at extreme anomalies by decade for individual station 
 subset(anomN, anomN$StationID == AllStn$station_id[6])
 
-# format to visualize by stations
-plot(anomN$Decade[anomN$StationID == AllStn$station_id[2]], anomN$AnomN[anomN$StationID == AllStn$station_id[2]],
-     type = "h",
-     ylab = "Number of Days",
-     xlab = "Decade",
-     main = paste("Extreme Anomalies in", AllStn$name[2] ))
 
 
 ### WEEK 2 ----
@@ -1231,22 +1078,26 @@ for (i in 1:nrow(AllStn)){
 }
 
 ### Thawing Degree Days ----
-# Accumulation Jan 1 - June 30
+# Accumulation Jan 1 - June 30 ----
+# do we want to have multiple stations on the same graph?
 
 for (i in 1:nrow(AllStn)){
   current_dataT1 <- subset(TavData, TavData$StationID == AllStn$station_id[i])
+  current_dataT2 <- subset(current_dataT1, current_dataT1$DOY == max(current_dataT1$DOY))
   current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
-  current_data <- full_join(current_dataT1, current_range, by = c("Year" = "year"))
+  current_data <- full_join(current_dataT2, current_range, by = c("Year" = "year"))
+  current_data <- current_data[order(current_data$Year),]
   
   # saving plot as a png
   png(paste0(plotDIR[usernumber], "/tdd_bar", AllStn$name[i], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
-  
+
   # get the base plot with just the first year on there
   plot(current_data$Year, current_data$TDD,
-       type = "h",
+       type = "o",
+       pch = 20,
        xlab = "Year",
        ylab = "Degrees (C)",
-       lwd = 3,
+       lwd = 1.5,
        col = "deepskyblue3",
        main = paste0("Thawing Degree Day Accumulation (Jan - June) in ", AllStn$name[i], ", NY"))
   
@@ -1258,53 +1109,31 @@ for (i in 1:nrow(AllStn)){
 
 # creating for loop for plots
 for (i in 1:nrow(AllStn)){
-  tavdata1 <- subset(TavData, TavData$StationID == AllStn$station_id[i])
-  stn1yrs <- unique(data.frame(Year = tavdata1$Year, Decade = tavdata1$Decade)) 
-  stn1yrs$color <- ifelse(stn1yrs$Decade >= 2010, alpha("#FF9900", 1), alpha("#00008b", 0.3))
+  current_data <- subset(TavData, TavData$StationID == AllStn$station_id[i])
+  stnyrs <- unique(data.frame(Year = current_data$Year, Decade = current_data$Decade)) 
+  stnyrs$color <- ifelse(stnyrs$Decade >= 2010, alpha("#FF9900", 1), alpha("#00008b", 0.3))
   
   # saving plot as a png
   png(paste0(plotDIR[usernumber], "/tdd_", AllStn$name[i], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
-  
+
   # get the base plot with just the first year on there
-  plot(tavdata1$DOY[tavdata1$Year == stn1yrs$Year[1]], tavdata1$TDD[tavdata1$Year == stn1yrs$Year[1]],
+  plot(current_data$DOY[current_data$Year == stnyrs$Year[i]], current_data$TDD[current_data$Year == stnyrs$Year[i]],
        type = "l",
-       col = stn1yrs$color[1],
-       xlab = "Day of Year",
+       col = stnyrs$color[1],
+       ylim = c(0, round(max(current_data$TDD), digits = -2) + 100),
+       xlab = "DOY",
        ylab = "Degrees (C)",
        main = paste("Thawing Degree Days Accumulation", AllStn$name[i]))
-  legend("topleft", c("Before 2010", "2010 - 2019"), col = c("#00008b", "#FF9900"), lwd = 2, bty = "n")
   # loop through the rest of the years starting at the second index and add the line onto the plot
   # current year just keeps track of what year we're on to make it easier but we don't have to use it
-  for (j in 2:nrow(stn1yrs)){
-    current_year = (stn1yrs$Year[j])
-    lines(tavdata1$DOY[tavdata1$Year == current_year], tavdata1$TDD[tavdata1$Year == current_year],
-          col = stn1yrs$color[j])
+  for (j in 2:nrow(stnyrs)){
+    current_year = (stnyrs$Year[j])
+    lines(current_data$DOY[current_data$Year == current_year], current_data$TDD[current_data$Year == current_year],
+          col = stnyrs$color[j])
   }
+  legend("topleft", c("Before 2010","2010-2019"), col = c("#00008b","#FF9900"), lwd = 2, bty = "n", cex = 1)
   dev.off()
 }
-
-
-
-for (i in 1:nrow(AllStn)){
-  current_dataT1 <- subset(TavData, TavData$StationID == AllStn$station_id[i])
-  current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
-  current_data <- full_join(current_dataT1, current_range, by = c("Year" = "year"))
-  
-  # saving plot as a png
-  png(paste0(plotDIR[usernumber], "/tdd_bar", AllStn$name[i], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
-  
-  # get the base plot with just the first year on there
-  plot(current_data$Year, current_data$TDD,
-       type = "h",
-       xlab = "Year",
-       ylab = "Degrees (C)",
-       lwd = 3,
-       col = "deepskyblue3",
-       main = paste0("Thawing Degree Day Accumulation (Jan - June) in ", AllStn$name[i], ", NY"))
-  
-  dev.off()
-}
-
 
 ### Day of Last Freeze ----
 # creating last freeze data frame 
@@ -1332,11 +1161,13 @@ for (i in 1:nrow(AllStn)){
   current_dataT1 <- subset(LastFreeze, LastFreeze$StationID == AllStn$station_id[i])
   current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
   current_data <- full_join(current_dataT1, current_range, by = c("Year" = "year"))
+  current_data$TminFlag <- ifelse(current_data$tmin < -2.2, current_data$DOY, NA)
+  current_data$TDDFlag <- ifelse(current_data$tmin < -2.2, current_data$TDD, NA)
   current_data <- current_data[order(current_data$Year),]
   
   # saving plot as a png
   png(paste0(plotDIR[usernumber], "/lf_tdd_", AllStn$name[i], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
-  
+
   # get the base plot with just the first year on there
   par(mar = c(5, 4, 4, 4) + 0.3)
   plot(current_data$Year, current_data$DOY,
@@ -1346,6 +1177,10 @@ for (i in 1:nrow(AllStn)){
        xlab = "Year",
        ylab = "DOY of Last Freeze",
        main = paste0("Day of Year of Last Freeze in ", AllStn$name[i],", NY"))
+  points(current_data$Year, current_data$TminFlag,
+         type = "p",
+         col = "deepskyblue2",
+         pch = 8)
   par(new = TRUE)
   plot(current_data$Year, current_data$TDD,
        type = "l",
@@ -1355,10 +1190,15 @@ for (i in 1:nrow(AllStn)){
        axes = FALSE, 
        xlab = "", 
        ylab = "")
+  points(current_data$Year, current_data$TDDFlag,
+         type = "p",
+         col = "deepskyblue2",
+         ylim = c(-200,900),
+         pch = 8)
   axis(side = 4, at = seq(0,900, by = 200))
   mtext("Accumulated TDD (C)", side = 4, line = 3) 
-  legend("bottom", c("DOY","TDD"), col = c("black","red3"), lwd = 2, bty = "n", cex = .5)
-  
+  legend("topright", c("DOY","TDD", "Tmin < -2.2˚C"), col = c("black","red3", "deepskyblue2"), 
+         lwd = 2, bty = "n", lty = c(1, 1, NA), pch = c(NA, NA, 8), cex = 1)
   dev.off()
 }
 
@@ -1372,7 +1212,7 @@ for (i in 1:nrow(AllStn)){
   
   # saving plot as a png
   png(paste0(plotDIR[usernumber], "/lf_temp_", AllStn$name[i], ".png"),width = 10, height = 10, units = "in", res = 144, pointsize = 15)
-  
+
   par(mar = c(5, 4, 4, 4) + 0.3)
   plot(current_data$Year, current_data$DOY,
        type = "l",
@@ -1394,8 +1234,8 @@ for (i in 1:nrow(AllStn)){
        ylim = c(-10, 0))
   axis(side = 4, at = seq(-10, 0, by = 2))
   mtext("Minimum Temperature (C)", side = 4, line = 3)
-  legend("bottom", c("DOY","Tmin"), col = c("black","deepskyblue3"), lwd = 2, bty = "n", cex = .5)
-  
+  legend("bottom", c("DOY","Tmin"), col = c("black","deepskyblue3"), lwd = 2, bty = "n", cex = 1)
+
   dev.off()
 }
 
@@ -1424,7 +1264,7 @@ for (i in 1:nrow(AllStn)){
   
   # saving plot as a png
   png(paste0(plotDIR[usernumber], "/mar_freeze_days_", AllStn$name[i], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
-  
+
   # march plots
   plot(current_data$Year[current_data$Month == "Mar"], current_data$FreezeDays[current_data$Month == "Mar"],
        type = "h",
@@ -1433,13 +1273,13 @@ for (i in 1:nrow(AllStn)){
        col = "lightskyblue",
        xlab = "Year",
        ylab = "Number of Days",
-       main = paste0("Number of Freezes and Hard Freezes in March in ", AllStn$name[1] ,", NY"))
+       main = paste0("Number of Freezes and Hard Freezes in March in ", AllStn$name[i] ,", NY"))
   points(current_data2$Year[current_data2$Month == "Mar"], current_data2$FreezeDays[current_data2$Month == "Mar"],
          type = "h",
          col = "green4",
          lwd = 2)
-  legend("top", c("Days Below 0˚C","Days Below -5˚C"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-  
+  legend("topright", c("Days Below 0˚C","Days Below -5˚C"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = 1)
+
   dev.off()
 }
 
@@ -1464,13 +1304,13 @@ for (i in 1:nrow(AllStn)){
        col = "lightskyblue",
        xlab = "Year",
        ylab = "Number of Days",
-       main = paste0("Number of Freezes and Hard Freezes in April in ", AllStn$name[1] ,", NY"))
+       main = paste0("Number of Freezes and Hard Freezes in April in ", AllStn$name[i] ,", NY"))
   points(current_data2$Year[current_data2$Month == "Apr"], current_data2$FreezeDays[current_data2$Month == "Apr"],
          type = "h",
          col = "green4",
          lwd = 2)
-  legend("top", c("Days Below 0˚C","Days Below -5˚C"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = .5)
-  
+  legend("topright", c("Days Below 0˚C","Days Below -5˚C"), col = c("lightskyblue","green4"), lwd = 2, bty = "n", cex = 1)
+
   dev.off()
 }
 
@@ -1487,7 +1327,7 @@ for (i in 1:nrow(stn2012)){
   # saving plot as a png
   png(paste0(plotDIR[usernumber], "/apple_gdd_", AllStn$name[i], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
   
-  # create bar plot of DOY last freeze and temperature
+  # create plot of DOY last freeze and temperature
   plot(current_data$DOY, current_data$GDD41,
        type = "l",
        lwd = 1.5,
@@ -1547,6 +1387,5 @@ legend("topleft", "Accumulated GDD", col = "deepskyblue3", lwd = 2, bty = "n", c
 
 dev.off()
 
-# pull out Syracuse 2012
+# look at Syracuse 2012 data
 syr2012 <- tav2012[tav2012$StationID == AllStn$station_id[10],]
-
