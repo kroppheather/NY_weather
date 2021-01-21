@@ -24,10 +24,9 @@ diru = c("/Users/abby/Documents/NYweather",
 plotDIR = c("/Users/abby/Documents/NYweather/plots", 
             "/Users/hkropp/Google Drive/research/students/NYweather/plots", 
             "/Users/rachelpike/Desktop/2020-2021/Research/plots")
-
-plotDIR = c("/Users/abby/Documents/NYweather/plots", 
-            "/Users/hkropp/Google Drive/research/students/NYweather/plots", 
-            "/Users/rachelpike/Desktop/2020-2021/Research/plots")
+dataDIR = c("",
+            "",
+            "/Users/rachelpike/Desktop/2020-2021/Research")
 
 # Choosing the user number - CHANGE THIS VALUE 
 usernumber = 3
@@ -497,6 +496,14 @@ SpringDecadeAv$ExLoCount <- aggregate(SpringData$ExtrLo,by=list(SpringData$Stati
 SpringDecadeAv$FTdays <- aggregate(SpringData$FreezeThaw, by = list(SpringData$StationID, SpringData$Decade), FUN = "sum", na.rm = TRUE)$x / 30
 SpringDecadeAv$FTrange <- aggregate(SpringData$FTrange, by = list(SpringData$StationID, SpringData$Decade), FUN = "mean", na.rm = TRUE)$x
 
+
+# Publish Dataset ----
+FinalData <- AllData[c("StationID", "StationName", "Name", "DOY", "Month", "Year", "Decade", "prcp", "tmax", "tmin", "tav")]
+FinalData <- left_join(AllStn, FinalData, by = c("StationName"))
+FinalData <- FinalData[c("StationID", "StationName", "Name", "lat", "long", "DOY", "Month", "Year", "Decade", "prcp", "tmax", "tmin", "tav")]
+colnames(FinalData) <- c("StationID", "StationName", "Name", "Lat", "Lon", "DOY", "Month", "Year", "Decade", "Prcp", "Tmax", "Tmin", "Tav")
+
+write.csv(FinalData, paste0(dataDIR[usernumber], "/FinalData.csv"), row.names = FALSE)
 
 ## Linear regressions for tav ----
 RegressionTav <- data.frame(StationID=character(0), 
