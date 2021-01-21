@@ -1258,6 +1258,7 @@ HardFreezeDays <- aggregate(HardFreezeDays$DOY, by = list(HardFreezeDays$Station
 colnames(HardFreezeDays) <- c("StationID", "StationName", "Year", "Month", "FreezeDays")
 
 
+
 # plotting number of days below 0 and -5 for march
 for (i in 1:nrow(AllStn)){
   current_dataT1 <- subset(FreezeDays, StationID == AllStn$station_id[i])
@@ -1279,6 +1280,7 @@ for (i in 1:nrow(AllStn)){
        col = "lightskyblue",
        xlab = "Year",
        ylab = "Number of Days",
+       ylim = c(0, 35),
        main = paste0("Number of Freezes and Hard Freezes in March in ", AllStn$name[i] ,", NY"))
   points(current_data2$Year[current_data2$Month == "Mar"], current_data2$FreezeDays[current_data2$Month == "Mar"],
          type = "h",
@@ -1308,6 +1310,7 @@ for (i in 1:nrow(AllStn)){
        pch = 20,
        lwd = 2,
        col = "lightskyblue",
+       ylim = c(0, 35),
        xlab = "Year",
        ylab = "Number of Days",
        main = paste0("Number of Freezes and Hard Freezes in April in ", AllStn$name[i] ,", NY"))
