@@ -7,7 +7,6 @@ library(rgdal)
 library(sp)
 library(ggplot2)
 library(zoo)
-library(plyr)
 
 ### Set up directories   -----
 
@@ -386,16 +385,20 @@ ExtVals$LoTmin <- aggregate(AllData$tmin, by = list(AllData$StationID, AllData$M
 # join extreme values to alldata
 AllData <- left_join(AllData, ExtVals, by = c("StationID", "Month","Year"))
 
-
+# checking continuity of tav data
 # filtering out tav with na
 TavData <- AllData %>% drop_na(tav)
+# count number of tav observations per year
 TavCount <- aggregate(TavData$tav, by = list(TavData$StationID, TavData$StationName, TavData$Year), FUN = "length")
 colnames(TavCount) <- c("StationID", "StationName", "Year", "ncount")
+# identify years with less than 10 missing observations
 TavCount <- subset(TavCount, TavCount$ncount >= 171)
-
+# keep only years with enough tav data
 TavData <- inner_join(TavData, TavCount, by = c("StationID", "StationName", "Year"))
 
-# add thawing degree day accumulation
+# add thawing degree day accumulation to TavData
+TavData$StationID <- as.factor(TavData$StationID)
+
 TavData <- TavData %>%
   group_by(Year, StationID) %>%
   arrange(DOY) %>%
@@ -405,7 +408,7 @@ TavData <- TavData %>%
 TavData <- TavData %>%
   group_by(Year, StationID) %>%
   arrange(DOY) %>%
-  mutate(GDD41 = cumsum(ifelse(is.na(tav), 0, ifelse(tav >= 5, tav - 5, 0))))
+  mutate(GDD41 = cumsum(ifelse(is.na(tav), 0, ifelse(tav >= 5, (tav-5), 0))))
 
 ## subset to spring data frame
 SpringData <- subset(AllData, AllData$Month %in% c("Mar","Apr","May"))
@@ -932,8 +935,6 @@ for (i in 1:nrow(AllStn)){
 #   theme_classic()+
 #   labs(title = "May Extreme Low Temperatures by Decade", x = "Decade", y = "Temperature (celcius)")
 
-### FREEZE THAW ----
-# Number of Freeze Thaw Days Graphs ----
 
 ### FREEZE THAW ----
 # Number of Freeze Thaw Days Graphs ----
@@ -1096,10 +1097,10 @@ for (i in 1:nrow(AllStn)){
   plot(current_data$DOY[current_data$Year == stnyrs$Year[i]], current_data$TDD[current_data$Year == stnyrs$Year[i]],
        type = "l",
        col = stnyrs$color[1],
-       ylim = c(0, round_any(max(current_data$TDD), 100, f = ceiling)),
+       ylim = c(0, round(max(current_data$TDD), digits = -2) + 100),
        xlab = "DOY",
        ylab = "Degrees (C)",
-       main = paste("Thawing Degree Days Accumulation", AllStn$name[10]))
+       main = paste("Thawing Degree Days Accumulation", AllStn$name[i]))
   # loop through the rest of the years starting at the second index and add the line onto the plot
   # current year just keeps track of what year we're on to make it easier but we don't have to use it
   for (j in 2:nrow(stnyrs)){
@@ -1134,15 +1135,17 @@ LastHardFreeze <- LastHardFreeze[c("StationID", "StationName", "Year","DOY", "tm
 
 # Plots of day of last freeze with thawing degree days
 for (i in 1:nrow(AllStn)){
+  
   current_dataT1 <- subset(LastFreeze, LastFreeze$StationID == AllStn$station_id[i])
   current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
   current_data <- full_join(current_dataT1, current_range, by = c("Year" = "year"))
   current_data$TminFlag <- ifelse(current_data$tmin < -2.2, current_data$DOY, NA)
+  current_data$TDDFlag <- ifelse(current_data$tmin < -2.2, current_data$TDD, NA)
   current_data <- current_data[order(current_data$Year),]
   
   # saving plot as a png
   png(paste0(plotDIR[usernumber], "/lf_tdd_", AllStn$name[i], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
-  
+
   # get the base plot with just the first year on there
   par(mar = c(5, 4, 4, 4) + 0.3)
   plot(current_data$Year, current_data$DOY,
@@ -1165,11 +1168,15 @@ for (i in 1:nrow(AllStn)){
        axes = FALSE, 
        xlab = "", 
        ylab = "")
+  points(current_data$Year, current_data$TDDFlag,
+         type = "p",
+         col = "deepskyblue2",
+         ylim = c(-200,900),
+         pch = 8)
   axis(side = 4, at = seq(0,900, by = 200))
   mtext("Accumulated TDD (C)", side = 4, line = 3) 
   legend("topright", c("DOY","TDD", "Tmin < -2.2˚C"), col = c("black","red3", "deepskyblue2"), 
          lwd = 2, bty = "n", lty = c(1, 1, NA), pch = c(NA, NA, 8), cex = 1)
-  
   dev.off()
 }
 
@@ -1314,3 +1321,26 @@ for (i in 1:nrow(stn2012)){
   
   dev.off()
 }
+
+
+
+tav2012 <- subset(TavData, Year == 2012)
+stn2012 <- data.frame(StationID = unique(tav2012$StationID), name = unique(tav2012$Name))
+
+current_data <- subset(tav2012, StationID == stn2012$StationID[1])
+# create bar plot of DOY last freeze and temperature
+plot(current_data$DOY, current_data$GDD41,
+     type = "l",
+     lwd = 1.5,
+     col = "deepskyblue3",
+     xlab = "DOY",
+     ylab = "Degrees (C)",
+     main = paste0("2012 Apple Growing Degree Days in ", stn2012$name[1], ", NY"))
+abline(h = 100000, col = alpha("red3", 0.6), lwd = 1.5)
+abline(h = 400000, col = alpha("blueviolet", 0.6), lwd = 1.5)
+rect(xleft = -10, xright = 200, ybottom = 400000, ytop =  1000000, col = alpha("blueviolet", 0.2), border = NA)
+
+abline(v = LastFreeze$DOY[LastFreeze$StationID == stn2012$StationID[i] & LastFreeze$Year == 2012], col = alpha("goldenrod3", 0.6), lwd = 1.5)
+abline(v = LastHardFreeze$DOY[LastHardFreeze$StationID == stn2012$StationID[i] & LastHardFreeze$Year == 2012], col = alpha("darkgreen", 0.6), lwd = 1.5)
+legend("topleft", c("GDD Needed for Budding", "GDD Needed for Leaf Out","Last Day Below -0˚C","Last Day Below -5˚C", "Accumulated GDD"), 
+       col = c("red3", "blueviolet", "goldenrod3","darkgreen","deepskyblue3"), lwd = 2, bty = "n", cex = 1)
