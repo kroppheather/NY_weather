@@ -594,7 +594,7 @@ for (i in 1:nrow(AllStn)){
 }
 
 
-### General temperature trends ----
+### GENERAL TEMPERATURE TRENDS ----
 # Plot general temperature trends
 # Creating for loop to plot each station and save to local computer
 for (i in 1:nrow(AllStn)){
@@ -613,9 +613,9 @@ for (i in 1:nrow(AllStn)){
     geom_line(aes(y = tmin, color = "Minimum"))+
     geom_abline(data = RegressionTmin, aes(slope = Slope[i], intercept = Int[i]), color = alpha("deepskyblue3", 0.6),
                 linetype = ifelse(RegressionTmin$Sig[i] == 1, "solid", "longdash"))+
-    scale_color_manual(values = c("slateblue1","tomato3","skyblue"), name = "Measurement")+
+    scale_color_manual(values = c("slateblue1","tomato3","skyblue"), name = NULL)+
     theme_classic()+
-    theme(plot.title = element_text(hjust = 0.5, face = "bold"))+ 
+    theme(plot.title = element_text(hjust = 0.5, face = "bold"), legend.position = c(.1, .92))+ 
     labs(x = "Year", y = "Temperature (celsius)", title = paste0("Spring Temperatures in ", AllStn$name[i], ", NY"))
   ggsave(paste0("temp_trends_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
