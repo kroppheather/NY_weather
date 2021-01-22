@@ -25,12 +25,12 @@ plotDIR = c("/Users/abby/Documents/NYweather/plots",
             "/Users/hkropp/Google Drive/research/students/NYweather/plots", 
             "/Users/rachelpike/Desktop/2020-2021/Research/plots")
 # to save data
-dataDIR = c("",
-            "",
+dataDIR = c("/Users/abby/Documents/NYweather",
+            "/Users/hkropp/Google Drive/research/students/NYweather",
             "/Users/rachelpike/Desktop/2020-2021/Research")
 
 # Choosing the user number - CHANGE THIS VALUE 
-usernumber = 3
+usernumber = 1
 
 ### Read in data   -----
 # Reading in prcp data from google drive
@@ -283,17 +283,23 @@ title(main= "Map of Precip Stations")
 
 
 # Identify sites with all data types and create AllStn data frame
-### do we need to keep T1 and T2? 
+# Start by formatting tmax sites
 AllStnT1 <- data.frame(station_id = sitesMax$station_id, 
                        lat = sitesMax$lat, 
                        long = sitesMax$long, 
                        StationName = sitesMax$name,
                        StartTmax = sitesMax$min) 
+# Keep only relevant columns for tmin sites
 sitesMin2 <- data.frame(station_id = sitesMin$station_id, StartTmin = sitesMin$min)
+# Join tmax and tmin
 AllStnT2 <- inner_join(AllStnT1, sitesMin2, by="station_id")
+# Keep only relevant columns for prcp sites
 sitesPrcp2 <- data.frame(station_id = sitesPrcp$station_id, StartPrcp = sitesPrcp$min)
+# Join prcp to AllStn
 AllStn <- inner_join(AllStnT2, sitesPrcp2, by="station_id")
+# Add station ID column
 AllStn$stnID <- seq(1, nrow(AllStn))
+# Add name column
 AllStn$name <- c("Boonville", "Cooperstown", "Indian Lake", "Lowville", "Norwich", "Oswego",
                  "Watertown", "Albany AP", "Glens Falls AP", "Syracuse AP", "Massena AP", "Watertown AP")
 
@@ -315,12 +321,11 @@ title(main= "Map of Stations with Tmax, Tmin, and Prcp")
 
 ### Creating one large data frame ----
 
-# get rid of T1 and T2 ?
 # Join tmax, tmin, and prcp data 
 AllDataT1 <- full_join(TmaxData, TminData, by = c("id"="id", "date" = "date", "year"="year", "DOY" = "DOY"))
 AllDataT2 <- full_join(AllDataT1, PrcpData, by = c("id"="id", "date" = "date", "year"="year", "DOY" = "DOY"))
 
-# Add station names of the 12 good stations
+# Keep only 12 good stations
 AllData <- inner_join(AllDataT2, AllStn, by = c("id"="station_id"))
 
 # Add month column
@@ -329,7 +334,7 @@ AllData$Month <- month(AllData$date, label = TRUE)
 # Add decade column
 AllData$Decade <- AllData$year - (AllData$year %% 10)
 
-# Subset to just keep id, tmin, tmax, year, doy
+# Clean up dataframe
 AllData <- data.frame(StationID = AllData$id, 
                       StationName = AllData$StationName,
                       Name = AllData$name,
@@ -360,7 +365,7 @@ AllData$FTrange <- ifelse(AllData$FreezeThaw == 1, AllData$tmax - AllData$tmin, 
 
 # Extreme values data frame (occur <5% of the time) 
 # Make table of extreme values for each station, then can join into AllData
-## cna use to count how many temps greater/less than extremes
+## Use to count how many temps greater/less than extremes
 # Highest 5% tmax
 ExtRef <- aggregate(AllData$tmax, by = list(AllData$StationID, AllData$Month), FUN = "quantile", prob = 0.95, na.rm = TRUE)
 # Lowest 5% tmin
@@ -387,7 +392,7 @@ AllData$ExtrHi <- ifelse(AllData$tmax>=AllData$RefHi, 1, NA)
 # Add flag if temps are lower than 5% threshold for tmin
 AllData$ExtrLo <- ifelse(AllData$tmin<=AllData$RefLo,1,NA)
 
-# Make extreme temperature values of data frame 
+# Calculate extreme temperature values of data frame 
 ## Different than above because it has actual temperatures
 ExtVals <- aggregate(AllData$tmax, by = list(AllData$StationID, AllData$Month, AllData$Year), FUN = "quantile", prob = 0.95, na.rm = TRUE)
 colnames(ExtVals) <- c("StationID", "Month", "Year", "HiTmax")
@@ -595,7 +600,7 @@ for (i in 1:nrow(AllStn)){
 
 ### GENERAL TEMPERATURE TRENDS ----
 # Plot general temperature trends
-# Creating for loop to plot each station and save to local computer
+# Loop through each station
 for (i in 1:nrow(AllStn)){
   current_dataT1 <- subset(SpringYear, SpringYear$StationID == AllStn$station_id[i])
   current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
@@ -616,6 +621,7 @@ for (i in 1:nrow(AllStn)){
     theme_classic()+
     theme(plot.title = element_text(hjust = 0.5, face = "bold"), legend.position = c(.1, .92))+ 
     labs(x = "Year", y = "Temperature (celsius)", title = paste0("Spring Temperatures in ", AllStn$name[i], ", NY"))
+  # Save to local computer
   ggsave(paste0("temp_trends_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
 
@@ -665,6 +671,7 @@ ggsave("RollAv10_All.png", plot = last_plot(), device = png(), path = paste0(plo
 
 # Violin plots to show distribution of temperatures ----
 # Jan - June
+# Loop through stations
 for (i in 1:nrow(AllStn)){
   
   current_data = subset(TavData, TavData$StationID == AllStn$station_id[i])
@@ -682,6 +689,7 @@ for (i in 1:nrow(AllStn)){
 }
 
 # Mar - May
+# Loop through stations
 for (i in 1:nrow(AllStn)){
   
   current_data = subset(SpringData, SpringData$StationID == AllStn$station_id[i])
@@ -732,7 +740,7 @@ for (i in 1:nrow(AllStn)){
 
 # Extreme temperatures by year ----
 # Separated by month
-# Loop through different stations
+# Loop through stations
 for (i in 1:nrow(AllStn)){
   
   current_dataT1 <- subset(SpringMonths, SpringMonths$StationID == AllStn$station_id[i])
@@ -740,7 +748,7 @@ for (i in 1:nrow(AllStn)){
   current_data <- full_join(current_dataT1, current_range, by = c("year" = "year", "month" = "month"))
   current_data <- current_data[order(current_data$year),]
   
-  # Loop through different months 
+  # Loop through months 
   for (j in 1:3){
     
     png(paste0(plotDIR[usernumber], "/ex_temps", AllStn$name[i], "_", monthID[j], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
@@ -765,6 +773,7 @@ for (i in 1:nrow(AllStn)){
 }  
 
 # All months on same plot
+# Loop through stations
 for (i in 1:nrow(AllStn)){
   
   current_dataT1 <- subset(SpringMonths, SpringMonths$StationID == AllStn$station_id[i])
@@ -800,12 +809,12 @@ for (i in 1:nrow(AllStn)){
 
 
 # Extreme temperatures by decade ---- 
-# Loop through different stations
+# Loop through stations
 for (i in 1:nrow(AllStn)){
   
   current_data <- subset(SpringDecade, SpringDecade$StationID == AllStn$station_id[i])
   
-  # Loop through different months 
+  # Loop through months 
   for (j in 1:3){
     
     png(paste0(plotDIR[usernumber], "/ex_temps_decade_", AllStn$name[i], "_", monthID[j], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
@@ -831,6 +840,7 @@ for (i in 1:nrow(AllStn)){
 }  
 
 # Extreme temps by decade - all spring months on same graph
+# Loop through stations
 for (i in 1:nrow(AllStn)){
   
   current_data <- subset(SpringDecade, SpringDecade$StationID == AllStn$station_id[i])
@@ -861,8 +871,8 @@ for (i in 1:nrow(AllStn)){
   dev.off()
 }  
 
-# Number of extreme days by year ----
-# Loop through different stations
+# Number of extreme days per year ----
+# Loop through stations
 for (i in 1:nrow(AllStn)){
   
   current_data <- subset(SpringMonths, SpringMonths$StationID == AllStn$station_id[i])
@@ -890,7 +900,7 @@ for (i in 1:nrow(AllStn)){
   }
 }
 
-# Number of extreme days by decade ----
+# Number of extreme days per decade ----
 # Loop through stations
 for (i in 1:nrow(AllStn)){
   
@@ -941,7 +951,7 @@ for (i in 1:nrow(AllStn)){
 }
 
 # Freeze Thaw Amplitude Graphs ----
-# Creating spring year data frame with rolling avs
+# Creating spring year data frame with rolling averages of freeze thaw amplitude
 SpringYear1 <- SpringYear %>%
   group_by(StationID) %>%
   mutate(FTRollAv5 = rollmean(FTrange, k = 5, fill = NA),
@@ -1022,13 +1032,13 @@ for (i in 1:nrow(AllStn)){
 }
 
 
-# Count number of days with temperature anomaly >10
+# Count number of days with temperature anomaly >10 per decade
 springEx <- SpringData[(SpringData$AnRaw >= 10) | (SpringData$AnRaw <= -10),]
 springEx <- springEx %>% drop_na(AnRaw)
 anomN <- aggregate(springEx$AnRaw, by = list(springEx$StationID, springEx$StationName, springEx$Decade), FUN = "length")
 colnames(anomN) <- c("StationID", "StationName", "Decade","AnomN")
 
-# Look at extreme anomalies by decade for individual station 
+# Look at number of extreme anomalies for individual station 
 subset(anomN, anomN$StationID == AllStn$station_id[6])
 
 
@@ -1037,7 +1047,7 @@ for (i in 1:nrow(AllStn)){
   current_dataT1 <- subset(AllData, AllData$StationID == AllStn$station_id[i])
   current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
   current_data <- full_join(current_dataT1, current_range, by = c("Year" = "year"))
-  # Make a factor to turn into discreet values
+  # Make a factor to turn into discrete values
   current_data$DayType <- as.factor(current_data$DayType) 
   
   ggplot(data= current_data, mapping = aes(x= Year, y = DOY, fill = DayType))+
@@ -1052,7 +1062,7 @@ for (i in 1:nrow(AllStn)){
 
 ### Thawing Degree Days ----
 # Accumulation Jan 1 - June 30 ----
-
+# loop through stations
 for (i in 1:nrow(AllStn)){
   current_dataT1 <- subset(TavData, TavData$StationID == AllStn$station_id[i])
   current_dataT2 <- subset(current_dataT1, current_dataT1$DOY == max(current_dataT1$DOY))
@@ -1078,7 +1088,7 @@ for (i in 1:nrow(AllStn)){
 
 
 # TDD accumulation curves ----
-# Creating for loop to go through each station
+# Loop through stations
 for (i in 1:nrow(AllStn)){
   current_data <- subset(TavData, TavData$StationID == AllStn$station_id[i])
   stnyrs <- unique(data.frame(Year = current_data$Year, Decade = current_data$Decade)) 
@@ -1222,7 +1232,7 @@ HardFreezeDays <- AllData[AllData$tmin <= -5,1:6]
 HardFreezeDays <- aggregate(HardFreezeDays$DOY, by = list(HardFreezeDays$StationID, HardFreezeDays$StationName, HardFreezeDays$Year, HardFreezeDays$Month), FUN = "length")
 colnames(HardFreezeDays) <- c("StationID", "StationName", "Year", "Month", "FreezeDays")
 
-# Plotting number of days below 0 and -5 for march
+# Plotting number of days below 0 and -5 for March
 for (i in 1:nrow(AllStn)){
   current_dataT1 <- subset(FreezeDays, StationID == AllStn$station_id[i])
   current_range <- data.frame(year=seq(AllStn[1, 5], 2019))
@@ -1254,7 +1264,7 @@ for (i in 1:nrow(AllStn)){
   dev.off()
 }
 
-# Plotting number of days below 0 and -5 for april
+# Plotting number of days below 0 and -5 for April
 for (i in 1:nrow(AllStn)){
   current_dataT1 <- subset(FreezeDays, StationID == AllStn$station_id[i])
   current_range <- data.frame(year=seq(AllStn[1, 5], 2019))
@@ -1293,13 +1303,14 @@ for (i in 1:nrow(AllStn)){
 tav2012 <- subset(TavData, Year == 2012)
 stn2012 <- data.frame(StationID = unique(tav2012$StationID), name = unique(tav2012$Name))
 
+# loop through all stations with 2012 data
 for (i in 1:nrow(stn2012)){
   current_data <- subset(tav2012, StationID == stn2012$StationID[i])
   
   # Saving plot as a png
   png(paste0(plotDIR[usernumber], "/apple_gdd_", AllStn$name[i], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
   
-  # Create plot of DOY last freeze and temperature
+  # Plot with GDD and DOY
   plot(current_data$DOY, current_data$GDD41,
        type = "l",
        lwd = 1.5,
@@ -1307,6 +1318,7 @@ for (i in 1:nrow(stn2012)){
        xlab = "DOY",
        ylab = "Degrees (C)",
        main = paste0("2012 Apple Growing Degree Days in ", stn2012$name[i], ", NY"))
+  # Lines at 100 and 400 GDD, and day of last freeze
   abline(h = 100, col = alpha("red3", 0.6), lwd = 1.5)
   abline(h = 400, col = alpha("blueviolet", 0.6), lwd = 1.5)
   abline(v = LastFreeze$DOY[LastFreeze$StationID == stn2012$StationID[i] & LastFreeze$Year == 2012], col = alpha("goldenrod3", 0.6), lwd = 1.5)
@@ -1318,21 +1330,24 @@ for (i in 1:nrow(stn2012)){
 }
 
 # Focus on one station for storymap
-# Find temperatures at days noted as damaging freeze
+# Find temperatures at days noted as damaging freeze events
 frz2012 <- subset(tav2012, (tav2012$DOY == 87) | (tav2012$DOY == 119) | (tav2012$DOY == 120))
 frz2012 <- data.frame(StationID = frz2012$StationID,
                       StationName = frz2012$StationName,
                       DOY = frz2012$DOY,
                       tmin = frz2012$tmin)
+# Look at just Syracuse station
 frz2012[frz2012$StationID == AllStn$station_id[10],]
 
-# Read in pictures of apple stations
+# Read in pictures of apple phases
 silvertip <- readJPEG(paste0(diru[usernumber], "/silvertip.jpg"))
 firstbloom <- readJPEG(paste0(diru[usernumber], "/firstbloom.jpeg"))
 
-# Plot of 2012 apple freeze in syracuse
+# 2012 apple freeze in Syracuse
+# Save plot to local computer
 png(paste0(plotDIR[usernumber], "/apple_gdd_final_", AllStn$name[10], ".png"), width = 10, height = 10, units = "in", res = 144, pointsize = 15)
 
+# Plot GDD and DOY
 plot(tav2012$DOY[tav2012$StationID == AllStn$station_id[10]], tav2012$GDD41[tav2012$StationID == AllStn$station_id[10]],
      type = "l",
      lwd = 1.5,
@@ -1340,20 +1355,21 @@ plot(tav2012$DOY[tav2012$StationID == AllStn$station_id[10]], tav2012$GDD41[tav2
      xlab = "DOY",
      ylab = "Degrees (C)",
      main = "2012 Apple Growing Degree Days in Syracuse, NY")
+# Shade above GDD 100 and 400 to show apple development phases
 rect(xleft = -10, xright = 200, ybottom = 400, ytop =  1500, col = alpha("blueviolet", 0.2), border = NA)
 rect(xleft = -10, xright = 200, ybottom = 100, ytop =  400, col = alpha("lightgreen", 0.2), border = NA)
 abline(h = 100, col = alpha("springgreen4", 0.6), lwd = 1.5)
 abline(h = 400, col = alpha("blueviolet", 0.6), lwd = 1.5)
-
-arrows(x0 = 87, y0 = 300, x1 = 87, y1 = 180, length = 0.1, lwd = 2)
-text(87, 350, labels = "-6.7 ˚C")
-arrows(x0 = 119, y0 = 410, x1 = 119, y1 = 280, length = 0.1, lwd = 2)
-text(119, 450, labels = "-3.3 ˚C")
-
+# Add images and labels of apple phases
 rasterImage(silvertip, 0, 110, 20, 220)
 text(20, 120, pos = 4, labels = "First Bud at 100 GDD", cex = 0.75, col = "springgreen4")
 rasterImage(firstbloom, 0, 410, 20, 520)
 text(20, 420, pos = 4, labels = "First Bloom at 400 GDD", cex = 0.75, col = "blueviolet")
+# Point out tmin on harmful freezing days in March and April 
+arrows(x0 = 87, y0 = 300, x1 = 87, y1 = 180, length = 0.1, lwd = 2)
+text(87, 350, labels = "-6.7 ˚C")
+arrows(x0 = 119, y0 = 410, x1 = 119, y1 = 280, length = 0.1, lwd = 2)
+text(119, 450, labels = "-3.3 ˚C")
 
 legend("topleft", "Accumulated GDD", col = "deepskyblue3", lwd = 2, bty = "n", cex = 1)
 
