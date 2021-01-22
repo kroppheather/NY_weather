@@ -599,7 +599,7 @@ for (i in 1:nrow(AllStn)){
     geom_line(aes(y = tmin, color = "Minimum"))+
     geom_abline(data = RegressionTmin, aes(slope = Slope[i], intercept = Int[i]), color = alpha("deepskyblue3", 0.6),
                 linetype = ifelse(RegressionTmin$Sig[i] == 1, "solid", "longdash"))+
-    scale_color_manual(values = c("slateblue1","tomato3","skyblue"), name = "Temperature Measurement")+
+    scale_color_manual(values = c("slateblue1","tomato3","skyblue"), name = "Measurement")+
     theme_classic()+
     theme(plot.title = element_text(hjust = 0.5, face = "bold"))+ 
     labs(x = "Year", y = "Temperature (celsius)", title = paste0("Spring Temperatures in ", AllStn$name[i], ", NY"))
