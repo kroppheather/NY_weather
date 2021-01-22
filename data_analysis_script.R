@@ -25,10 +25,9 @@ diru = c("/Users/abby/Documents/NYweather",
 plotDIR = c("/Users/abby/Documents/NYweather/plots", 
             "/Users/hkropp/Google Drive/research/students/NYweather/plots", 
             "/Users/rachelpike/Desktop/2020-2021/Research/plots")
-
-plotDIR = c("/Users/abby/Documents/NYweather/plots", 
-            "/Users/hkropp/Google Drive/research/students/NYweather/plots", 
-            "/Users/rachelpike/Desktop/2020-2021/Research/plots")
+dataDIR = c("/Users/abby/Documents/NYweather",
+            "",
+            "/Users/rachelpike/Desktop/2020-2021/Research")
 
 # Choosing the user number - CHANGE THIS VALUE 
 usernumber = 1
@@ -498,6 +497,14 @@ SpringDecadeAv$ExLoCount <- aggregate(SpringData$ExtrLo,by=list(SpringData$Stati
 SpringDecadeAv$FTdays <- aggregate(SpringData$FreezeThaw, by = list(SpringData$StationID, SpringData$Decade), FUN = "sum", na.rm = TRUE)$x / 30
 SpringDecadeAv$FTrange <- aggregate(SpringData$FTrange, by = list(SpringData$StationID, SpringData$Decade), FUN = "mean", na.rm = TRUE)$x
 
+# Publish Dataset ----
+FinalData <- AllData[c("StationID", "StationName", "Name", "DOY", "Month", "Year", "Decade", "prcp", "tmax", "tmin", "tav")]
+FinalData <- left_join(AllStn, FinalData, by = c("StationName"))
+FinalData <- FinalData[c("StationID", "StationName", "Name", "lat", "long", "DOY", "Month", "Year", "Decade", "prcp", "tmax", "tmin", "tav")]
+colnames(FinalData) <- c("StationID", "StationName", "Name", "Lat", "Lon", "DOY", "Month", "Year", "Decade", "Prcp", "Tmax", "Tmin", "Tav")
+
+write.csv(FinalData, paste0(dataDIR[usernumber], "/FinalData.csv"), row.names = FALSE)
+
 
 ## Linear regressions for tav ----
 RegressionTav <- data.frame(StationID=character(0), 
@@ -593,12 +600,13 @@ for (i in 1:nrow(AllStn)){
     geom_line(aes(y = tmin, color = "Minimum"))+
     geom_abline(data = RegressionTmin, aes(slope = Slope[i], intercept = Int[i]), color = alpha("deepskyblue3", 0.6),
                 linetype = ifelse(RegressionTmin$Sig[i] == 1, "solid", "longdash"))+
-    scale_color_manual(values = c("slateblue1","tomato3","skyblue"), name = "Temperature Measurement")+
+    scale_color_manual(values = c("slateblue1","tomato3","skyblue"), name = NULL)+
     theme_classic()+
-    theme(plot.title = element_text(hjust = 0.5, face = "bold"))+ 
+    theme(plot.title = element_text(hjust = 0.5, face = "bold"), legend.position = c(.1,.92))+ 
     labs(x = "Year", y = "Temperature (celsius)", title = paste0("Spring Temperatures in ", AllStn$name[i], ", NY"))
   ggsave(paste0("temp_trends_", AllStn$name[i],".png"), plot = last_plot(), device = png(), path = paste0(plotDIR[usernumber], "/"))
 }
+
 
 
 # average temperatures by decade for all stations ----
@@ -948,10 +956,19 @@ for (i in 1:nrow(AllStn)){
 ### FREEZE THAW ----
 # Number of Freeze Thaw Days Graphs ----
 # loop through stations
+current_dataT1 <- subset(SpringYear, SpringYear$StationID == AllStn$station_id[3])
+current_range <- data.frame(year=seq(AllStn[3, 5], 2019))
+current_data <- full_join(current_dataT1, current_range, by = c("year" = "year"))
+current_data <- current_data[order(current_data$year),]
+current_data$FTdays<- na_if(current_data$FTdays, 0)
+current_av <- mean(current_data$FTdays, na.rm = TRUE)
+
 for (i in 1:nrow(AllStn)){
   current_dataT1 <- subset(SpringYear, SpringYear$StationID == AllStn$station_id[i])
   current_range <- data.frame(year=seq(AllStn[i, 5], 2019))
   current_data <- full_join(current_dataT1, current_range, by = c("year" = "year"))
+  current_data <- current_data[order(current_data$year),]
+  current_data$FTdays<- na_if(current_data$FTdays, 0)
   current_av <- mean(current_data$FTdays, na.rm = TRUE)
   
   ggplot(data = current_data, aes(x = year, y = FTdays)) +
@@ -1273,6 +1290,7 @@ for (i in 1:nrow(AllStn)){
        col = "lightskyblue",
        xlab = "Year",
        ylab = "Number of Days",
+       ylim = c(0, 32),
        main = paste0("Number of Freezes and Hard Freezes in March in ", AllStn$name[i] ,", NY"))
   points(current_data2$Year[current_data2$Month == "Mar"], current_data2$FreezeDays[current_data2$Month == "Mar"],
          type = "h",
@@ -1304,6 +1322,7 @@ for (i in 1:nrow(AllStn)){
        col = "lightskyblue",
        xlab = "Year",
        ylab = "Number of Days",
+       ylim = c(0, 32),
        main = paste0("Number of Freezes and Hard Freezes in April in ", AllStn$name[i] ,", NY"))
   points(current_data2$Year[current_data2$Month == "Apr"], current_data2$FreezeDays[current_data2$Month == "Apr"],
          type = "h",
