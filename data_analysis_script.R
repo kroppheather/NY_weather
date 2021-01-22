@@ -535,7 +535,7 @@ for (i in 1:nrow(AllStn)){
   RegressionTav[i,5] <- summary(current.mod)$coefficients[1,1]
   RegressionTav[i,6] <- summary(current.mod)$coefficients[1,4]
   RegressionTav[i,7] <- summary(current.mod)$r.squared
-  RegressionTav[i,8] <- ifelse(RegressionTav[i,4] <= 0.05 & RegressionTav[i,6] <= 0.05, 1, 0)
+  RegressionTav[i,8] <- ifelse(RegressionTav[i,4] <= 0.05, 1, 0)
   
 }
 
@@ -561,7 +561,7 @@ for (i in 1:nrow(AllStn)){
   RegressionTmin[i,5] <- summary(current.mod)$coefficients[1,1]
   RegressionTmin[i,6] <- summary(current.mod)$coefficients[1,4]
   RegressionTmin[i,7] <- summary(current.mod)$r.squared
-  RegressionTmin[i,8] <- ifelse(RegressionTmin[i,4] <= 0.05 & RegressionTmin[i,6] <= 0.05, 1, 0)
+  RegressionTmin[i,8] <- ifelse(RegressionTmin[i,4] <= 0.05, 1, 0)
   
   
 }
@@ -588,8 +588,7 @@ for (i in 1:nrow(AllStn)){
   RegressionTmax[i,5] <- summary(current.mod)$coefficients[1,1]
   RegressionTmax[i,6] <- summary(current.mod)$coefficients[1,4]
   RegressionTmax[i,7] <- summary(current.mod)$r.squared
-  RegressionTmax[i,8] <- ifelse(RegressionTmax[i,4] <= 0.05 & RegressionTmax[i,6] <= 0.05, 1, 0)
-  
+  RegressionTmax[i,8] <- ifelse(RegressionTmax[i,4] <= 0.05, 1, 0)
   
 }
 
